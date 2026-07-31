@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Алексей Ситников - LUDING</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: 900;
+            color: #8b1a1a;
+            letter-spacing: -1px;
+            margin-bottom: 5px;
+        }
+
+        .logo-sub {
+            font-size: 14px;
+            color: #8b1a1a;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .divider {
+            width: 40px;
+            height: 3px;
+            background: #8b1a1a;
+            margin-bottom: 20px;
+        }
+
+        .name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .position {
+            font-size: 16px;
+            color: #6e6e73;
+            line-height: 1.4;
+        }
+
+        .photo-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .photo {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 15px;
+        }
+
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .contact-item {
+            background: white;
+            border-radius: 15px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .contact-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .icon-phone { background: #8b1a1a; }
+        .icon-telegram { background: #0088cc; }
+        .icon-max { background: #6b4c9a; }
+        .icon-email { background: #6e6e73; }
+        .icon-save { background: #6e6e73; }
+
+        .contact-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .contact-value {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+
+        .arrow {
+            color: #c7c7cc;
+            font-size: 20px;
+        }
+
+        .about-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .about-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .about-text {
+            font-size: 15px;
+            color: #6e6e73;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #8b1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .feature-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #8b1a1a;
+        }
+
+        .feature-text {
+            font-size: 13px;
+            color: #1d1d1f;
+            line-height: 1.3;
+        }
+
+        .bottom-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .action-btn {
+            background: white;
+            border-radius: 15px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #8b1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .action-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #8b1a1a;
+        }
+
+        .action-info {
+            flex: 1;
+        }
+
+        .action-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .action-sublabel {
+            font-size: 12px;
+            color: #6e6e73;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6e6e73;
+            font-size: 14px;
+        }
+
+        .footer-logo {
+            font-weight: 700;
+            color: #8b1a1a;
+        }
+
+        .offers-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .offers-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .offers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .offer-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f5f5f7;
+            border-radius: 10px;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.2s;
+        }
+
+        .offer-item:hover {
+            background: #e8e8ed;
+        }
+
+        .offer-icon {
+            width: 36px;
+            height: 36px;
+            background: #8b1a1a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .offer-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .offer-info {
+            flex: 1;
+        }
+
+        .offer-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .offer-date {
+            font-size: 12px;
+            color: #6e6e73;
+        }
+
+        .download-icon {
+            color: #8b1a1a;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">LUDING</div>
+            <div class="logo-sub">EST. 1993</div>
+            <div class="divider"></div>
+            <h1 class="name">Алексей Ситников</h1>
+            <p class="position">Менеджер по работе<br>с частными и корпоративными<br>клиентами</p>
+        </div>
+
+        <!-- Contact List -->
+        <div class="contact-list">
+            <a href="tel:+79670281571" class="contact-item">
+                <div class="contact-icon icon-phone">
+                    <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-label">Позвонить</div>
+                    <div class="contact-value">+7 967 028-15-71</div>
+                </div>
+                <div class="arrow">›</div>
+            </a>
+
+            <a href="https://t.me/Alex_Sitnikov_Luding" target="_blank" class="contact-item">
+                <div class="contact-icon icon-telegram">
+                    <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-label">Telegram</div>
+                    <div class="contact-value">@Alex_Sitnikov_Luding</div>
+                </div>
+                <div class="arrow">›</div>
+            </a>
+
+            <a href="https://max.ru/Alex_Sitnikov_Luding" target="_blank" class="contact-item">
+                <div class="contact-icon icon-max">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-label">MAX</div>
+                    <div class="contact-value">@Alex_Sitnikov_Luding</div>
+                </div>
+                <div class="arrow">›</div>
+            </a>
+
+            <a href="mailto:Aleksei.sitnikov@luding.ru" class="contact-item">
+                <div class="contact-icon icon-email">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-label">Email</div>
+                    <div class="contact-value">Aleksei.sitnikov@luding.ru</div>
+                </div>
+                <div class="arrow">›</div>
+            </a>
+
+            <a href="alexey-sitnikov.vcf" class="contact-item">
+                <div class="contact-icon icon-save">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-label">Сохранить контакт</div>
+                    <div class="contact-value">Добавить в телефон</div>
+                </div>
+                <div class="arrow">›</div>
+            </a>
+        </div>
+
+        <!-- Special Offers -->
+        <div class="offers-section">
+            <div class="offers-title">📊 Актуальные спецпредложения</div>
+            <div class="offers-list">
+                <a href="offers/special-offers-2026-07.xlsx" download class="offer-item">
+                    <div class="offer-icon">
+                        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    </div>
+                    <div class="offer-info">
+                        <div class="offer-name">Спецпредложения Июль 2026</div>
+                        <div class="offer-date">Обновлено: 31.07.2026</div>
+                    </div>
+                    <div class="download-icon">↓</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="about-section">
+            <div class="about-title">О компании LUDING</div>
+            <p class="about-text">Поставки премиальных напитков для частных и корпоративных клиентов. Вино, крепкий алкоголь, вода, подарочные решения и комплектация мероприятий.</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                    </div>
+                    <div class="feature-text">Широкий ассортимент</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg>
+                    </div>
+                    <div class="feature-text">Подарочные решения</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                    </div>
+                    <div class="feature-text">Оперативная отгрузка</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                    </div>
+                    <div class="feature-text">Экспертиза и качество</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Actions -->
+        <div class="bottom-actions">
+            <a href="https://luding.ru" target="_blank" class="action-btn">
+                <div class="action-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                </div>
+                <div class="action-info">
+                    <div class="action-label">Перейти на сайт</div>
+                    <div class="action-sublabel">luding.ru</div>
+                </div>
+            </a>
+
+            <a href="offers/special-offers-2026-07.xlsx" download class="action-btn">
+                <div class="action-icon">
+                    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                </div>
+                <div class="action-info">
+                    <div class="action-label">Спецпредложения</div>
+                    <div class="action-sublabel">Скачать Excel</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span class="footer-logo">LUDING</span> EST. 1993
+        </div>
+    </div>
+</body>
+</html>
