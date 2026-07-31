@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Алексей Ситников - LUDING</title>
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Алексей Ситников — LUDING</title>
     <style>
         * {
             margin: 0;
@@ -12,520 +13,759 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --accent: #8b1a1a;
+            --accent-hover: #a52020;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(180deg, #fafafa 0%, #f0f0f0 100%);
-            color: #1d1d1f;
-            line-height: 1.4;
-            min-height: 100vh;
-            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .container {
-            max-width: 430px;
-            margin: 0 auto;
-            padding: 20px 16px 30px;
+        /* ============ LOGO ANIMATION ============ */
+        .logo-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            z-index: 1000;
+            transform: scaleX(0);
+            transform-origin: left;
+            animation: logoBar 1.2s cubic-bezier(0.77, 0, 0.175, 1) 0.3s forwards;
         }
 
-        /* Header Section */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 24px;
+        @keyframes logoBar {
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
         }
 
-        .logo-section {
-            flex: 1;
+        .top-logo {
+            position: fixed;
+            top: 16px;
+            left: 20px;
+            z-index: 999;
+            opacity: 0;
+            animation: fadeInLogo 0.8s ease 0.6s forwards;
         }
 
-        .logo {
-            font-size: 36px;
-            font-weight: 800;
-            color: #8b1a1a;
-            letter-spacing: -1px;
-            line-height: 1;
-            margin-bottom: 4px;
+        @keyframes fadeInLogo {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .logo-sub {
-            font-size: 11px;
-            color: #8b1a1a;
-            font-weight: 500;
-            letter-spacing: 1px;
+        .top-logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-primary);
         }
 
-        .photo-container {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
+        .top-logo-sub {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ============ HERO SECTION ============ */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 700px;
             overflow: hidden;
-            border: 2px solid #e0e0e0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            flex-shrink: 0;
+            display: flex;
+            align-items: flex-end;
         }
 
-        .photo {
+        .hero-photo {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: center;
+            object-position: center top;
+            opacity: 0;
+            animation: photoReveal 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
         }
 
-        /* Name Section */
-        .name-section {
-            margin-bottom: 28px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid #e5e5e5;
+        @keyframes photoReveal {
+            from { 
+                opacity: 0; 
+                transform: scale(1.08); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
         }
 
-        .name {
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin-bottom: 8px;
-            color: #1d1d1f;
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(10, 10, 10, 0.3) 0%,
+                rgba(10, 10, 10, 0.1) 40%,
+                rgba(10, 10, 10, 0.6) 70%,
+                rgba(10, 10, 10, 1) 100%
+            );
+            z-index: 1;
         }
 
-        .position {
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            padding: 0 24px 60px;
+        }
+
+        .hero-name {
+            font-size: 42px;
+            font-weight: 300;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            margin-bottom: 12px;
+            opacity: 0;
+            animation: slideUp 0.8s ease 0.8s forwards;
+        }
+
+        .hero-name strong {
+            font-weight: 600;
+            display: block;
+        }
+
+        .hero-position {
             font-size: 15px;
-            color: #6e6e73;
+            color: var(--text-secondary);
             font-weight: 400;
-            line-height: 1.5;
+            margin-bottom: 8px;
+            opacity: 0;
+            animation: slideUp 0.8s ease 1s forwards;
         }
 
-        /* Contact Grid */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 10px;
+        .hero-company {
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: slideUp 0.8s ease 1.1s forwards;
         }
 
-        .contact-item {
-            background: white;
-            border-radius: 14px;
-            padding: 16px 14px;
+        .hero-divider {
+            width: 40px;
+            height: 1px;
+            background: var(--accent);
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: slideUp 0.8s ease 1.2s forwards;
+        }
+
+        .hero-tags {
             display: flex;
             flex-direction: column;
+            gap: 8px;
+            opacity: 0;
+            animation: slideUp 0.8s ease 1.3s forwards;
+        }
+
+        .hero-tag {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
             align-items: center;
-            text-decoration: none;
-            color: inherit;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            transition: all 0.2s ease;
-            border: 1px solid #f0f0f0;
+            gap: 10px;
         }
 
-        .contact-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        .hero-tag::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
         }
 
-        .contact-item:active {
-            transform: scale(0.98);
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
         }
 
-        .contact-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
+        /* ============ MAIN CONTENT ============ */
+        .content {
+            padding: 60px 24px 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ============ BUTTONS ============ */
+        .buttons-section {
+            margin-bottom: 80px;
+        }
+
+        .btn-primary {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 8px;
+            gap: 12px;
+            width: 100%;
+            padding: 22px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-family: inherit;
         }
 
-        .icon-phone { background: linear-gradient(135deg, #8b1a1a 0%, #a02020 100%); }
-        .icon-telegram { background: linear-gradient(135deg, #0088cc 0%, #00a0e0 100%); }
-        .icon-max { background: white; border: 1px solid #e0e0e0; }
-        .icon-email { background: linear-gradient(135deg, #5e5e63 0%, #8e8e93 100%); }
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 26, 26, 0.4);
+        }
 
-        .contact-icon svg {
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary svg {
             width: 22px;
             height: 22px;
             fill: white;
         }
 
-        .contact-icon img {
-            width: 28px;
-            height: 28px;
-            object-fit: contain;
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
-        .contact-label {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 2px;
-            text-align: center;
-        }
-
-        .contact-value {
-            font-size: 11px;
-            color: #8e8e93;
-            text-align: center;
-            line-height: 1.3;
-        }
-
-        /* Save Contact Button */
-        .save-contact {
-            background: linear-gradient(135deg, #8b1a1a 0%, #a02020 100%);
-            border-radius: 14px;
-            padding: 18px;
+        .btn-glass {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 12px;
+            padding: 18px 16px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--text-primary);
             text-decoration: none;
-            color: white;
-            box-shadow: 0 4px 12px rgba(139, 26, 26, 0.25);
-            transition: all 0.2s ease;
-            margin-bottom: 24px;
-            border: none;
-            width: 100%;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            font-family: inherit;
         }
 
-        .save-contact:hover {
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.12);
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(139, 26, 26, 0.35);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
-        .save-contact:active {
-            transform: scale(0.98);
+        .btn-glass:active {
+            transform: scale(0.97);
         }
 
-        .save-contact-icon {
+        .btn-glass-icon {
             width: 36px;
             height: 36px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.08);
         }
 
-        .save-contact-icon svg {
+        .btn-glass-icon svg {
             width: 20px;
             height: 20px;
             fill: white;
         }
 
-        .save-contact-text {
+        .btn-glass-icon img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .btn-glass-text {
             flex: 1;
+            text-align: left;
         }
 
-        .save-contact-label {
-            font-size: 16px;
+        /* ============ SECTIONS ============ */
+        .section {
+            margin-bottom: 80px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--accent);
             font-weight: 600;
-            margin-bottom: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
         }
 
-        .save-contact-sublabel {
-            font-size: 12px;
-            opacity: 0.9;
+        .section-title {
+            font-size: 32px;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            margin-bottom: 20px;
         }
 
-        .arrow {
-            color: rgba(255,255,255,0.7);
-            font-size: 20px;
+        .section-title strong {
+            font-weight: 600;
         }
 
-        /* About Section */
-        .about-section {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            border: 1px solid #f0f0f0;
+        .section-text {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-weight: 300;
         }
 
-        .about-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            letter-spacing: -0.3px;
-        }
-
-        .about-text {
-            font-size: 14px;
-            color: #6e6e73;
-            line-height: 1.6;
-            margin-bottom: 18px;
-        }
-
-        .features {
+        /* ============ FEATURES ============ */
+        .features-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 32px;
         }
 
-        .feature {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .feature-card:hover {
+            background: var(--bg-glass);
+            transform: translateY(-4px);
+            border-color: rgba(139, 26, 26, 0.3);
         }
 
         .feature-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: #fafafa;
-            border: 1px solid #e5e5e5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            font-size: 28px;
+            margin-bottom: 16px;
+            display: block;
         }
 
-        .feature-icon svg {
-            width: 16px;
-            height: 16px;
-            fill: #8b1a1a;
-        }
-
-        .feature-text {
-            font-size: 12px;
-            color: #1d1d1f;
-            font-weight: 500;
+        .feature-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
             line-height: 1.3;
         }
 
-        /* Bottom Actions */
-        .bottom-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 24px;
+        .feature-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            font-weight: 300;
         }
 
-        .action-btn {
-            background: white;
-            border-radius: 14px;
-            padding: 16px 14px;
-            display: flex;
-            align-items: center;
+        /* ============ OFFERS BUTTON ============ */
+        .offers-btn {
+            display: block;
+            width: 100%;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(139, 26, 26, 0.15) 0%, rgba(139, 26, 26, 0.05) 100%);
+            border: 1px solid rgba(139, 26, 26, 0.3);
+            border-radius: 20px;
+            color: white;
             text-decoration: none;
-            color: inherit;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: 1px solid #f0f0f0;
+            text-align: center;
+            transition: all 0.3s ease;
         }
 
-        .action-btn:hover {
+        .offers-btn:hover {
+            background: linear-gradient(135deg, rgba(139, 26, 26, 0.25) 0%, rgba(139, 26, 26, 0.1) 100%);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        .action-btn:active {
+        .offers-btn:active {
             transform: scale(0.98);
         }
 
-        .action-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: #fafafa;
-            border: 1px solid #e5e5e5;
+        .offers-btn-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .offers-btn-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* ============ SAVE CONTACT ============ */
+        .save-btn {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        .action-icon svg {
-            width: 18px;
-            height: 18px;
-            fill: #8b1a1a;
-        }
-
-        .action-info {
-            flex: 1;
-        }
-
-        .action-label {
-            font-size: 13px;
+            gap: 14px;
+            width: 100%;
+            padding: 24px;
+            background: white;
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 20px;
+            font-size: 17px;
             font-weight: 600;
-            margin-bottom: 2px;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-family: inherit;
         }
 
-        .action-sublabel {
-            font-size: 11px;
-            color: #8e8e93;
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(255, 255, 255, 0.15);
         }
 
-        /* Footer */
+        .save-btn:active {
+            transform: scale(0.98);
+        }
+
+        .save-btn-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .save-btn-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .save-btn-text {
+            flex: 1;
+            text-align: left;
+        }
+
+        .save-btn-label {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .save-btn-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .save-btn-arrow {
+            font-size: 24px;
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        /* ============ FOOTER ============ */
         .footer {
+            padding: 40px 24px 50px;
             text-align: center;
-            padding: 16px;
-            color: #8e8e93;
-            font-size: 12px;
-            font-weight: 500;
+            border-top: 1px solid var(--border);
         }
 
         .footer-logo {
+            font-size: 24px;
             font-weight: 700;
-            color: #8b1a1a;
-            letter-spacing: -0.5px;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
         }
 
-        /* Responsive */
+        .footer-sub {
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .footer-contacts {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        .footer-contact {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-contact:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-copy {
+            margin-top: 32px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ============ RESPONSIVE ============ */
         @media (max-width: 380px) {
-            .name {
+            .hero-name {
+                font-size: 36px;
+            }
+            .section-title {
                 font-size: 28px;
             }
-            
-            .photo-container {
-                width: 80px;
-                height: 80px;
+            .buttons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-height: 800px) {
+            .hero {
+                min-height: 800px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header: Logo + Photo -->
-        <div class="header">
-            <div class="logo-section">
-                <div class="logo">LUDING</div>
-                <div class="logo-sub">EST. 1993</div>
-            </div>
-            <div class="photo-container">
-                <img src="photo.jpg" alt="Алексей Ситников" class="photo">
-            </div>
-        </div>
-
-        <!-- Name Section -->
-        <div class="name-section">
-            <h1 class="name">Алексей Ситников</h1>
-            <p class="position">Менеджер по работе с частными и корпоративными клиентами</p>
-        </div>
-
-        <!-- Contact Grid (2 columns) -->
-        <div class="contact-grid">
-            <a href="tel:+79670281571" class="contact-item">
-                <div class="contact-icon icon-phone">
-                    <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                </div>
-                <div class="contact-label">Позвонить</div>
-                <div class="contact-value">+7 967 028-15-71</div>
-            </a>
-
-            <a href="https://t.me/+79670281571" target="_blank" class="contact-item">
-                <div class="contact-icon icon-telegram">
-                    <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
-                </div>
-                <div class="contact-label">Telegram</div>
-                <div class="contact-value">Написать сообщение</div>
-            </a>
-
-            <a href="https://max.ru/u/f9LHodD0cOLvSFb5ck4JSoEU8jPP38BwELZ8ic1o1_NfMi9J5LAuk90woYw" target="_blank" class="contact-item">
-                <div class="contact-icon icon-max">
-                    <img src="max-logo.png" alt="MAX">
-                </div>
-                <div class="contact-label">MAX</div>
-                <div class="contact-value">Написать сообщение</div>
-            </a>
-
-            <a href="mailto:Aleksei.sitnikov@luding.ru" class="contact-item">
-                <div class="contact-icon icon-email">
-                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                </div>
-                <div class="contact-label">Email</div>
-                <div class="contact-value">Написать письмо</div>
-            </a>
-        </div>
-
-        <!-- Save Contact Button (Full Width, Center) -->
-        <a href="alexey-sitnikov.vcf" class="save-contact">
-            <div class="save-contact-icon">
-                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            </div>
-            <div class="save-contact-text">
-                <div class="save-contact-label">Сохранить контакт</div>
-                <div class="save-contact-sublabel">Добавить в телефон</div>
-            </div>
-            <div class="arrow">›</div>
-        </a>
-
-        <!-- About Section -->
-        <div class="about-section">
-            <div class="about-title">О компании LUDING</div>
-            <p class="about-text">Поставки премиальных напитков для частных и корпоративных клиентов. Вино, крепкий алкоголь, вода, подарочные решения и комплектация мероприятий.</p>
-            
-            <div class="features">
-                <div class="feature">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
-                    </div>
-                    <div class="feature-text">Широкий ассортимент</div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg>
-                    </div>
-                    <div class="feature-text">Подарочные решения</div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-                    </div>
-                    <div class="feature-text">Оперативная отгрузка</div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-                    </div>
-                    <div class="feature-text">Экспертиза и качество</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Actions (2 columns) -->
-        <div class="bottom-actions">
-            <a href="https://luding.ru" target="_blank" class="action-btn">
-                <div class="action-icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                </div>
-                <div class="action-info">
-                    <div class="action-label">Сайт LUDING</div>
-                    <div class="action-sublabel">luding.ru</div>
-                </div>
-            </a>
-
-            <button onclick="downloadSpecialOffer()" class="action-btn">
-                <div class="action-icon">
-                    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                </div>
-                <div class="action-info">
-                    <div class="action-label">Спецпредложения</div>
-                    <div class="action-sublabel">Скачать</div>
-                </div>
-            </button>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <span class="footer-logo">LUDING</span> · EST. 1993
-        </div>
+    <!-- Logo Bar Animation -->
+    <div class="logo-bar"></div>
+    
+    <!-- Top Logo -->
+    <div class="top-logo">
+        <div class="top-logo-text">LUDING</div>
+        <div class="top-logo-sub">EST. 1993</div>
     </div>
 
-    <script>
-        // Название файла со спецпредложениями (обновляйте каждый месяц)
-        const specialOfferFile = 'offers/special.xlsx';
+    <!-- Hero Section -->
+    <section class="hero">
+        <img src="photo.jpg" alt="Алексей Ситников" class="hero-photo">
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content">
+            <h1 class="hero-name">
+                Алексей<br>
+                <strong>Ситников</strong>
+            </h1>
+            <p class="hero-position">Менеджер по работе с частными и корпоративными клиентами</p>
+            <div class="hero-company">LUDING</div>
+            <div class="hero-divider"></div>
+            <div class="hero-tags">
+                <div class="hero-tag">Корпоративные поставки напитков</div>
+                <div class="hero-tag">Подарочные решения</div>
+                <div class="hero-tag">Комплектация мероприятий</div>
+            </div>
+        </div>
+    </section>
 
-        // Функция для скачивания спецпредложений
-        function downloadSpecialOffer() {
-            const link = document.createElement('a');
-            link.href = specialOfferFile;
-            link.download = 'special-offers.xlsx';
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+    <!-- Main Content -->
+    <div class="content">
+        
+        <!-- Buttons Section -->
+        <section class="buttons-section">
+            <a href="tel:+79670281571" class="btn-primary">
+                <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                Позвонить
+            </a>
+
+            <div class="buttons-grid">
+                <a href="https://t.me/+79670281571" target="_blank" class="btn-glass">
+                    <div class="btn-glass-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+                    </div>
+                    <div class="btn-glass-text">Telegram</div>
+                </a>
+
+                <a href="https://max.ru/u/f9LHodD0cOLvSFb5ck4JSoEU8jPP38BwELZ8ic1o1_NfMi9J5LAuk90woYw" target="_blank" class="btn-glass">
+                    <div class="btn-glass-icon">
+                        <img src="max-logo.png" alt="MAX">
+                    </div>
+                    <div class="btn-glass-text">MAX</div>
+                </a>
+
+                <a href="mailto:Aleksei.sitnikov@luding.ru" class="btn-glass">
+                    <div class="btn-glass-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    </div>
+                    <div class="btn-glass-text">Email</div>
+                </a>
+
+                <a href="alexey-sitnikov.vcf" class="btn-glass">
+                    <div class="btn-glass-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+                    <div class="btn-glass-text">Контакт</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="section" data-animate>
+            <div class="section-label">Обо мне</div>
+            <h2 class="section-title">Эксперт в мире <strong>напитков</strong></h2>
+            <p class="section-text">
+                Более 8 лет опыта в винной индустрии. Помогаю подобрать напитки для корпоративных мероприятий, деловых встреч, подарков партнерам и важных событий.
+            </p>
+        </section>
+
+        <!-- Features Section -->
+        <section class="section" data-animate>
+            <div class="section-label">Преимущества</div>
+            <h2 class="section-title">Почему выбирают <strong>LUDING</strong></h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🍷</span>
+                    <div class="feature-title">Широкий ассортимент</div>
+                    <div class="feature-desc">Более 5000 позиций напитков</div>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🎁</span>
+                    <div class="feature-title">Подарочные решения</div>
+                    <div class="feature-desc">Подбор наборов для клиентов и партнеров</div>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🏢</span>
+                    <div class="feature-title">Корпоративные проекты</div>
+                    <div class="feature-desc">Комплектация мероприятий любого масштаба</div>
+                </div>
+
+                <div class="feature-card">
+                    <span class="feature-icon">🚚</span>
+                    <div class="feature-title">Оперативная отгрузка</div>
+                    <div class="feature-desc">Быстрое оформление и доставка</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Offers Section -->
+        <section class="section" data-animate>
+            <div class="section-label">Акции</div>
+            <h2 class="section-title">Спецпредложения <strong>месяца</strong></h2>
+            <a href="offers.html" class="offers-btn">
+                <div class="offers-btn-title">Актуальные спецпредложения</div>
+                <div class="offers-btn-sub">Подборки · Акции · Предложения месяца</div>
+            </a>
+        </section>
+
+        <!-- Save Contact Section -->
+        <section class="section" data-animate>
+            <a href="alexey-sitnikov.vcf" class="save-btn">
+                <div class="save-btn-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+                <div class="save-btn-text">
+                    <div class="save-btn-label">Добавить меня в контакты</div>
+                    <div class="save-btn-sub">Сохранить в телефон</div>
+                </div>
+                <div class="save-btn-arrow">›</div>
+            </a>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-logo">LUDING</div>
+        <div class="footer-sub">EST. 1993</div>
+        
+        <div class="footer-contacts">
+            <a href="tel:+79670281571" class="footer-contact">+7 967 028-15-71</a>
+            <a href="mailto:Aleksei.sitnikov@luding.ru" class="footer-contact">Aleksei.sitnikov@luding.ru</a>
+            <a href="https://t.me/+79670281571" target="_blank" class="footer-contact">Telegram</a>
+            <a href="https://max.ru/u/f9LHodD0cOLvSFb5ck4JSoEU8jPP38BwELZ8ic1o1_NfMi9J5LAuk90woYw" target="_blank" class="footer-contact">MAX</a>
+        </div>
+        
+        <div class="footer-copy">© 2026 LUDING. Все права защищены.</div>
+    </footer>
+
+    <script>
+        // Анимация появления секций при прокрутке
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('[data-animate]').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Плавное увеличение кнопок при нажатии (дополнительная обратная связь)
+        document.querySelectorAll('.btn-glass, .btn-primary, .save-btn, .offers-btn').forEach(btn => {
+            btn.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.97)';
+            });
+            btn.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
     </script>
 </body>
 </html>
