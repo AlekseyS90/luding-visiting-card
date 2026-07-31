@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Спецпредложения — LUDING</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --accent: #8b1a1a;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .logo-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            z-index: 1000;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 999;
+            background: linear-gradient(to bottom, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .nav-logo {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .nav-back {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s ease;
+        }
+
+        .nav-back:hover {
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 120px 24px 60px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+
+        .page-title strong {
+            font-weight: 600;
+        }
+
+        .page-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .offers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .offer-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardAppear 0.6s ease forwards;
+        }
+
+        .offer-card:nth-child(1) { animation-delay: 0.1s; }
+        .offer-card:nth-child(2) { animation-delay: 0.2s; }
+        .offer-card:nth-child(3) { animation-delay: 0.3s; }
+        .offer-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes cardAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .offer-card:hover {
+            background: var(--bg-glass);
+            transform: translateY(-2px);
+            border-color: rgba(139, 26, 26, 0.3);
+        }
+
+        .offer-card:active {
+            transform: scale(0.98);
+        }
+
+        .offer-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent) 0%, #a52020 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .offer-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .offer-info {
+            flex: 1;
+        }
+
+        .offer-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .offer-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        .offer-arrow {
+            font-size: 22px;
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .footer-note {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-bar"></div>
+    
+    <nav class="top-nav">
+        <a href="index.html" class="nav-back">← Назад</a>
+        <div class="nav-logo">LUDING</div>
+    </nav>
+
+    <div class="container">
+        <div class="section-label">Каталог</div>
+        <h1 class="page-title">Спецпредложения <strong>месяца</strong></h1>
+        <p class="page-subtitle">Актуальные подборки, акции и выгодные условия</p>
+
+        <div class="offers-list" id="offersList">
+            <!-- Карточки генерируются JavaScript -->
+        </div>
+
+        <div class="footer-note">
+            Обновляется ежемесячно · LUDING EST. 1993
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация файлов со спецпредложениями
+        // Просто добавьте или удалите объекты из этого массива
+        const offers = [
+            {
+                file: 'offers/special.xlsx',
+                name: 'Спецпредложения месяца',
+                desc: 'Актуальный каталог акций'
+            }
+            // Можно добавить ещё:
+            // {
+            //     file: 'offers/wines.xlsx',
+            //     name: 'Подборка вин',
+            //     desc: 'Лучшие предложения по винам'
+            // },
+            // {
+            //     file: 'offers/gifts.xlsx',
+            //     name: 'Подарочные наборы',
+            //     desc: 'Решения для партнёров'
+            // }
+        ];
+
+        const offersList = document.getElementById('offersList');
+
+        if (offers.length === 0) {
+            offersList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon"></div>
+                    <div>Спецпредложения скоро появятся</div>
+                </div>
+            `;
+        } else {
+            offers.forEach(offer => {
+                const card = document.createElement('a');
+                card.href = offer.file;
+                card.download = offer.file.split('/').pop();
+                card.className = 'offer-card';
+                card.innerHTML = `
+                    <div class="offer-icon">
+                        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                    </div>
+                    <div class="offer-info">
+                        <div class="offer-name">${offer.name}</div>
+                        <div class="offer-desc">${offer.desc}</div>
+                    </div>
+                    <div class="offer-arrow">›</div>
+                `;
+                offersList.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
