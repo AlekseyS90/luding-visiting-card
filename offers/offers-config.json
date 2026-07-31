@@ -1,0 +1,17 @@
+{
+  "files": [
+    {
+      "name": "special-offer-wines.xlsx",
+      "description": "Спецпредложения на вина"
+    },
+    {
+      "name": "special-offer-spirits.xlsx",
+      "description": "Спецпредложения на крепкий алкоголь"
+    },
+    {
+      "name": "special-offer-gifts.xlsx",
+      "description": "Подарочные наборы"
+    }
+  ],
+  "lastUpdate": "2026-07-31"
+}
