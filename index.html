@@ -120,8 +120,6 @@
             animation: contactBtnAppear 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.1s forwards;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
             cursor: pointer;
-            border: none;
-            font-family: inherit;
         }
 
         @keyframes contactBtnAppear {
@@ -605,7 +603,7 @@
             color: var(--text-secondary);
         }
 
-        /* ============ SAVE CONTACT HINT ============ */
+        /* ============ SAVE CONTACT SECTION ============ */
         .save-section {
             text-align: center;
         }
@@ -703,7 +701,7 @@
     </div>
 
     <!-- Contact Button (Fixed, Top Right) -->
-    <button class="contact-btn" id="contactBtn" onclick="saveContact()">
+    <a href="alexey-sitnikov.vcf" class="contact-btn" id="contactBtn">
         <div class="contact-btn-icon">
             <svg viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -713,7 +711,7 @@
             </svg>
         </div>
         <span class="contact-btn-text">Контакт</span>
-    </button>
+    </a>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -879,60 +877,77 @@
     </footer>
 
     <script>
-        // ============================================
-        // ФУНКЦИЯ СОХРАНЕНИЯ КОНТАКТА
-        // ============================================
-        function saveContact() {
-            // Виброотдача
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
-
-            // Генерация vCard строки
-            const vCardData = [
-                'BEGIN:VCARD',
-                'VERSION:3.0',
-                'FN:Алексей Ситников',
-                'N:Ситников;Алексей;;;',
-                'ORG:LUDING',
-                'TITLE:Менеджер по работе с частными и корпоративными клиентами',
-                'TEL;TYPE=CELL:+79670281571',
-                'EMAIL:Aleksei.sitnikov@luding.ru',
-                'URL:https://luding.ru',
-                'NOTE:LUDING - поставки премиальных напитков',
-                'END:VCARD'
-            ].join('\r\n');
-
-            // Создаём Blob с правильным MIME-типом
-            const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            
-            // Создаём скрытую ссылку
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'Алексей_Ситников.vcf';
-            
-            // Для iOS: открываем в новом окне
-            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-            }
-            
-            // Эмулируем клик
-            document.body.appendChild(link);
-            link.click();
-            
-            // Очищаем через 1 секунду
-            setTimeout(() => {
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 1000);
-        }
-
-        // ============================================
-        // ПЛАВАЮЩАЯ КНОПКА ПРИ ПРОКРУТКЕ
-        // ============================================
+        // Contact Button: превращение в плавающую кнопку при прокрутке
         const contactBtn = document.getElementById('contactBtn');
         let isFloating = false;
 
-        window
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const heroHeight = document.querySelector('.hero').offsetHeight;
+            
+            if (scrollY > heroHeight * 0.8 && !isFloating) {
+                contactBtn.classList.add('floating');
+                isFloating = true;
+            } else if (scrollY <= heroHeight * 0.8 && isFloating) {
+                contactBtn.classList.remove('floating');
+                isFloating = false;
+            }
+        });
+
+        // Виброотдача при нажатии (если поддерживается)
+        contactBtn.addEventListener('click', () => {
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        });
+
+        // Анимация появления секций при прокрутке
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    sectionObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        document.querySelectorAll('[data-animate]').forEach(el => {
+            sectionObserver.observe(el);
+        });
+
+        // Анимация карточек преимуществ с задержкой 0.15 сек
+        const featureObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const cards = entry.target.querySelectorAll('[data-feature]');
+                    cards.forEach((card, index) => {
+                        setTimeout(() => {
+                            card.classList.add('visible');
+                        }, index * 150);
+                    });
+                    featureObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.2
+        });
+
+        document.querySelectorAll('.features-grid').forEach(grid => {
+            featureObserver.observe(grid);
+        });
+
+        // Плавное увеличение кнопок при нажатии
+        document.querySelectorAll('.btn-glass, .btn-primary, .offers-btn').forEach(btn => {
+            btn.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.97)';
+            }, { passive: true });
+            btn.addEventListener('touchend', function() {
+                this.style.transform = '';
+            }, { passive: true });
+        });
+    </script>
+</body>
+</html>
