@@ -62,8 +62,8 @@
         /* ============ TOP LOGO ============ */
         .top-logo {
             position: fixed;
-            top: 16px;
-            left: 20px;
+            top: 20px;
+            left: 24px;
             z-index: 999;
             opacity: 0;
             transform: translateY(-10px);
@@ -93,6 +93,94 @@
             letter-spacing: 2px;
             color: var(--text-muted);
             margin-top: 2px;
+        }
+
+        /* ============ CONTACT BUTTON ============ */
+        .contact-btn {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 18px;
+            background: rgba(25, 25, 25, 0.35);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(10px);
+            animation: contactBtnAppear 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.1s forwards;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        @keyframes contactBtnAppear {
+            0% { 
+                opacity: 0; 
+                transform: translateY(10px); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .contact-btn:hover {
+            border-color: var(--accent);
+            background: rgba(25, 25, 25, 0.5);
+            transform: translateY(0) scale(1.02);
+        }
+
+        .contact-btn:active {
+            transform: scale(0.97);
+            transition: transform 0.1s ease;
+        }
+
+        .contact-btn-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-btn-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: white;
+            stroke-width: 1.5;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .contact-btn-text {
+            white-space: nowrap;
+        }
+
+        /* Floating state after scroll */
+        .contact-btn.floating {
+            padding: 12px;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            justify-content: center;
+        }
+
+        .contact-btn.floating .contact-btn-text {
+            display: none;
+        }
+
+        .contact-btn.floating .contact-btn-icon {
+            margin: 0;
         }
 
         /* ============ HERO SECTION ============ */
@@ -515,73 +603,15 @@
             color: var(--text-secondary);
         }
 
-        /* ============ SAVE CONTACT ============ */
-        .save-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            width: 100%;
-            padding: 24px;
-            background: white;
-            color: var(--bg-primary);
-            border: none;
-            border-radius: 20px;
-            font-size: 17px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            font-family: inherit;
-            transform: scale(1);
+        /* ============ SAVE CONTACT SECTION ============ */
+        .save-section {
+            text-align: center;
         }
 
-        .save-btn:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 10px 40px rgba(255, 255, 255, 0.15);
-        }
-
-        .save-btn:active {
-            transform: scale(0.97);
-            transition: transform 0.1s ease;
-        }
-
-        .save-btn-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--bg-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .save-btn-icon svg {
-            width: 22px;
-            height: 22px;
-            fill: white;
-        }
-
-        .save-btn-text {
-            flex: 1;
-            text-align: left;
-        }
-
-        .save-btn-label {
-            font-size: 17px;
-            font-weight: 600;
-        }
-
-        .save-btn-sub {
-            font-size: 13px;
+        .save-hint {
+            font-size: 14px;
             color: var(--text-muted);
-            font-weight: 400;
-        }
-
-        .save-btn-arrow {
-            font-size: 24px;
-            color: var(--text-muted);
+            margin-bottom: 16px;
             font-weight: 300;
         }
 
@@ -642,6 +672,15 @@
             .buttons-grid {
                 grid-template-columns: 1fr;
             }
+            .contact-btn {
+                top: 16px;
+                right: 16px;
+                padding: 10px 14px;
+            }
+            .top-logo {
+                top: 16px;
+                left: 16px;
+            }
         }
 
         @media (min-height: 800px) {
@@ -660,6 +699,19 @@
         <div class="top-logo-text">LUDING</div>
         <div class="top-logo-sub">EST. 1993</div>
     </div>
+
+    <!-- Contact Button (Fixed, Top Right) -->
+    <a href="alexey-sitnikov.vcf" class="contact-btn" id="contactBtn">
+        <div class="contact-btn-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+                <line x1="19" y1="8" x2="19" y2="14"/>
+                <line x1="22" y1="11" x2="16" y2="11"/>
+            </svg>
+        </div>
+        <span class="contact-btn-text">Контакт</span>
+    </a>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -714,11 +766,11 @@
                     <div class="btn-glass-text">Email</div>
                 </a>
 
-                <a href="alexey-sitnikov.vcf" class="btn-glass">
+                <a href="https://luding.ru" target="_blank" class="btn-glass">
                     <div class="btn-glass-icon">
-                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
                     </div>
-                    <div class="btn-glass-text">Контакт</div>
+                    <div class="btn-glass-text">Сайт LUDING</div>
                 </a>
             </div>
         </section>
@@ -740,7 +792,6 @@
             <div class="features-grid">
                 <div class="feature-card" data-feature>
                     <div class="feature-icon">
-                        <!-- Иконка бокала -->
                         <svg viewBox="0 0 24 24">
                             <path d="M8 2h8l-1 9c-.5 2-2 3.5-3 4v4h3v2H9v-2h3v-4c-1-.5-2.5-2-3-4L8 2z"/>
                             <path d="M6 2h12"/>
@@ -752,7 +803,6 @@
 
                 <div class="feature-card" data-feature>
                     <div class="feature-icon">
-                        <!-- Иконка подарка -->
                         <svg viewBox="0 0 24 24">
                             <rect x="3" y="8" width="18" height="13" rx="1"/>
                             <path d="M12 8v13"/>
@@ -766,7 +816,6 @@
 
                 <div class="feature-card" data-feature>
                     <div class="feature-icon">
-                        <!-- Иконка здания -->
                         <svg viewBox="0 0 24 24">
                             <path d="M3 21V7l9-4 9 4v14"/>
                             <path d="M9 21v-6h6v6"/>
@@ -782,7 +831,6 @@
 
                 <div class="feature-card" data-feature>
                     <div class="feature-icon">
-                        <!-- Иконка доставки -->
                         <svg viewBox="0 0 24 24">
                             <rect x="1" y="7" width="15" height="10" rx="1"/>
                             <path d="M16 11h4l3 3v3h-7"/>
@@ -806,18 +854,9 @@
             </a>
         </section>
 
-        <!-- Save Contact Section -->
-        <section class="section" data-animate>
-            <a href="alexey-sitnikov.vcf" class="save-btn">
-                <div class="save-btn-icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                </div>
-                <div class="save-btn-text">
-                    <div class="save-btn-label">Добавить меня в контакты</div>
-                    <div class="save-btn-sub">Сохранить в телефон</div>
-                </div>
-                <div class="save-btn-arrow">›</div>
-            </a>
+        <!-- Save Contact Hint -->
+        <section class="section save-section" data-animate>
+            <p class="save-hint">Используйте кнопку «Контакт» в правом верхнем углу, чтобы сохранить мои данные в телефон</p>
         </section>
 
     </div>
@@ -838,6 +877,30 @@
     </footer>
 
     <script>
+        // Contact Button: превращение в плавающую кнопку при прокрутке
+        const contactBtn = document.getElementById('contactBtn');
+        let isFloating = false;
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const heroHeight = document.querySelector('.hero').offsetHeight;
+            
+            if (scrollY > heroHeight * 0.8 && !isFloating) {
+                contactBtn.classList.add('floating');
+                isFloating = true;
+            } else if (scrollY <= heroHeight * 0.8 && isFloating) {
+                contactBtn.classList.remove('floating');
+                isFloating = false;
+            }
+        });
+
+        // Виброотдача при нажатии (если поддерживается)
+        contactBtn.addEventListener('click', () => {
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        });
+
         // Анимация появления секций при прокрутке
         const sectionObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -863,7 +926,7 @@
                     cards.forEach((card, index) => {
                         setTimeout(() => {
                             card.classList.add('visible');
-                        }, index * 150); // 0.15 сек задержка между карточками
+                        }, index * 150);
                     });
                     featureObserver.unobserve(entry.target);
                 }
@@ -876,8 +939,8 @@
             featureObserver.observe(grid);
         });
 
-        // Плавное увеличение кнопок при нажатии (дополнительная обратная связь)
-        document.querySelectorAll('.btn-glass, .btn-primary, .save-btn, .offers-btn').forEach(btn => {
+        // Плавное увеличение кнопок при нажатии
+        document.querySelectorAll('.btn-glass, .btn-primary, .offers-btn').forEach(btn => {
             btn.addEventListener('touchstart', function() {
                 this.style.transform = 'scale(0.97)';
             }, { passive: true });
