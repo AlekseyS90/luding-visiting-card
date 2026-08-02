@@ -672,48 +672,6 @@
             font-weight: 300;
         }
 
-        /* ============ STATS ============ */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 24px 20px;
-            text-align: center;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.4s ease;
-        }
-
-        .stat-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 300;
-            letter-spacing: -1px;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-        }
-
-        .stat-value strong {
-            font-weight: 600;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.4;
-            font-weight: 400;
-        }
-
         /* ============ OFFERS CARD ============ */
         .offers-card {
             background: linear-gradient(135deg, rgba(139, 26, 26, 0.12) 0%, rgba(139, 26, 26, 0.04) 100%);
@@ -1040,34 +998,6 @@
             </div>
         </section>
 
-        <!-- Stats -->
-        <section class="section" data-animate>
-            <div class="section-label">Цифры</div>
-            <h2 class="section-title">Профессиональный <strong>подход</strong></h2>
-            
-            <div class="stats-grid">
-                <div class="stat-card" data-stat>
-                    <div class="stat-value"><strong>8+</strong></div>
-                    <div class="stat-label">лет опыта<br>в индустрии</div>
-                </div>
-
-                <div class="stat-card" data-stat>
-                    <div class="stat-value"><strong>5000+</strong></div>
-                    <div class="stat-label">позиций<br>напитков</div>
-                </div>
-
-                <div class="stat-card" data-stat>
-                    <div class="stat-value"><strong>1993</strong></div>
-                    <div class="stat-label">год основания<br>компании</div>
-                </div>
-
-                <div class="stat-card" data-stat>
-                    <div class="stat-value"><strong>B2B</strong></div>
-                    <div class="stat-label">решения для<br>корпоративных клиентов</div>
-                </div>
-            </div>
-        </section>
-
         <!-- Offers -->
         <section class="section" data-animate>
             <a href="offers.html" class="offers-card">
@@ -1215,25 +1145,6 @@
 
         document.querySelectorAll('.features-grid').forEach(grid => {
             featureObserver.observe(grid);
-        });
-
-        // Карточки статистики с задержкой
-        const statObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const cards = entry.target.querySelectorAll('[data-stat]');
-                    cards.forEach((card, index) => {
-                        setTimeout(() => {
-                            card.classList.add('visible');
-                        }, index * 120);
-                    });
-                    statObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.2 });
-
-        document.querySelectorAll('.stats-grid').forEach(grid => {
-            statObserver.observe(grid);
         });
 
         // Тактильная обратная связь для кнопок
