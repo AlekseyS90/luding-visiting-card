@@ -120,6 +120,8 @@
             animation: contactBtnAppear 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.1s forwards;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
             cursor: pointer;
+            border: none;
+            font-family: inherit;
         }
 
         @keyframes contactBtnAppear {
@@ -603,7 +605,7 @@
             color: var(--text-secondary);
         }
 
-        /* ============ SAVE CONTACT SECTION ============ */
+        /* ============ SAVE CONTACT HINT ============ */
         .save-section {
             text-align: center;
         }
@@ -701,7 +703,7 @@
     </div>
 
     <!-- Contact Button (Fixed, Top Right) -->
-    <a href="alexey-sitnikov.vcf" class="contact-btn" id="contactBtn">
+    <button class="contact-btn" id="contactBtn" onclick="saveContact()">
         <div class="contact-btn-icon">
             <svg viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -711,7 +713,7 @@
             </svg>
         </div>
         <span class="contact-btn-text">Контакт</span>
-    </a>
+    </button>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -877,7 +879,94 @@
     </footer>
 
     <script>
-        // Contact Button: превращение в плавающую кнопку при прокрутке
+        // ============================================
+        // ФУНКЦИЯ СОХРАНЕНИЯ КОНТАКТА (БЕЗ СКАЧИВАНИЯ)
+        // ============================================
+        function saveContact() {
+            // Виброотдача
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+
+            // Генерация vCard строки
+            const vCardData = [
+                'BEGIN:VCARD',
+                'VERSION:3.0',
+                'FN:Алексей Ситников',
+                'N:Ситников;Алексей;;;',
+                'ORG:LUDING',
+                'TITLE:Менеджер по работе с частными и корпоративными клиентами',
+                'TEL;TYPE=CELL:+79670281571',
+                'EMAIL:Aleksei.sitnikov@luding.ru',
+                'URL:https://luding.ru',
+                'NOTE:LUDING - поставки премиальных напитков',
+                'END:VCARD'
+            ].join('\r\n');
+
+            // Создаём File объект с правильным MIME-типом
+            const vCardFile = new File(
+                [vCardData], 
+                'Алексей_Ситников.vcf', 
+                { type: 'text/vcard; charset=utf-8' }
+            );
+
+            // ПРИОРИТЕТ 1: Web Share API (нативное окно на iOS/Android)
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [vCardFile] })) {
+                navigator.share({
+                    files: [vCardFile],
+                    title: 'Алексей Ситников',
+                    text: 'Контакт менеджера LUDING'
+                }).catch(() => {
+                    // Если пользователь отменил — пробуем fallback
+                    fallbackSave(vCardFile);
+                });
+                return;
+            }
+
+            // ПРИОРИТЕТ 2: Обычный Web Share без файлов (iOS Safari иногда поддерживает только это)
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Алексей Ситников — LUDING',
+                    text: 'Менеджер по работе с частными и корпоративными клиентами\nТел: +7 967 028-15-71\nEmail: Aleksei.sitnikov@luding.ru',
+                    url: 'https://luding.ru'
+                }).catch(() => {
+                    fallbackSave(vCardFile);
+                });
+                return;
+            }
+
+            // ПРИОРИТЕТ 3: Fallback — Blob + ссылка (откроется в приложении контактов на большинстве устройств)
+            fallbackSave(vCardFile);
+        }
+
+        // Fallback метод: создание Blob и открытие через ссылку
+        function fallbackSave(vCardFile) {
+            const blob = new Blob([vCardFile], { type: 'text/vcard; charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Алексей_Ситников.vcf';
+            link.style.display = 'none';
+            
+            // Для iOS важно: открывать в том же окне
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                link.target = '_blank';
+            }
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            // Очистка через 100мс
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+
+        // ============================================
+        // ПЛАВАЮЩАЯ КНОПКА ПРИ ПРОКРУТКЕ
+        // ============================================
         const contactBtn = document.getElementById('contactBtn');
         let isFloating = false;
 
@@ -894,14 +983,9 @@
             }
         });
 
-        // Виброотдача при нажатии (если поддерживается)
-        contactBtn.addEventListener('click', () => {
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
-        });
-
-        // Анимация появления секций при прокрутке
+        // ============================================
+        // АНИМАЦИИ ПОЯВЛЕНИЯ СЕКЦИЙ
+        // ============================================
         const sectionObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -918,7 +1002,7 @@
             sectionObserver.observe(el);
         });
 
-        // Анимация карточек преимуществ с задержкой 0.15 сек
+        // Анимация карточек с задержкой 0.15 сек
         const featureObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -939,7 +1023,7 @@
             featureObserver.observe(grid);
         });
 
-        // Плавное увеличение кнопок при нажатии
+        // Анимация кнопок при нажатии
         document.querySelectorAll('.btn-glass, .btn-primary, .offers-btn').forEach(btn => {
             btn.addEventListener('touchstart', function() {
                 this.style.transform = 'scale(0.97)';
