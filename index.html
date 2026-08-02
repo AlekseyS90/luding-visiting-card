@@ -880,7 +880,7 @@
 
     <script>
         // ============================================
-        // ФУНКЦИЯ СОХРАНЕНИЯ КОНТАКТА (БЕЗ СКАЧИВАНИЯ)
+        // ФУНКЦИЯ СОХРАНЕНИЯ КОНТАКТА
         // ============================================
         function saveContact() {
             // Виброотдача
@@ -903,65 +903,30 @@
                 'END:VCARD'
             ].join('\r\n');
 
-            // Создаём File объект с правильным MIME-типом
-            const vCardFile = new File(
-                [vCardData], 
-                'Алексей_Ситников.vcf', 
-                { type: 'text/vcard; charset=utf-8' }
-            );
-
-            // ПРИОРИТЕТ 1: Web Share API (нативное окно на iOS/Android)
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [vCardFile] })) {
-                navigator.share({
-                    files: [vCardFile],
-                    title: 'Алексей Ситников',
-                    text: 'Контакт менеджера LUDING'
-                }).catch(() => {
-                    // Если пользователь отменил — пробуем fallback
-                    fallbackSave(vCardFile);
-                });
-                return;
-            }
-
-            // ПРИОРИТЕТ 2: Обычный Web Share без файлов (iOS Safari иногда поддерживает только это)
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Алексей Ситников — LUDING',
-                    text: 'Менеджер по работе с частными и корпоративными клиентами\nТел: +7 967 028-15-71\nEmail: Aleksei.sitnikov@luding.ru',
-                    url: 'https://luding.ru'
-                }).catch(() => {
-                    fallbackSave(vCardFile);
-                });
-                return;
-            }
-
-            // ПРИОРИТЕТ 3: Fallback — Blob + ссылка (откроется в приложении контактов на большинстве устройств)
-            fallbackSave(vCardFile);
-        }
-
-        // Fallback метод: создание Blob и открытие через ссылку
-        function fallbackSave(vCardFile) {
-            const blob = new Blob([vCardFile], { type: 'text/vcard; charset=utf-8' });
+            // Создаём Blob с правильным MIME-типом
+            const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             
+            // Создаём скрытую ссылку
             const link = document.createElement('a');
             link.href = url;
             link.download = 'Алексей_Ситников.vcf';
-            link.style.display = 'none';
             
-            // Для iOS важно: открывать в том же окне
+            // Для iOS: открываем в новом окне
             if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                 link.target = '_blank';
+                link.rel = 'noopener noreferrer';
             }
             
+            // Эмулируем клик
             document.body.appendChild(link);
             link.click();
             
-            // Очистка через 100мс
+            // Очищаем через 1 секунду
             setTimeout(() => {
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
-            }, 100);
+            }, 1000);
         }
 
         // ============================================
@@ -970,68 +935,4 @@
         const contactBtn = document.getElementById('contactBtn');
         let isFloating = false;
 
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            const heroHeight = document.querySelector('.hero').offsetHeight;
-            
-            if (scrollY > heroHeight * 0.8 && !isFloating) {
-                contactBtn.classList.add('floating');
-                isFloating = true;
-            } else if (scrollY <= heroHeight * 0.8 && isFloating) {
-                contactBtn.classList.remove('floating');
-                isFloating = false;
-            }
-        });
-
-        // ============================================
-        // АНИМАЦИИ ПОЯВЛЕНИЯ СЕКЦИЙ
-        // ============================================
-        const sectionObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    sectionObserver.unobserve(entry.target);
-                }
-            });
-        }, {
-            threshold: 0.15,
-            rootMargin: '0px 0px -50px 0px'
-        });
-
-        document.querySelectorAll('[data-animate]').forEach(el => {
-            sectionObserver.observe(el);
-        });
-
-        // Анимация карточек с задержкой 0.15 сек
-        const featureObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const cards = entry.target.querySelectorAll('[data-feature]');
-                    cards.forEach((card, index) => {
-                        setTimeout(() => {
-                            card.classList.add('visible');
-                        }, index * 150);
-                    });
-                    featureObserver.unobserve(entry.target);
-                }
-            });
-        }, {
-            threshold: 0.2
-        });
-
-        document.querySelectorAll('.features-grid').forEach(grid => {
-            featureObserver.observe(grid);
-        });
-
-        // Анимация кнопок при нажатии
-        document.querySelectorAll('.btn-glass, .btn-primary, .offers-btn').forEach(btn => {
-            btn.addEventListener('touchstart', function() {
-                this.style.transform = 'scale(0.97)';
-            }, { passive: true });
-            btn.addEventListener('touchend', function() {
-                this.style.transform = '';
-            }, { passive: true });
-        });
-    </script>
-</body>
-</html>
+        window
