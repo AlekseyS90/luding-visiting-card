@@ -2,8 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#080808">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Алексей Ситников — LUDING Digital Card</title>
     <style>
         * {
@@ -19,12 +21,12 @@
             --bg-card: #151515;
             --text-primary: #FFFFFF;
             --text-secondary: #B8B8B8;
-            --text-muted: #707070;
+            --text-muted: #6B6B6B;
             --accent: #8b1a1a;
             --accent-hover: #a52020;
+            --silver: #C8C8C8;
             --border: rgba(255, 255, 255, 0.08);
-            --glass: rgba(255, 255, 255, 0.06);
-            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass: rgba(255, 255, 255, 0.08);
         }
 
         html {
@@ -41,187 +43,130 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ============ LOGO BAR ============ */
-        .logo-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--accent);
-            z-index: 2000;
-            transform: scaleX(0);
-            transform-origin: left;
-            animation: logoBar 1.2s cubic-bezier(0.77, 0, 0.175, 1) 0.2s forwards;
-        }
-
-        @keyframes logoBar {
-            0% { transform: scaleX(0); }
-            100% { transform: scaleX(1); }
-        }
-
-        /* ============ HERO / CARD CONTAINER ============ */
+        /* ============ HERO SECTION WITH CARD ============ */
         .hero {
             position: relative;
             width: 100%;
             height: 100vh;
-            min-height: 700px;
+            min-height: 720px;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            z-index: 10;
+            overflow: hidden;
         }
 
         /* ============ DIGITAL CARD ============ */
         .digital-card {
             position: relative;
             width: 90%;
-            max-width: 420px;
+            max-width: 400px;
             height: 70vh;
-            max-height: 620px;
-            min-height: 500px;
-            background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 50%, #1a1a1a 100%);
-            border-radius: 36px;
+            max-height: 640px;
+            min-height: 560px;
+            background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 50%, #151515 100%);
+            border-radius: 32px;
             overflow: hidden;
             box-shadow: 
                 0 20px 60px rgba(0, 0, 0, 0.5),
-                0 0 0 1px rgba(255, 255, 255, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
-            opacity: 0;
+                0 0 0 1px rgba(255, 255, 255, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
             transform: scale(0.95);
+            opacity: 0;
             animation: cardAppear 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
         }
 
         @keyframes cardAppear {
-            0% { 
-                opacity: 0; 
-                transform: scale(0.95); 
+            0% {
+                opacity: 0;
+                transform: scale(0.95);
             }
-            100% { 
-                opacity: 1; 
-                transform: scale(1); 
+            100% {
+                opacity: 1;
+                transform: scale(1);
             }
         }
 
-        /* Металлическая текстура */
+        /* Стеклянный блик на карте */
         .digital-card::before {
             content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* Стеклянный блик */
-        .card-shine {
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
             background: linear-gradient(
-                90deg,
-                transparent 0%,
-                rgba(255, 255, 255, 0.08) 50%,
-                transparent 100%
+                105deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.03) 45%,
+                rgba(255, 255, 255, 0.06) 50%,
+                rgba(255, 255, 255, 0.03) 55%,
+                transparent 60%
             );
-            z-index: 2;
+            z-index: 3;
             pointer-events: none;
-            animation: shinePass 2s ease-out 1s forwards;
+            animation: cardShine 3s ease-in-out 1.2s;
         }
 
-        @keyframes shinePass {
+        @keyframes cardShine {
             0% { left: -100%; }
             100% { left: 200%; }
         }
 
-        /* Фото на карте */
-        .card-photo {
+        /* Тонкая текстура карты */
+        .digital-card::after {
+            content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center 30%;
-            opacity: 0;
-            animation: photoFade 1.2s ease 0.6s forwards;
-            z-index: 0;
-        }
-
-        @keyframes photoFade {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        /* Затемнение фото снизу */
-        .card-photo-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                to bottom,
-                rgba(15, 15, 15, 0.3) 0%,
-                rgba(15, 15, 15, 0.1) 40%,
-                rgba(15, 15, 15, 0.7) 70%,
-                rgba(15, 15, 15, 0.95) 100%
-            );
+            inset: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.02) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.01) 0%, transparent 50%);
+            pointer-events: none;
             z-index: 1;
         }
 
-        /* Контент карты */
-        .card-content {
-            position: relative;
-            z-index: 3;
-            height: 100%;
-            padding: 28px 26px 26px;
-            display: flex;
-            flex-direction: column;
+        .digital-card:active {
+            transform: scale(0.98);
+            transition: transform 0.15s ease;
         }
 
-        /* Верхняя часть карты */
+        /* ============ CARD HEADER ============ */
         .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: auto;
+            position: absolute;
+            top: 28px;
+            left: 28px;
+            z-index: 4;
+            opacity: 0;
+            animation: fadeIn 0.6s ease 0.4s forwards;
         }
 
         .card-logo {
-            opacity: 0;
-            animation: fadeIn 0.8s ease 0.8s forwards;
-        }
-
-        .card-logo-text {
-            font-size: 16px;
+            font-size: 22px;
             font-weight: 700;
             letter-spacing: 2px;
-            color: #c0c0c0;
+            color: var(--silver);
             line-height: 1;
         }
 
         .card-logo-sub {
             font-size: 9px;
             letter-spacing: 2px;
-            color: #808080;
+            color: var(--text-muted);
             margin-top: 4px;
+            font-weight: 500;
         }
 
-        /* Кнопка Контакт на карте */
+        /* ============ CONTACT BUTTON ON CARD ============ */
         .card-contact-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            z-index: 5;
             display: flex;
             align-items: center;
-            gap: 7px;
+            gap: 8px;
             padding: 10px 16px;
             background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(20px);
@@ -233,19 +178,30 @@
             font-weight: 600;
             cursor: pointer;
             opacity: 0;
-            animation: fadeInUp 0.6s ease 1.2s forwards;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
+            transform: translateY(-8px);
+            animation: contactBtnAppear 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1s forwards;
+            transition: all 0.3s ease;
             font-family: inherit;
+        }
+
+        @keyframes contactBtnAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .card-contact-btn:hover {
             background: rgba(255, 255, 255, 0.18);
-            transform: scale(1.03);
+            border-color: var(--accent);
         }
 
         .card-contact-btn:active {
-            transform: scale(0.96);
+            transform: scale(0.95);
         }
 
         .card-contact-btn svg {
@@ -258,35 +214,62 @@
             stroke-linejoin: round;
         }
 
-        @keyframes fadeInUp {
-            0% { 
-                opacity: 0; 
-                transform: translateY(10px); 
-            }
-            100% { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
+        /* ============ CARD PHOTO ============ */
+        .card-photo-container {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            opacity: 0;
+            animation: fadeIn 0.8s ease 0.6s forwards;
         }
 
-        /* Центральная часть карты */
-        .card-body {
-            margin-bottom: auto;
-            padding-top: 20px;
+        .card-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 20%;
+            mask-image: linear-gradient(
+                to bottom,
+                black 0%,
+                black 50%,
+                rgba(0,0,0,0.8) 70%,
+                rgba(0,0,0,0.3) 85%,
+                transparent 100%
+            );
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                black 0%,
+                black 50%,
+                rgba(0,0,0,0.8) 70%,
+                rgba(0,0,0,0.3) 85%,
+                transparent 100%
+            );
+        }
+
+        /* ============ CARD CONTENT ============ */
+        .card-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0 32px 36px;
+            z-index: 3;
         }
 
         .card-name {
-            font-size: 40px;
-            font-weight: 500;
-            letter-spacing: -1px;
+            font-size: 38px;
+            font-weight: 300;
+            letter-spacing: -0.5px;
             line-height: 1.05;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             opacity: 0;
-            animation: fadeInUp 0.8s ease 0.9s forwards;
+            transform: translateY(15px);
+            animation: slideUp 0.7s ease 0.7s forwards;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
         }
 
         .card-name strong {
-            font-weight: 700;
+            font-weight: 600;
             display: block;
         }
 
@@ -295,118 +278,195 @@
             color: var(--text-primary);
             font-weight: 400;
             line-height: 1.4;
-            max-width: 280px;
+            margin-bottom: 16px;
             opacity: 0;
-            animation: fadeInUp 0.8s ease 1s forwards;
+            transform: translateY(15px);
+            animation: slideUp 0.7s ease 0.85s forwards;
+            text-shadow: 0 1px 10px rgba(0,0,0,0.5);
         }
 
-        .card-accent-logo {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 1px;
+        .card-brand {
+            font-size: 13px;
+            letter-spacing: 3px;
             color: var(--accent);
-            margin-top: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
             opacity: 0;
-            animation: fadeInUp 0.8s ease 1.1s forwards;
+            transform: translateY(15px);
+            animation: slideUp 0.7s ease 0.95s forwards;
         }
 
-        /* Нижняя часть карты */
-        .card-footer {
+        .card-divider {
+            width: 32px;
+            height: 1px;
+            background: var(--accent);
+            margin-bottom: 12px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease 1s forwards;
+        }
+
+        .card-footer-text {
             font-size: 11px;
             color: var(--text-muted);
             letter-spacing: 0.5px;
             opacity: 0;
-            animation: fadeInUp 0.8s ease 1.2s forwards;
+            transform: translateY(10px);
+            animation: slideUp 0.6s ease 1.05s forwards;
         }
 
         @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+            to { opacity: 1; }
         }
 
-        /* ============ SCROLLED STATE (CARD → HEADER) ============ */
-        .digital-card.scrolled {
-            position: fixed;
-            top: 12px;
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============ SCROLL INDICATOR ============ */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 24px;
             left: 50%;
-            transform: translateX(-50%) scale(1);
-            width: calc(100% - 24px);
-            max-width: 420px;
-            height: 120px;
-            border-radius: 24px;
-            z-index: 100;
-            box-shadow: 
-                0 10px 40px rgba(0, 0, 0, 0.6),
-                0 0 0 1px rgba(255, 255, 255, 0.06);
-        }
-
-        .digital-card.scrolled .card-photo,
-        .digital-card.scrolled .card-photo-overlay,
-        .digital-card.scrolled .card-shine,
-        .digital-card.scrolled .card-body,
-        .digital-card.scrolled .card-footer {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .digital-card.scrolled .card-content {
-            padding: 18px 22px;
-            flex-direction: row;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            gap: 8px;
+            opacity: 0;
+            animation: fadeIn 0.6s ease 1.5s forwards;
+            z-index: 10;
         }
 
-        .digital-card.scrolled .card-header {
-            margin-bottom: 0;
-            flex: 1;
-        }
-
-        .digital-card.scrolled .card-logo-text {
-            font-size: 14px;
-        }
-
-        .digital-card.scrolled .card-name {
-            font-size: 16px;
-            margin-bottom: 2px;
-            opacity: 1;
-            animation: none;
-        }
-
-        .digital-card.scrolled .card-name strong {
-            display: inline;
-        }
-
-        .digital-card.scrolled .card-position {
+        .scroll-text {
             font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 24px;
+            background: linear-gradient(to bottom, var(--text-muted), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
+            50% { opacity: 1; transform: scaleY(1); }
+        }
+
+        /* ============ COMPACT HEADER (after scroll) ============ */
+        .compact-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 0;
+            background: rgba(8, 8, 8, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+
+        .compact-header.visible {
+            height: 72px;
             opacity: 1;
-            animation: none;
-            max-width: 200px;
         }
 
-        .digital-card.scrolled .card-accent-logo {
-            display: none;
-        }
-
-        .digital-card.scrolled .card-contact-btn {
-            opacity: 1;
-            animation: none;
-            padding: 9px 14px;
-            font-size: 12px;
-        }
-
-        /* ============ CONTENT SECTIONS ============ */
-        .content {
-            position: relative;
-            z-index: 5;
+        .compact-header-content {
             max-width: 460px;
             margin: 0 auto;
-            padding: 0 20px 60px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .compact-logo {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--silver);
+        }
+
+        .compact-info {
+            flex: 1;
+            margin: 0 16px;
+            min-width: 0;
+        }
+
+        .compact-name {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .compact-position {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .compact-contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .compact-contact-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .compact-contact-btn:active {
+            transform: scale(0.95);
+        }
+
+        .compact-contact-btn svg {
+            width: 14px;
+            height: 14px;
+            stroke: white;
+            stroke-width: 1.8;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ============ MAIN CONTENT ============ */
+        .content {
+            max-width: 460px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
         }
 
         .section {
-            margin-bottom: 60px;
+            margin-bottom: 64px;
             opacity: 0;
-            transform: translateY(15px);
+            transform: translateY(20px);
             transition: opacity 0.7s ease, transform 0.7s ease;
         }
 
@@ -421,15 +481,15 @@
             color: var(--accent);
             font-weight: 600;
             text-transform: uppercase;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
 
         .section-title {
-            font-size: 28px;
+            font-size: 30px;
             font-weight: 300;
             letter-spacing: -0.5px;
-            line-height: 1.2;
-            margin-bottom: 16px;
+            line-height: 1.15;
+            margin-bottom: 20px;
         }
 
         .section-title strong {
@@ -439,18 +499,59 @@
         .section-text {
             font-size: 15px;
             color: var(--text-secondary);
-            line-height: 1.6;
+            line-height: 1.7;
             font-weight: 300;
         }
 
         /* ============ QUICK ACTIONS ============ */
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 18px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(139, 26, 26, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
         .actions-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .action-btn {
+        .btn-glass {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -458,7 +559,7 @@
             background: var(--glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--border);
             border-radius: 18px;
             color: var(--text-primary);
             text-decoration: none;
@@ -469,47 +570,30 @@
             font-family: inherit;
         }
 
-        .action-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.12);
             transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
-        .action-btn:active {
+        .btn-glass:active {
             transform: scale(0.97);
         }
 
-        .action-btn.primary {
-            grid-column: 1 / -1;
-            background: var(--accent);
-            border-color: var(--accent);
-            justify-content: center;
-            padding: 20px;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .action-btn.primary:hover {
-            background: var(--accent-hover);
-        }
-
-        .action-btn.primary svg {
-            fill: white;
-        }
-
-        .action-icon {
+        .btn-glass-icon {
             width: 36px;
             height: 36px;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.06);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.06);
         }
 
-        .action-icon svg {
-            width: 18px;
-            height: 18px;
+        .btn-glass-icon svg {
+            width: 20px;
+            height: 20px;
             stroke: var(--text-primary);
             stroke-width: 1.5;
             fill: none;
@@ -517,32 +601,32 @@
             stroke-linejoin: round;
         }
 
-        .action-icon img {
-            width: 20px;
-            height: 20px;
+        .btn-glass-icon img {
+            width: 22px;
+            height: 22px;
             object-fit: contain;
         }
 
-        .action-btn.primary .action-icon {
-            background: rgba(255, 255, 255, 0.15);
+        .btn-glass-text {
+            flex: 1;
+            text-align: left;
         }
 
-        /* ============ FEATURES GRID ============ */
+        /* ============ FEATURES ============ */
         .features-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 24px;
+            gap: 12px;
         }
 
         .feature-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 22px 18px;
+            padding: 24px 20px;
             transition: all 0.4s ease;
             opacity: 0;
-            transform: translateY(15px);
+            transform: translateY(20px);
         }
 
         .feature-card.visible {
@@ -552,13 +636,13 @@
 
         .feature-card:hover {
             border-color: rgba(139, 26, 26, 0.3);
-            transform: translateY(-2px);
+            transform: translateY(-4px);
         }
 
         .feature-icon {
             width: 40px;
             height: 40px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -568,7 +652,7 @@
             width: 28px;
             height: 28px;
             stroke: var(--text-primary);
-            stroke-width: 1.3;
+            stroke-width: 1.5;
             fill: none;
             stroke-linecap: round;
             stroke-linejoin: round;
@@ -584,81 +668,67 @@
         .feature-desc {
             font-size: 12px;
             color: var(--text-muted);
-            line-height: 1.4;
+            line-height: 1.5;
             font-weight: 300;
         }
 
-        /* ============ NUMBERS GRID ============ */
-        .numbers-grid {
+        /* ============ STATS ============ */
+        .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 24px;
+            gap: 12px;
         }
 
-        .number-card {
+        .stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 22px 18px;
-            text-align: left;
+            padding: 24px 20px;
+            text-align: center;
             opacity: 0;
-            transform: translateY(15px);
+            transform: translateY(20px);
             transition: all 0.4s ease;
         }
 
-        .number-card.visible {
+        .stat-card.visible {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .number-value {
-            font-size: 28px;
-            font-weight: 700;
+        .stat-value {
+            font-size: 32px;
+            font-weight: 300;
             letter-spacing: -1px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             color: var(--text-primary);
         }
 
-        .number-value.accent {
-            color: var(--accent);
+        .stat-value strong {
+            font-weight: 600;
         }
 
-        .number-label {
+        .stat-label {
             font-size: 12px;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             line-height: 1.4;
             font-weight: 400;
         }
 
         /* ============ OFFERS CARD ============ */
         .offers-card {
-            background: linear-gradient(135deg, rgba(139, 26, 26, 0.12) 0%, rgba(20, 20, 20, 0.8) 100%);
+            background: linear-gradient(135deg, rgba(139, 26, 26, 0.12) 0%, rgba(139, 26, 26, 0.04) 100%);
             border: 1px solid rgba(139, 26, 26, 0.25);
             border-radius: 24px;
-            padding: 28px 24px;
+            padding: 32px 24px;
             text-decoration: none;
             color: inherit;
             display: block;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .offers-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(139, 26, 26, 0.5), transparent);
+            transition: all 0.3s ease;
         }
 
         .offers-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(139, 26, 26, 0.5);
-            box-shadow: 0 15px 40px rgba(139, 26, 26, 0.15);
+            transform: translateY(-4px);
+            border-color: rgba(139, 26, 26, 0.4);
         }
 
         .offers-card:active {
@@ -676,30 +746,30 @@
 
         .offers-card-title {
             font-size: 22px;
-            font-weight: 500;
-            letter-spacing: -0.5px;
+            font-weight: 300;
+            letter-spacing: -0.3px;
             margin-bottom: 8px;
             line-height: 1.2;
         }
 
         .offers-card-title strong {
-            font-weight: 700;
+            font-weight: 600;
         }
 
-        .offers-card-desc {
+        .offers-card-sub {
             font-size: 13px;
             color: var(--text-secondary);
-            line-height: 1.5;
-            margin-bottom: 20px;
+            font-weight: 300;
         }
 
         .offers-card-arrow {
-            display: inline-flex;
+            margin-top: 20px;
+            display: flex;
             align-items: center;
             gap: 8px;
             font-size: 13px;
             color: var(--accent);
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .offers-card-arrow svg {
@@ -714,7 +784,7 @@
 
         /* ============ FOOTER ============ */
         .footer {
-            padding: 40px 24px 50px;
+            padding: 40px 20px 50px;
             text-align: center;
             border-top: 1px solid var(--border);
             max-width: 460px;
@@ -725,8 +795,8 @@
             font-size: 20px;
             font-weight: 700;
             letter-spacing: 2px;
+            color: var(--silver);
             margin-bottom: 4px;
-            color: #c0c0c0;
         }
 
         .footer-sub {
@@ -740,7 +810,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            max-width: 260px;
+            max-width: 280px;
             margin: 0 auto;
         }
 
@@ -764,10 +834,13 @@
         /* ============ RESPONSIVE ============ */
         @media (max-width: 380px) {
             .card-name {
-                font-size: 34px;
+                font-size: 32px;
             }
             .section-title {
-                font-size: 24px;
+                font-size: 26px;
+            }
+            .digital-card {
+                border-radius: 28px;
             }
         }
 
@@ -777,60 +850,82 @@
             }
         }
 
-        @media (min-width: 500px) {
-            .digital-card {
-                width: 420px;
+        @media (min-width: 768px) {
+            .content {
+                padding: 60px 24px 80px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Logo Bar -->
-    <div class="logo-bar"></div>
 
-    <!-- Hero с цифровой картой -->
+    <!-- Hero Section with Digital Card -->
     <section class="hero" id="hero">
         <div class="digital-card" id="digitalCard">
-            <div class="card-shine"></div>
             
-            <img src="photo.jpg" alt="Алексей Ситников" class="card-photo">
-            <div class="card-photo-overlay"></div>
-            
-            <div class="card-content">
-                <div class="card-header">
-                    <div class="card-logo">
-                        <div class="card-logo-text">LUDING</div>
-                        <div class="card-logo-sub">EST. 1993</div>
-                    </div>
-                    
-                    <button class="card-contact-btn" onclick="saveContact()">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                            <line x1="19" y1="8" x2="19" y2="14"/>
-                            <line x1="22" y1="11" x2="16" y2="11"/>
-                        </svg>
-                        <span>Контакт</span>
-                    </button>
-                </div>
-
-                <div class="card-body">
-                    <h1 class="card-name">
-                        Алексей<br>
-                        <strong>Ситников</strong>
-                    </h1>
-                    <p class="card-position">Менеджер по работе с частными и корпоративными клиентами</p>
-                    <div class="card-accent-logo">LUDING</div>
-                </div>
-
-                <div class="card-footer">
-                    Персональный менеджер корпоративных клиентов
-                </div>
+            <!-- Card Header -->
+            <div class="card-header">
+                <div class="card-logo">LUDING</div>
+                <div class="card-logo-sub">EST. 1993</div>
             </div>
+
+            <!-- Contact Button on Card -->
+            <button class="card-contact-btn" onclick="saveContact(event)">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                    <line x1="19" y1="8" x2="19" y2="14"/>
+                    <line x1="22" y1="11" x2="16" y2="11"/>
+                </svg>
+                <span>Контакт</span>
+            </button>
+
+            <!-- Photo -->
+            <div class="card-photo-container">
+                <img src="photo.jpg" alt="Алексей Ситников" class="card-photo">
+            </div>
+
+            <!-- Card Content -->
+            <div class="card-content">
+                <h1 class="card-name">
+                    Алексей<br>
+                    <strong>Ситников</strong>
+                </h1>
+                <p class="card-position">Менеджер по работе<br>с частными и корпоративными клиентами</p>
+                <div class="card-brand">LUDING</div>
+                <div class="card-divider"></div>
+                <div class="card-footer-text">Персональный менеджер корпоративных клиентов</div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <div class="scroll-text">ПРОКРУТИТЕ</div>
+            <div class="scroll-line"></div>
         </div>
     </section>
 
-    <!-- Контент под картой -->
+    <!-- Compact Header (appears on scroll) -->
+    <div class="compact-header" id="compactHeader">
+        <div class="compact-header-content">
+            <div class="compact-logo">LUDING</div>
+            <div class="compact-info">
+                <div class="compact-name">Алексей Ситников</div>
+                <div class="compact-position">Менеджер LUDING</div>
+            </div>
+            <button class="compact-contact-btn" onclick="saveContact(event)">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                    <line x1="19" y1="8" x2="19" y2="14"/>
+                    <line x1="22" y1="11" x2="16" y2="11"/>
+                </svg>
+                <span>Контакт</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
     <div class="content">
         
         <!-- Quick Actions -->
@@ -838,54 +933,54 @@
             <div class="section-label">Связаться</div>
             <h2 class="section-title">Быстрые <strong>действия</strong></h2>
             
-            <div class="actions-grid">
-                <a href="tel:+79670281571" class="action-btn primary">
-                    <div class="action-icon">
-                        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                    </div>
+            <div class="quick-actions">
+                <a href="tel:+79670281571" class="btn-primary">
+                    <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
                     Позвонить
                 </a>
 
-                <a href="https://t.me/+79670281571" target="_blank" class="action-btn">
-                    <div class="action-icon">
-                        <svg viewBox="0 0 24 24"><path d="M21.5 4.5L2.5 12.5L9.5 14.5L12.5 20.5L15.5 13.5L21.5 4.5Z" stroke-linejoin="round"/></svg>
-                    </div>
-                    Telegram
-                </a>
+                <div class="actions-grid">
+                    <a href="https://t.me/+79670281571" target="_blank" class="btn-glass">
+                        <div class="btn-glass-icon">
+                            <svg viewBox="0 0 24 24"><path d="M21.5 4.5L2.5 11.5L9.5 13.5L12.5 20.5L21.5 4.5Z"/></svg>
+                        </div>
+                        <div class="btn-glass-text">Telegram</div>
+                    </a>
 
-                <a href="https://max.ru/u/f9LHodD0cOLvSFb5ck4JSoEU8jPP38BwELZ8ic1o1_NfMi9J5LAuk90woYw" target="_blank" class="action-btn">
-                    <div class="action-icon">
-                        <img src="max-logo.png" alt="MAX">
-                    </div>
-                    MAX
-                </a>
+                    <a href="https://max.ru/u/f9LHodD0cOLvSFb5ck4JSoEU8jPP38BwELZ8ic1o1_NfMi9J5LAuk90woYw" target="_blank" class="btn-glass">
+                        <div class="btn-glass-icon">
+                            <img src="max-logo.png" alt="MAX">
+                        </div>
+                        <div class="btn-glass-text">MAX</div>
+                    </a>
 
-                <a href="mailto:Aleksei.sitnikov@luding.ru" class="action-btn">
-                    <div class="action-icon">
-                        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>
-                    </div>
-                    Email
-                </a>
+                    <a href="mailto:Aleksei.sitnikov@luding.ru" class="btn-glass">
+                        <div class="btn-glass-icon">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7L12 13L21 7"/></svg>
+                        </div>
+                        <div class="btn-glass-text">Email</div>
+                    </a>
 
-                <a href="https://luding.ru" target="_blank" class="action-btn">
-                    <div class="action-icon">
-                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    </div>
-                    Сайт LUDING
-                </a>
+                    <a href="https://luding.ru" target="_blank" class="btn-glass">
+                        <div class="btn-glass-icon">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.5 16 8.5 16 12C16 15.5 14.5 18.5 12 21C9.5 18.5 8 15.5 8 12C8 8.5 9.5 5.5 12 3Z"/></svg>
+                        </div>
+                        <div class="btn-glass-text">Сайт LUDING</div>
+                    </a>
+                </div>
             </div>
         </section>
 
         <!-- Expertise -->
         <section class="section" data-animate>
-            <div class="section-label">Экспертиза</div>
+            <div class="section-label">Обо мне</div>
             <h2 class="section-title">Эксперт в мире <strong>напитков</strong></h2>
             <p class="section-text">
                 Более 8 лет опыта в винной индустрии. Помогаю подобрать напитки для корпоративных мероприятий, деловых встреч, подарков партнерам и важных событий.
             </p>
         </section>
 
-        <!-- Why LUDING -->
+        <!-- Features -->
         <section class="section" data-animate>
             <div class="section-label">Преимущества</div>
             <h2 class="section-title">Почему выбирают <strong>LUDING</strong></h2>
@@ -945,30 +1040,30 @@
             </div>
         </section>
 
-        <!-- Numbers -->
+        <!-- Stats -->
         <section class="section" data-animate>
             <div class="section-label">Цифры</div>
             <h2 class="section-title">Профессиональный <strong>подход</strong></h2>
             
-            <div class="numbers-grid">
-                <div class="number-card" data-number>
-                    <div class="number-value accent">8+</div>
-                    <div class="number-label">лет опыта в винной индустрии</div>
+            <div class="stats-grid">
+                <div class="stat-card" data-stat>
+                    <div class="stat-value"><strong>8+</strong></div>
+                    <div class="stat-label">лет опыта<br>в индустрии</div>
                 </div>
 
-                <div class="number-card" data-number>
-                    <div class="number-value">5000+</div>
-                    <div class="number-label">позиций напитков в каталоге</div>
+                <div class="stat-card" data-stat>
+                    <div class="stat-value"><strong>5000+</strong></div>
+                    <div class="stat-label">позиций<br>напитков</div>
                 </div>
 
-                <div class="number-card" data-number>
-                    <div class="number-value accent">1993</div>
-                    <div class="number-label">год основания компании LUDING</div>
+                <div class="stat-card" data-stat>
+                    <div class="stat-value"><strong>1993</strong></div>
+                    <div class="stat-label">год основания<br>компании</div>
                 </div>
 
-                <div class="number-card" data-number>
-                    <div class="number-value">B2B</div>
-                    <div class="number-label">решения для корпоративных клиентов</div>
+                <div class="stat-card" data-stat>
+                    <div class="stat-value"><strong>B2B</strong></div>
+                    <div class="stat-label">решения для<br>корпоративных клиентов</div>
                 </div>
             </div>
         </section>
@@ -976,12 +1071,12 @@
         <!-- Offers -->
         <section class="section" data-animate>
             <a href="offers.html" class="offers-card">
-                <div class="offers-card-label">Персональные предложения</div>
-                <div class="offers-card-title">Актуальные <strong>спецпредложения</strong></div>
-                <div class="offers-card-desc">Подборки, акции и выгодные условия месяца. Обновляется регулярно.</div>
+                <div class="offers-card-label">Акции</div>
+                <div class="offers-card-title">Персональные <strong>предложения</strong></div>
+                <div class="offers-card-sub">Подборки · Акции · Предложения месяца</div>
                 <div class="offers-card-arrow">
-                    Открыть
-                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <span>Открыть</span>
+                    <svg viewBox="0 0 24 24"><path d="M5 12H19"/><path d="M12 5L19 12L12 19"/></svg>
                 </div>
             </a>
         </section>
@@ -1005,9 +1100,13 @@
 
     <script>
         // ============================================
-        // СОХРАНЕНИЕ КОНТАКТА
+        // СОХРАНЕНИЕ КОНТАКТА (без скачивания файла)
         // ============================================
-        function saveContact() {
+        function saveContact(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
             if (navigator.vibrate) {
                 navigator.vibrate(10);
             }
@@ -1048,36 +1147,35 @@
         }
 
         // ============================================
-        // ЭФФЕКТ ПРОКРУТКИ: КАРТА → ШАПКА
+        // ПРОКРУТКА: трансформация карты в шапку
         // ============================================
-        const card = document.getElementById('digitalCard');
+        const digitalCard = document.getElementById('digitalCard');
+        const compactHeader = document.getElementById('compactHeader');
         const hero = document.getElementById('hero');
-        let isScrolled = false;
+        let isCompact = false;
 
         window.addEventListener('scroll', () => {
             const scrollY = window.scrollY;
             const heroHeight = hero.offsetHeight;
             const threshold = heroHeight * 0.6;
-            
-            if (scrollY > threshold && !isScrolled) {
-                card.classList.add('scrolled');
-                isScrolled = true;
-            } else if (scrollY <= threshold && isScrolled) {
-                card.classList.remove('scrolled');
-                isScrolled = false;
-            }
-        }, { passive: true });
 
-        // Физическое нажатие на карту
-        card.addEventListener('touchstart', function() {
-            if (!isScrolled) {
-                this.style.transform = 'scale(0.98)';
+            if (scrollY > threshold && !isCompact) {
+                isCompact = true;
+                compactHeader.classList.add('visible');
+            } else if (scrollY <= threshold && isCompact) {
+                isCompact = false;
+                compactHeader.classList.remove('visible');
             }
-        }, { passive: true });
 
-        card.addEventListener('touchend', function() {
-            if (!isScrolled) {
-                this.style.transform = '';
+            // Параллакс и уменьшение карты
+            if (scrollY < heroHeight) {
+                const progress = Math.min(scrollY / threshold, 1);
+                const scale = 1 - (progress * 0.15);
+                const translateY = scrollY * 0.3;
+                const opacity = 1 - (progress * 0.3);
+                
+                digitalCard.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+                digitalCard.style.opacity = opacity;
             }
         }, { passive: true });
 
@@ -1093,32 +1191,59 @@
             });
         }, {
             threshold: 0.15,
-            rootMargin: '0px 0px -40px 0px'
+            rootMargin: '0px 0px -50px 0px'
         });
 
         document.querySelectorAll('[data-animate]').forEach(el => {
             sectionObserver.observe(el);
         });
 
-        // Карточки с задержкой
-        const cardObserver = new IntersectionObserver((entries) => {
+        // Карточки преимуществ с задержкой
+        const featureObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    const cards = entry.target.querySelectorAll('[data-feature], [data-number]');
+                    const cards = entry.target.querySelectorAll('[data-feature]');
                     cards.forEach((card, index) => {
                         setTimeout(() => {
                             card.classList.add('visible');
-                        }, index * 140);
+                        }, index * 150);
                     });
-                    cardObserver.unobserve(entry.target);
+                    featureObserver.unobserve(entry.target);
                 }
             });
-        }, {
-            threshold: 0.2
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.features-grid').forEach(grid => {
+            featureObserver.observe(grid);
         });
 
-        document.querySelectorAll('.features-grid, .numbers-grid').forEach(grid => {
-            cardObserver.observe(grid);
+        // Карточки статистики с задержкой
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const cards = entry.target.querySelectorAll('[data-stat]');
+                    cards.forEach((card, index) => {
+                        setTimeout(() => {
+                            card.classList.add('visible');
+                        }, index * 120);
+                    });
+                    statObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.stats-grid').forEach(grid => {
+            statObserver.observe(grid);
+        });
+
+        // Тактильная обратная связь для кнопок
+        document.querySelectorAll('.btn-glass, .btn-primary, .offers-card').forEach(btn => {
+            btn.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.97)';
+            }, { passive: true });
+            btn.addEventListener('touchend', function() {
+                this.style.transform = '';
+            }, { passive: true });
         });
     </script>
 </body>
