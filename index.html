@@ -54,7 +54,7 @@
             justify-content: center;
             padding: 20px;
             overflow: hidden;
-            perspective: 1200px; /* Для 3D эффекта */
+            /* Убрали perspective отсюда, перенесли в саму карту для лучшего контроля */
         }
 
         /* ============ DIGITAL CARD ============ */
@@ -75,7 +75,7 @@
             transform: scale(0.95);
             opacity: 0;
             animation: cardAppear 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
-            transition: transform 0.1s ease-out; /* Плавный переход для 3D */
+            /* ИСПРАВЛЕНО: Убран transition, чтобы не конфликтовать с JS-анимацией */
             transform-style: preserve-3d;
             cursor: pointer;
             will-change: transform;
@@ -131,8 +131,8 @@
         }
 
         .digital-card:active {
-            transform: scale(0.98);
-            transition: transform 0.15s ease;
+            transform: scale(0.98) !important;
+            transition: transform 0.15s ease !important;
         }
 
         /* ============ CARD HEADER ============ */
@@ -1033,106 +1033,84 @@
 
     <script>
         // ============================================
-        // 3D НАКЛОН КАРТЫ (мышь + тач)
+        // 3D НАКЛОН КАРТЫ (Исправленный и оптимизированный)
         // ============================================
         const card = document.getElementById('digitalCard');
         const hero = document.getElementById('hero');
+        
         let currentRotateX = 0;
         let currentRotateY = 0;
         let targetRotateX = 0;
         let targetRotateY = 0;
-        let animationFrameId = null;
+        let isHovering = false;
+        let animationId = null;
 
-        // Максимальный угол наклона (в градусах)
-        const MAX_TILT = 12;
+        const MAX_TILT = 8; // Оптимальный угол для премиального эффекта (было 12, 8 выглядит дороже)
 
-        // Функция плавной интерполяции
         function lerp(start, end, factor) {
             return start + (end - start) * factor;
         }
 
-        // Анимация наклона
-        function animateTilt() {
-            // Плавное приближение к целевому углу (factor = 0.08 для мягкости)
+        function updateTilt() {
+            // Если не наводим, плавно возвращаем в 0
+            if (!isHovering) {
+                targetRotateX = 0;
+                targetRotateY = 0;
+            }
+
+            // Плавная интерполяция (0.08 дает мягкое, "вязкое" движение)
             currentRotateX = lerp(currentRotateX, targetRotateX, 0.08);
             currentRotateY = lerp(currentRotateY, targetRotateY, 0.08);
 
             // Применяем трансформацию
-            card.style.transform = `
-                perspective(1200px)
-                rotateX(${currentRotateX}deg)
-                rotateY(${currentRotateY}deg)
-                scale(1)
-            `;
+            card.style.transform = `perspective(1200px) rotateX(${currentRotateX}deg) rotateY(${currentRotateY}deg) scale(1)`;
 
-            // Продолжаем анимацию, если есть движение
-            if (Math.abs(currentRotateX - targetRotateX) > 0.01 || 
-                Math.abs(currentRotateY - targetRotateY) > 0.01) {
-                animationFrameId = requestAnimationFrame(animateTilt);
+            // Продолжаем анимацию, если есть движение или если не вернулись в 0
+            if (isHovering || Math.abs(currentRotateX) > 0.01 || Math.abs(currentRotateY) > 0.01) {
+                animationId = requestAnimationFrame(updateTilt);
             } else {
-                animationFrameId = null;
+                animationId = null;
             }
         }
 
-        // Обработка движения мыши (ПК)
-        hero.addEventListener('mousemove', (e) => {
+        function handleMove(clientX, clientY) {
+            // ИСПРАВЛЕНО: Отключаем наклон, если пользователь уже начал прокрутку (чтобы не конфликтовало)
+            if (window.scrollY > 50) return;
+
             const rect = hero.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
             
-            // Вычисляем позицию мыши относительно центра (-1 до 1)
-            const mouseX = (e.clientX - centerX) / (rect.width / 2);
-            const mouseY = (e.clientY - centerY) / (rect.height / 2);
+            // Нормализуем координаты от -1 до 1
+            const x = (clientX - centerX) / (rect.width / 2);
+            const y = (clientY - centerY) / (rect.height / 2);
             
-            // Инвертируем Y для естественного наклона
-            targetRotateX = -mouseY * MAX_TILT;
-            targetRotateY = mouseX * MAX_TILT;
+            targetRotateY = x * MAX_TILT;
+            targetRotateX = -y * MAX_TILT; // Инверсия для естественного эффекта
 
-            // Запускаем анимацию, если не запущена
-            if (!animationFrameId) {
-                animateTilt();
-            }
-        });
-
-        // Возврат в исходное положение при уходе мыши
-        hero.addEventListener('mouseleave', () => {
-            targetRotateX = 0;
-            targetRotateY = 0;
-            if (!animationFrameId) {
-                animateTilt();
-            }
-        });
-
-        // Обработка касаний (мобильные)
-        hero.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 1) {
-                const touch = e.touches[0];
-                const rect = hero.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                
-                // Вычисляем позицию касания относительно центра (-1 до 1)
-                const touchX = (touch.clientX - centerX) / (rect.width / 2);
-                const touchY = (touch.clientY - centerY) / (rect.height / 2);
-                
-                // Инвертируем Y для естественного наклона
-                targetRotateX = -touchY * MAX_TILT;
-                targetRotateY = touchX * MAX_TILT;
-
-                // Запускаем анимацию, если не запущена
-                if (!animationFrameId) {
-                    animateTilt();
+            if (!isHovering) {
+                isHovering = true;
+                if (!animationId) {
+                    animationId = requestAnimationFrame(updateTilt);
                 }
             }
-        }, { passive: true });
+        }
 
-        // Возврат в исходное положение при окончании касания
-        hero.addEventListener('touchend', () => {
-            targetRotateX = 0;
-            targetRotateY = 0;
-            if (!animationFrameId) {
-                animateTilt();
+        // Мышь (ПК)
+        hero.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+        hero.addEventListener('mouseleave', () => {
+            isHovering = false;
+        });
+
+        // Тач (Смартфон)
+        hero.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 1) {
+                handleMove(e.touches[0].clientX, e.touches[0].clientY);
             }
+        }, { passive: true });
+        
+        hero.addEventListener('touchend', () => {
+            isHovering = false;
         });
 
         // ============================================
@@ -1201,20 +1179,15 @@
                 compactHeader.classList.remove('visible');
             }
 
-            // Параллакс и уменьшение карты
-            if (scrollY < heroHeight) {
+            // ИСПРАВЛЕНО: Если прокрутили больше 50px, принудительно отключаем 3D и применяем скролл-эффект
+            if (scrollY > 50) {
+                isHovering = false; 
                 const progress = Math.min(scrollY / threshold, 1);
                 const scale = 1 - (progress * 0.15);
                 const translateY = scrollY * 0.3;
                 const opacity = 1 - (progress * 0.3);
                 
-                card.style.transform = `
-                    perspective(1200px)
-                    rotateX(0deg)
-                    rotateY(0deg)
-                    scale(${scale})
-                    translateY(${translateY}px)
-                `;
+                card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale(${scale}) translateY(${translateY}px)`;
                 card.style.opacity = opacity;
             }
         }, { passive: true });
