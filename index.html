@@ -48,7 +48,7 @@
             align-items: center;
             justify-content: center;
             animation: splashFadeOut 0.8s ease 1.4s forwards;
-            pointer-events: none;
+            pointer-events: none; /* Не блокирует клики после исчезновения */
         }
 
         .splash-glass {
@@ -76,7 +76,7 @@
             width: 100%;
             height: 0%;
             background: var(--accent);
-            opacity: 0.8;
+            opacity: 0.85;
             border-radius: 0 0 30px 30px;
             animation: fillWine 1s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
         }
@@ -85,7 +85,7 @@
             margin-top: 24px;
             text-align: center;
             opacity: 0;
-            animation: textAppear 0.6s ease 1s forwards;
+            animation: textAppear 0.6s ease 1.0s forwards;
         }
 
         .splash-logo {
@@ -121,7 +121,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            perspective: 1200px; /* Глубина 3D */
+            perspective: 1200px;
             overflow: hidden;
         }
 
@@ -133,10 +133,9 @@
             max-height: 640px;
             min-height: 560px;
             border-radius: 32px;
-            transform-style: preserve-3d; /* Ключ к параллаксу */
+            transform-style: preserve-3d;
             will-change: transform;
             cursor: pointer;
-            /* Начальное состояние для анимации появления */
             opacity: 0;
             transform: translateY(40px) scale(0.95);
             animation: cardEntrance 1s cubic-bezier(0.2, 0.8, 0.2, 1) 1.5s forwards;
@@ -149,16 +148,14 @@
             }
         }
 
-        /* Эффект нажатия (2%) */
         .digital-card.pressed {
-            transition: transform 0.1s ease;
+            transition: transform 0.1s ease !important;
             transform: scale(0.98) !important;
         }
 
         /* =========================================
-           СЛОИ КАРТЫ (PARALLAX)
+           СЛОИ КАРТЫ (CSS PARALLAX)
            ========================================= */
-        /* Слой 0: Фон и динамический свет */
         .card-layer-bg {
             position: absolute;
             inset: 0;
@@ -170,7 +167,6 @@
             overflow: hidden;
         }
 
-        /* Слой 1: Динамический блик (Стекло) */
         .card-layer-shine {
             position: absolute;
             inset: 0;
@@ -187,8 +183,7 @@
             pointer-events: none;
             mix-blend-mode: overlay;
         }
-        
-        /* Блик при первом касании */
+
         .card-layer-shine.touch-flash {
             animation: touchFlash 0.4s ease-out forwards;
         }
@@ -199,7 +194,6 @@
             100% { opacity: 0; }
         }
 
-        /* Слой 2: Фотография (Параллакс: движется медленнее) */
         .card-layer-photo {
             position: absolute;
             inset: 0;
@@ -215,17 +209,6 @@
             object-position: center 20%;
             mask-image: linear-gradient(to bottom, black 40%, rgba(0,0,0,0.8) 70%, transparent 100%);
             -webkit-mask-image: linear-gradient(to bottom, black 40%, rgba(0,0,0,0.8) 70%, transparent 100%);
-        }
-
-        /* Слой 3: Контент (Текст) */
-        .card-layer-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 0 32px 36px;
-            transform: translateZ(50px);
-            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
         }
 
         .card-header {
@@ -249,6 +232,16 @@
             letter-spacing: 2px;
             color: var(--text-muted);
             margin-top: 4px;
+        }
+
+        .card-layer-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0 32px 36px;
+            transform: translateZ(50px);
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
         }
 
         .card-name {
@@ -303,7 +296,6 @@
             animation: layerSlideUp 0.6s ease 2.4s forwards;
         }
 
-        /* Слой 4: Кнопка контакта (Самый верхний слой) */
         .card-layer-btn {
             position: absolute;
             top: 24px;
@@ -348,11 +340,10 @@
 
         @keyframes layerFadeIn { to { opacity: 1; } }
         @keyframes layerSlideUp {
-            from { opacity: 0; transform: translateZ(var(--tz, 50px)) translateY(15px); }
-            to { opacity: 1; transform: translateZ(var(--tz, 50px)) translateY(0); }
+            from { opacity: 0; transform: translateZ(50px) translateY(15px); }
+            to { opacity: 1; transform: translateZ(50px) translateY(0); }
         }
 
-        /* Индикатор прокрутки */
         .scroll-indicator {
             position: absolute;
             bottom: 24px;
@@ -363,16 +354,11 @@
             align-items: center;
             gap: 8px;
             opacity: 0;
-            animation: layerFadeIn 0.6s ease 3s forwards;
+            animation: layerFadeIn 0.6s ease 3.0s forwards;
             z-index: 10;
         }
 
-        .scroll-text {
-            font-size: 11px;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-        }
-
+        .scroll-text { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
         .scroll-line {
             width: 1px;
             height: 24px;
@@ -386,7 +372,7 @@
         }
 
         /* =========================================
-           ОСТАЛЬНОЙ КОНТЕНТ (Упрощенно для фокуса на карте)
+           ОСТАЛЬНОЙ КОНТЕНТ
            ========================================= */
         .compact-header {
             position: fixed;
@@ -404,10 +390,7 @@
             opacity: 0;
         }
 
-        .compact-header.visible {
-            height: 72px;
-            opacity: 1;
-        }
+        .compact-header.visible { height: 72px; opacity: 1; }
 
         .compact-header-content {
             max-width: 460px;
@@ -425,27 +408,14 @@
         .compact-position { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .compact-contact-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 18px;
-            color: white;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
+            display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 18px;
+            color: white; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
         }
         .compact-contact-btn svg { width: 14px; height: 14px; stroke: white; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
-        .content {
-            max-width: 460px;
-            margin: 0 auto;
-            padding: 40px 20px 60px;
-        }
+        .content { max-width: 460px; margin: 0 auto; padding: 40px 20px 60px; }
 
         .section { margin-bottom: 64px; opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
         .section.visible { opacity: 1; transform: translateY(0); }
@@ -529,32 +499,25 @@
         <div class="splash-text">
             <div class="splash-logo">LUDING</div>
             <div class="splash-sub">EST. 1993</div>
-        </div
+        </div>
     </div>
 
     <!-- 2. HERO & 3D CARD -->
     <section class="hero" id="hero">
         <div class="digital-card" id="digitalCard">
-            
-            <!-- Слой 0: Фон -->
             <div class="card-layer-bg"></div>
-            
-            <!-- Слой 1: Динамический свет/блик -->
             <div class="card-layer-shine" id="cardShine"></div>
             
-            <!-- Слой 2: Фото (Parallax Z=30) -->
-            <div class="card-layer-photo" style="--tz: 30px">
+            <div class="card-layer-photo">
                 <img src="photo.jpg" alt="Алексей Ситников" class="card-photo">
             </div>
             
-            <!-- Слой 3: Хедер (Parallax Z=50) -->
-            <div class="card-header" style="--tz: 50px">
+            <div class="card-header">
                 <div class="card-logo">LUDING</div>
                 <div class="card-logo-sub">EST. 1993</div>
             </div>
 
-            <!-- Слой 3: Контент (Parallax Z=50) -->
-            <div class="card-layer-content" style="--tz: 50px">
+            <div class="card-layer-content">
                 <h1 class="card-name">Алексей<br><strong>Ситников</strong></h1>
                 <p class="card-position">Менеджер по работе<br>с частными и корпоративными клиентами</p>
                 <div class="card-brand">LUDING</div>
@@ -562,8 +525,7 @@
                 <div class="card-footer-text">Персональный менеджер корпоративных клиентов</div>
             </div>
 
-            <!-- Слой 4: Кнопка (Parallax Z=70) -->
-            <div class="card-layer-btn" style="--tz: 70px">
+            <div class="card-layer-btn">
                 <button class="card-contact-btn" onclick="saveContact(event)">
                     <svg viewBox="0 0 24 24">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -692,171 +654,148 @@
     </footer>
 
     <script>
-        // ==========================================
-        // 3D ДВИЖОК: Parallax, Гироскоп, Мышь, Свет
-        // ==========================================
-        const card = document.getElementById('digitalCard');
-        const hero = document.getElementById('hero');
-        const shine = document.getElementById('cardShine');
-        
-        let currentX = 0, currentY = 0;
-        let targetX = 0, targetY = 0;
-        let isInteracting = false;
-        let animationId = null;
-
-        // Функция линейной интерполяции для плавности ("тяжелая" карта)
-        function lerp(start, end, factor) {
-            return start + (end - start) * factor;
-        }
-
-        function update3D() {
-            // Плавное приближение (0.06 = медленно и дорого, как металлическая карта)
-            currentX = lerp(currentX, targetX, 0.06);
-            currentY = lerp(currentY, targetY, 0.06);
-
-            // Если взаимодействие закончилось, возвращаем в 0
-            if (!isInteracting) {
-                targetX = 0;
-                targetY = 0;
-            }
-
-            // Применяем вращение к самой карте
-            // Инвертируем Y для естественного наклона
-            card.style.transform = `perspective(1200px) rotateX(${-currentY}deg) rotateY(${currentX}deg)`;
-
-            // Динамический свет: перемещаем градиент в противоположную сторону от наклона
-            // (имитация источника света в левом верхнем углу)
-            const lightX = 30 + (currentX * 2); 
-            const lightY = 30 - (currentY * 2);
-            shine.style.setProperty('--light-x', `${lightX}%`);
-            shine.style.setProperty('--light-y', `${lightY}%`);
+        document.addEventListener('DOMContentLoaded', () => {
+            const card = document.getElementById('digitalCard');
+            const hero = document.getElementById('hero');
+            const shine = document.getElementById('cardShine');
+            const compactHeader = document.getElementById('compactHeader');
             
-            // Показываем блик только при движении
-            if (Math.abs(currentX) > 0.1 || Math.abs(currentY) > 0.1) {
-                shine.style.opacity = '1';
-            } else {
-                shine.style.opacity = '0';
+            if (!card || !hero) return; // Защита от ошибок
+
+            let currentX = 0, currentY = 0;
+            let targetX = 0, targetY = 0;
+            let isInteracting = false;
+            let animationId = null;
+
+            function lerp(start, end, factor) {
+                return start + (end - start) * factor;
             }
 
-            // Параллакс слоев: обновляем их transform для усиления эффекта глубины
-            // (CSS translateZ уже делает основную работу, но мы добавляем микро-сдвиг)
-            const layers = document.querySelectorAll('[style*="--tz"]');
-            layers.forEach(layer => {
-                const tz = layer.style.getPropertyValue('--tz').replace('px', '');
-                const factor = tz / 70; // Нормализация от 0 до 1
-                const moveX = currentX * factor * 1.5;
-                const moveY = -currentY * factor * 1.5;
-                layer.style.transform = `translateZ(${tz}px) translateX(${moveX}px) translateY(${moveY}px)`;
+            function update3D() {
+                currentX = lerp(currentX, targetX, 0.06);
+                currentY = lerp(currentY, targetY, 0.06);
+
+                if (!isInteracting) {
+                    targetX = 0;
+                    targetY = 0;
+                }
+
+                // Вращаем только родительскую карту. Дочерние слои с translateZ автоматически создают параллакс.
+                card.style.transform = `perspective(1200px) rotateX(${-currentY}deg) rotateY(${currentX}deg)`;
+
+                // Динамический свет
+                const lightX = 30 + (currentX * 3); 
+                const lightY = 30 - (currentY * 3);
+                shine.style.setProperty('--light-x', `${lightX}%`);
+                shine.style.setProperty('--light-y', `${lightY}%`);
+                
+                shine.style.opacity = (Math.abs(currentX) > 0.1 || Math.abs(currentY) > 0.1) ? '1' : '0';
+
+                if (isInteracting || Math.abs(currentX) > 0.05 || Math.abs(currentY) > 0.05) {
+                    animationId = requestAnimationFrame(update3D);
+                } else {
+                    animationId = null;
+                    card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg)`;
+                    shine.style.opacity = '0';
+                }
+            }
+
+            // Мышь
+            hero.addEventListener('mousemove', (e) => {
+                if (window.scrollY > 50) return;
+                const rect = hero.getBoundingClientRect();
+                targetX = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 5;
+                targetY = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * 5;
+                
+                if (!isInteracting) {
+                    isInteracting = true;
+                    if (!animationId) animationId = requestAnimationFrame(update3D);
+                }
             });
 
-            // Продолжаем цикл, если есть движение или мы не вернулись в ноль
-            if (isInteracting || Math.abs(currentX) > 0.05 || Math.abs(currentY) > 0.05) {
-                animationId = requestAnimationFrame(update3D);
-            } else {
-                animationId = null;
-                // Сброс в идеальный ноль
-                card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg)`;
-                shine.style.opacity = '0';
-            }
-        }
-
-        // --- Обработка Мыши (ПК) ---
-        hero.addEventListener('mousemove', (e) => {
-            if (window.scrollY > 50) return; // Отключаем при прокрутке
-            const rect = hero.getBoundingClientRect();
-            const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
-            const y = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
-            
-            // Максимум 5 градусов
-            targetX = x * 5;
-            targetY = y * 5;
-            
-            if (!isInteracting) {
-                isInteracting = true;
+            hero.addEventListener('mouseleave', () => {
+                isInteracting = false;
                 if (!animationId) animationId = requestAnimationFrame(update3D);
-            }
-        });
+            });
 
-        hero.addEventListener('mouseleave', () => {
-            isInteracting = false;
-            if (!animationId) animationId = requestAnimationFrame(update3D);
-        });
-
-        // --- Обработка Тача / Гироскопа (Мобильные) ---
-        // Используем положение пальца относительно центра экрана для имитации наклона телефона
-        // Это надежнее, чем запрос разрешения на гироскоп в iOS, и дает тот же эффект
-        hero.addEventListener('touchmove', (e) => {
-            if (window.scrollY > 50 || e.touches.length !== 1) return;
-            const touch = e.touches[0];
-            const rect = hero.getBoundingClientRect();
-            const x = (touch.clientX - rect.left - rect.width / 2) / (rect.width / 2);
-            const y = (touch.clientY - rect.top - rect.height / 2) / (rect.height / 2);
-            
-            targetX = x * 5;
-            targetY = y * 5;
-            
-            if (!isInteracting) {
-                isInteracting = true;
-                if (!animationId) animationId = requestAnimationFrame(update3D);
-            }
-        }, { passive: true });
-
-        hero.addEventListener('touchend', () => {
-            isInteracting = false;
-            if (!animationId) animationId = requestAnimationFrame(update3D);
-        });
-
-        // --- Эффект нажатия (2%) и Вспышка света (Requirement 10) ---
-        card.addEventListener('mousedown', () => card.classList.add('pressed'));
-        card.addEventListener('mouseup', () => card.classList.remove('pressed'));
-        card.addEventListener('touchstart', () => {
-            card.classList.add('pressed');
-            // Запуск вспышки света при касании
-            shine.classList.remove('touch-flash');
-            void shine.offsetWidth; // Триггер перерисовки для перезапуска анимации
-            shine.classList.add('touch-flash');
-        }, { passive: true });
-        card.addEventListener('touchend', () => card.classList.remove('pressed'));
-
-
-        // ==========================================
-        // ПРОКРУТКА: Эффект "уезжания назад"
-        // ==========================================
-        const compactHeader = document.getElementById('compactHeader');
-        let isCompact = false;
-
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            const heroHeight = hero.offsetHeight;
-            const threshold = heroHeight * 0.6;
-
-            // Компактный хедер
-            if (scrollY > threshold && !isCompact) {
-                isCompact = true;
-                compactHeader.classList.add('visible');
-            } else if (scrollY <= threshold && isCompact) {
-                isCompact = false;
-                compactHeader.classList.remove('visible');
-            }
-
-            // Рецессия карты (уезжает назад)
-            if (scrollY < heroHeight) {
-                const progress = Math.min(scrollY / threshold, 1);
-                const scale = 1 - (progress * 0.15);
-                const translateY = scrollY * 0.4; // Уезжает вверх
-                const opacity = 1 - (progress * 0.6);
+            // Тач
+            hero.addEventListener('touchmove', (e) => {
+                if (window.scrollY > 50 || e.touches.length !== 1) return;
+                const touch = e.touches[0];
+                const rect = hero.getBoundingClientRect();
+                targetX = ((touch.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 5;
+                targetY = ((touch.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * 5;
                 
-                // Если скроллим, принудительно отменяем 3D наклон
-                card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale(${scale}) translateY(${translateY}px)`;
-                card.style.opacity = opacity;
-                isInteracting = false; // Отключаем интерактивность при скролле
-            }
-        }, { passive: true });
+                if (!isInteracting) {
+                    isInteracting = true;
+                    if (!animationId) animationId = requestAnimationFrame(update3D);
+                }
+            }, { passive: true });
 
+            hero.addEventListener('touchend', () => {
+                isInteracting = false;
+                if (!animationId) animationId = requestAnimationFrame(update3D);
+            });
 
-        // ==========================================
-        // СОХРАНЕНИЕ КОНТАКТА
-        // ==========================================
+            // Нажатие и вспышка
+            const handlePress = () => {
+                card.classList.add('pressed');
+                shine.classList.remove('touch-flash');
+                void shine.offsetWidth; 
+                shine.classList.add('touch-flash');
+            };
+            const handleRelease = () => card.classList.remove('pressed');
+
+            card.addEventListener('mousedown', handlePress);
+            card.addEventListener('mouseup', handleRelease);
+            card.addEventListener('touchstart', handlePress, { passive: true });
+            card.addEventListener('touchend', handleRelease);
+
+            // Прокрутка
+            let isCompact = false;
+            window.addEventListener('scroll', () => {
+                const scrollY = window.scrollY;
+                const heroHeight = hero.offsetHeight;
+                const threshold = heroHeight * 0.6;
+
+                if (scrollY > threshold && !isCompact) {
+                    isCompact = true;
+                    compactHeader.classList.add('visible');
+                } else if (scrollY <= threshold && isCompact) {
+                    isCompact = false;
+                    compactHeader.classList.remove('visible');
+                }
+
+                if (scrollY < heroHeight) {
+                    const progress = Math.min(scrollY / threshold, 1);
+                    const scale = 1 - (progress * 0.15);
+                    const translateY = scrollY * 0.4;
+                    const opacity = 1 - (progress * 0.6);
+                    
+                    card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale(${scale}) translateY(${translateY}px)`;
+                    card.style.opacity = opacity;
+                    isInteracting = false;
+                }
+            }, { passive: true });
+
+            // Анимации секций
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        if (entry.target.classList.contains('features-grid')) {
+                            const cards = entry.target.querySelectorAll('.feature-card');
+                            cards.forEach((c, i) => setTimeout(() => c.classList.add('visible'), i * 120));
+                        }
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+            document.querySelectorAll('.section, .features-grid').forEach(el => observer.observe(el));
+        });
+
+        // Сохранение контакта (глобальная функция)
         function saveContact(event) {
             if (event) event.stopPropagation();
             if (navigator.vibrate) navigator.vibrate(10);
@@ -888,25 +827,6 @@
                 URL.revokeObjectURL(url);
             }, 1000);
         }
-
-        // ==========================================
-        // АНИМАЦИИ ПОЯВЛЕНИЯ СЕКЦИЙ
-        // ==========================================
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    if (entry.target.classList.contains('features-grid') || entry.target.classList.contains('section')) {
-                        // Для карточек внутри grid добавляем задержку
-                        const cards = entry.target.querySelectorAll('.feature-card');
-                        cards.forEach((c, i) => setTimeout(() => c.classList.add('visible'), i * 120));
-                    }
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
-
-        document.querySelectorAll('.section, .features-grid').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
