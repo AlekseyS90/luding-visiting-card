@@ -17,20 +17,13 @@
 
         :root {
             --bg-primary: #080808;
-            --bg-secondary: #111111;
-            --bg-card: #151515;
+            --bg-card: #111111;
             --text-primary: #FFFFFF;
             --text-secondary: #B8B8B8;
             --text-muted: #6B6B6B;
             --accent: #8b1a1a;
-            --accent-hover: #a52020;
             --silver: #C8C8C8;
             --border: rgba(255, 255, 255, 0.08);
-            --glass: rgba(255, 255, 255, 0.08);
-        }
-
-        html {
-            scroll-behavior: smooth;
         }
 
         body {
@@ -40,10 +33,85 @@
             line-height: 1.4;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ============ HERO SECTION WITH CARD ============ */
+        /* =========================================
+           1. ЭКРАН ЗАГРУЗКИ (SPLASH SCREEN)
+           ========================================= */
+        .splash-screen {
+            position: fixed;
+            inset: 0;
+            background: #000000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: splashFadeOut 0.8s ease 1.4s forwards;
+            pointer-events: none;
+        }
+
+        .splash-glass {
+            width: 60px;
+            height: 80px;
+            position: relative;
+            opacity: 0;
+            animation: glassAppear 0.6s ease 0.2s forwards;
+        }
+
+        .glass-outline {
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .glass-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: var(--accent);
+            opacity: 0.8;
+            border-radius: 0 0 30px 30px;
+            animation: fillWine 1s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+        }
+
+        .splash-text {
+            margin-top: 24px;
+            text-align: center;
+            opacity: 0;
+            animation: textAppear 0.6s ease 1s forwards;
+        }
+
+        .splash-logo {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--text-primary);
+        }
+
+        .splash-sub {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        @keyframes glassAppear { to { opacity: 1; } }
+        @keyframes fillWine { to { height: 60%; } }
+        @keyframes textAppear { to { opacity: 1; } }
+        @keyframes splashFadeOut { 
+            to { opacity: 0; visibility: hidden; } 
+        }
+
+        /* =========================================
+           2. HERO & 3D CARD CONTAINER
+           ========================================= */
         .hero {
             position: relative;
             width: 100%;
@@ -53,11 +121,10 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            perspective: 1200px; /* Глубина 3D */
             overflow: hidden;
-            /* Убрали perspective отсюда, перенесли в саму карту для лучшего контроля */
         }
 
-        /* ============ DIGITAL CARD ============ */
         .digital-card {
             position: relative;
             width: 90%;
@@ -65,165 +132,80 @@
             height: 70vh;
             max-height: 640px;
             min-height: 560px;
+            border-radius: 32px;
+            transform-style: preserve-3d; /* Ключ к параллаксу */
+            will-change: transform;
+            cursor: pointer;
+            /* Начальное состояние для анимации появления */
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+            animation: cardEntrance 1s cubic-bezier(0.2, 0.8, 0.2, 1) 1.5s forwards;
+        }
+
+        @keyframes cardEntrance {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Эффект нажатия (2%) */
+        .digital-card.pressed {
+            transition: transform 0.1s ease;
+            transform: scale(0.98) !important;
+        }
+
+        /* =========================================
+           СЛОИ КАРТЫ (PARALLAX)
+           ========================================= */
+        /* Слой 0: Фон и динамический свет */
+        .card-layer-bg {
+            position: absolute;
+            inset: 0;
             background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 50%, #151515 100%);
             border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            transform: translateZ(0px);
             overflow: hidden;
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.5),
-                0 0 0 1px rgba(255, 255, 255, 0.04),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            transform: scale(0.95);
-            opacity: 0;
-            animation: cardAppear 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
-            /* ИСПРАВЛЕНО: Убран transition, чтобы не конфликтовать с JS-анимацией */
-            transform-style: preserve-3d;
-            cursor: pointer;
-            will-change: transform;
         }
 
-        @keyframes cardAppear {
-            0% {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        /* Стеклянный блик на карте */
-        .digital-card::before {
-            content: '';
+        /* Слой 1: Динамический блик (Стекло) */
+        .card-layer-shine {
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                105deg,
-                transparent 40%,
-                rgba(255, 255, 255, 0.03) 45%,
-                rgba(255, 255, 255, 0.06) 50%,
-                rgba(255, 255, 255, 0.03) 55%,
-                transparent 60%
+            inset: 0;
+            border-radius: 32px;
+            background: radial-gradient(
+                circle at var(--light-x, 30%) var(--light-y, 30%), 
+                rgba(255, 255, 255, 0.15) 0%, 
+                rgba(255, 255, 255, 0.03) 40%, 
+                transparent 70%
             );
-            z-index: 3;
+            transform: translateZ(10px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
             pointer-events: none;
-            animation: cardShine 3s ease-in-out 1.2s;
+            mix-blend-mode: overlay;
+        }
+        
+        /* Блик при первом касании */
+        .card-layer-shine.touch-flash {
+            animation: touchFlash 0.4s ease-out forwards;
         }
 
-        @keyframes cardShine {
-            0% { left: -100%; }
-            100% { left: 200%; }
+        @keyframes touchFlash {
+            0% { opacity: 0; background: radial-gradient(circle at var(--light-x, 30%) var(--light-y, 30%), rgba(255,255,255,0.4) 0%, transparent 50%); }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
-        /* Тонкая текстура карты */
-        .digital-card::after {
-            content: '';
+        /* Слой 2: Фотография (Параллакс: движется медленнее) */
+        .card-layer-photo {
             position: absolute;
             inset: 0;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.02) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.01) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .digital-card:active {
-            transform: scale(0.98) !important;
-            transition: transform 0.15s ease !important;
-        }
-
-        /* ============ CARD HEADER ============ */
-        .card-header {
-            position: absolute;
-            top: 28px;
-            left: 28px;
-            z-index: 4;
+            transform: translateZ(30px);
             opacity: 0;
-            animation: fadeIn 0.6s ease 0.4s forwards;
-        }
-
-        .card-logo {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--silver);
-            line-height: 1;
-        }
-
-        .card-logo-sub {
-            font-size: 9px;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            margin-top: 4px;
-            font-weight: 500;
-        }
-
-        /* ============ CONTACT BUTTON ON CARD ============ */
-        .card-contact-btn {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 21px;
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            opacity: 0;
-            transform: translateY(-8px);
-            animation: contactBtnAppear 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1s forwards;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        @keyframes contactBtnAppear {
-            0% {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .card-contact-btn:hover {
-            background: rgba(255, 255, 255, 0.18);
-            border-color: var(--accent);
-        }
-
-        .card-contact-btn:active {
-            transform: scale(0.95);
-        }
-
-        .card-contact-btn svg {
-            width: 16px;
-            height: 16px;
-            stroke: white;
-            stroke-width: 1.8;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* ============ CARD PHOTO ============ */
-        .card-photo-container {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            opacity: 0;
-            animation: fadeIn 0.8s ease 0.6s forwards;
+            animation: layerFadeIn 0.8s ease 1.8s forwards;
         }
 
         .card-photo {
@@ -231,32 +213,42 @@
             height: 100%;
             object-fit: cover;
             object-position: center 20%;
-            mask-image: linear-gradient(
-                to bottom,
-                black 0%,
-                black 50%,
-                rgba(0,0,0,0.8) 70%,
-                rgba(0,0,0,0.3) 85%,
-                transparent 100%
-            );
-            -webkit-mask-image: linear-gradient(
-                to bottom,
-                black 0%,
-                black 50%,
-                rgba(0,0,0,0.8) 70%,
-                rgba(0,0,0,0.3) 85%,
-                transparent 100%
-            );
+            mask-image: linear-gradient(to bottom, black 40%, rgba(0,0,0,0.8) 70%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, rgba(0,0,0,0.8) 70%, transparent 100%);
         }
 
-        /* ============ CARD CONTENT ============ */
-        .card-content {
+        /* Слой 3: Контент (Текст) */
+        .card-layer-content {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             padding: 0 32px 36px;
-            z-index: 3;
+            transform: translateZ(50px);
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+
+        .card-header {
+            position: absolute;
+            top: 28px;
+            left: 28px;
+            transform: translateZ(50px);
+            opacity: 0;
+            animation: layerFadeIn 0.6s ease 1.9s forwards;
+        }
+
+        .card-logo {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--silver);
+        }
+
+        .card-logo-sub {
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
         .card-name {
@@ -266,9 +258,7 @@
             line-height: 1.05;
             margin-bottom: 12px;
             opacity: 0;
-            transform: translateY(15px);
-            animation: slideUp 0.7s ease 0.7s forwards;
-            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+            animation: layerSlideUp 0.7s ease 2.0s forwards;
         }
 
         .card-name strong {
@@ -283,9 +273,7 @@
             line-height: 1.4;
             margin-bottom: 16px;
             opacity: 0;
-            transform: translateY(15px);
-            animation: slideUp 0.7s ease 0.85s forwards;
-            text-shadow: 0 1px 10px rgba(0,0,0,0.5);
+            animation: layerSlideUp 0.7s ease 2.1s forwards;
         }
 
         .card-brand {
@@ -295,8 +283,7 @@
             font-weight: 600;
             margin-bottom: 24px;
             opacity: 0;
-            transform: translateY(15px);
-            animation: slideUp 0.7s ease 0.95s forwards;
+            animation: layerSlideUp 0.7s ease 2.2s forwards;
         }
 
         .card-divider {
@@ -305,7 +292,7 @@
             background: var(--accent);
             margin-bottom: 12px;
             opacity: 0;
-            animation: fadeIn 0.5s ease 1s forwards;
+            animation: layerFadeIn 0.5s ease 2.3s forwards;
         }
 
         .card-footer-text {
@@ -313,22 +300,59 @@
             color: var(--text-muted);
             letter-spacing: 0.5px;
             opacity: 0;
-            transform: translateY(10px);
-            animation: slideUp 0.6s ease 1.05s forwards;
+            animation: layerSlideUp 0.6s ease 2.4s forwards;
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
+        /* Слой 4: Кнопка контакта (Самый верхний слой) */
+        .card-layer-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            transform: translateZ(70px);
+            opacity: 0;
+            animation: layerSlideUp 0.6s ease 2.5s forwards;
         }
 
-        @keyframes slideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .card-contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 21px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
         }
 
-        /* ============ SCROLL INDICATOR ============ */
+        .card-contact-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: var(--accent);
+        }
+
+        .card-contact-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: white;
+            stroke-width: 1.8;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        @keyframes layerFadeIn { to { opacity: 1; } }
+        @keyframes layerSlideUp {
+            from { opacity: 0; transform: translateZ(var(--tz, 50px)) translateY(15px); }
+            to { opacity: 1; transform: translateZ(var(--tz, 50px)) translateY(0); }
+        }
+
+        /* Индикатор прокрутки */
         .scroll-indicator {
             position: absolute;
             bottom: 24px;
@@ -339,7 +363,7 @@
             align-items: center;
             gap: 8px;
             opacity: 0;
-            animation: fadeIn 0.6s ease 1.5s forwards;
+            animation: layerFadeIn 0.6s ease 3s forwards;
             z-index: 10;
         }
 
@@ -361,7 +385,9 @@
             50% { opacity: 1; transform: scaleY(1); }
         }
 
-        /* ============ COMPACT HEADER (after scroll) ============ */
+        /* =========================================
+           ОСТАЛЬНОЙ КОНТЕНТ (Упрощенно для фокуса на карте)
+           ========================================= */
         .compact-header {
             position: fixed;
             top: 0;
@@ -393,34 +419,10 @@
             height: 100%;
         }
 
-        .compact-logo {
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            color: var(--silver);
-        }
-
-        .compact-info {
-            flex: 1;
-            margin: 0 16px;
-            min-width: 0;
-        }
-
-        .compact-name {
-            font-size: 14px;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .compact-position {
-            font-size: 11px;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .compact-logo { font-size: 14px; font-weight: 700; letter-spacing: 1.5px; color: var(--silver); }
+        .compact-info { flex: 1; margin: 0 16px; min-width: 0; }
+        .compact-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .compact-position { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .compact-contact-btn {
             display: flex;
@@ -429,7 +431,6 @@
             padding: 8px 14px;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 18px;
             color: white;
@@ -437,436 +438,151 @@
             font-weight: 600;
             cursor: pointer;
             font-family: inherit;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
         }
+        .compact-contact-btn svg { width: 14px; height: 14px; stroke: white; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
-        .compact-contact-btn:hover {
-            border-color: var(--accent);
-        }
-
-        .compact-contact-btn:active {
-            transform: scale(0.95);
-        }
-
-        .compact-contact-btn svg {
-            width: 14px;
-            height: 14px;
-            stroke: white;
-            stroke-width: 1.8;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* ============ MAIN CONTENT ============ */
         .content {
             max-width: 460px;
             margin: 0 auto;
             padding: 40px 20px 60px;
         }
 
-        .section {
-            margin-bottom: 64px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.7s ease, transform 0.7s ease;
-        }
+        .section { margin-bottom: 64px; opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
+        .section.visible { opacity: 1; transform: translateY(0); }
+        .section-label { font-size: 11px; letter-spacing: 3px; color: var(--accent); font-weight: 600; text-transform: uppercase; margin-bottom: 16px; }
+        .section-title { font-size: 30px; font-weight: 300; letter-spacing: -0.5px; line-height: 1.15; margin-bottom: 20px; }
+        .section-title strong { font-weight: 600; }
+        .section-text { font-size: 15px; color: var(--text-secondary); line-height: 1.7; font-weight: 300; }
 
-        .section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .section-label {
-            font-size: 11px;
-            letter-spacing: 3px;
-            color: var(--accent);
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-        }
-
-        .section-title {
-            font-size: 30px;
-            font-weight: 300;
-            letter-spacing: -0.5px;
-            line-height: 1.15;
-            margin-bottom: 20px;
-        }
-
-        .section-title strong {
-            font-weight: 600;
-        }
-
-        .section-text {
-            font-size: 15px;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            font-weight: 300;
-        }
-
-        /* ============ QUICK ACTIONS ============ */
-        .quick-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
+        .quick-actions { display: flex; flex-direction: column; gap: 12px; }
         .btn-primary {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            padding: 20px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 18px;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            font-family: inherit;
+            display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 20px;
+            background: var(--accent); color: white; border: none; border-radius: 18px; font-size: 16px; font-weight: 600;
+            text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; font-family: inherit;
         }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary svg { width: 20px; height: 20px; fill: white; }
 
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(139, 26, 26, 0.4);
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        .btn-primary svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
-        }
-
-        .actions-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
+        .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .btn-glass {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 18px 16px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            color: var(--text-primary);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            font-family: inherit;
+            display: flex; align-items: center; gap: 12px; padding: 18px 16px;
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid var(--border);
+            border-radius: 18px; color: var(--text-primary); text-decoration: none; font-size: 14px; font-weight: 500;
+            transition: all 0.3s ease; cursor: pointer; font-family: inherit;
         }
+        .btn-glass:active { transform: scale(0.97); }
+        .btn-glass-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.06); }
+        .btn-glass-icon svg { width: 20px; height: 20px; stroke: var(--text-primary); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .btn-glass-icon img { width: 22px; height: 22px; object-fit: contain; }
 
-        .btn-glass:hover {
-            background: rgba(255, 255, 255, 0.12);
-            transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .btn-glass:active {
-            transform: scale(0.97);
-        }
-
-        .btn-glass-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .btn-glass-icon svg {
-            width: 20px;
-            height: 20px;
-            stroke: var(--text-primary);
-            stroke-width: 1.5;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .btn-glass-icon img {
-            width: 22px;
-            height: 22px;
-            object-fit: contain;
-        }
-
-        .btn-glass-text {
-            flex: 1;
-            text-align: left;
-        }
-
-        /* ============ FEATURES ============ */
-        .features-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
+        .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .feature-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 24px 20px;
-            transition: all 0.4s ease;
-            opacity: 0;
-            transform: translateY(20px);
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 24px 20px;
+            transition: all 0.4s ease; opacity: 0; transform: translateY(20px);
         }
+        .feature-card.visible { opacity: 1; transform: translateY(0); }
+        .feature-icon { width: 40px; height: 40px; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; }
+        .feature-icon svg { width: 28px; height: 28px; stroke: var(--text-primary); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .feature-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+        .feature-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
-        .feature-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .feature-card:hover {
-            border-color: rgba(139, 26, 26, 0.3);
-            transform: translateY(-4px);
-        }
-
-        .feature-icon {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .feature-icon svg {
-            width: 28px;
-            height: 28px;
-            stroke: var(--text-primary);
-            stroke-width: 1.5;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .feature-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            line-height: 1.3;
-        }
-
-        .feature-desc {
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.5;
-            font-weight: 300;
-        }
-
-        /* ============ OFFERS CARD ============ */
         .offers-card {
             background: linear-gradient(135deg, rgba(139, 26, 26, 0.12) 0%, rgba(139, 26, 26, 0.04) 100%);
-            border: 1px solid rgba(139, 26, 26, 0.25);
-            border-radius: 24px;
-            padding: 32px 24px;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            transition: all 0.3s ease;
+            border: 1px solid rgba(139, 26, 26, 0.25); border-radius: 24px; padding: 32px 24px;
+            text-decoration: none; color: inherit; display: block; transition: all 0.3s ease;
         }
+        .offers-card:active { transform: scale(0.98); }
+        .offers-card-label { font-size: 11px; letter-spacing: 2px; color: var(--accent); font-weight: 600; text-transform: uppercase; margin-bottom: 12px; }
+        .offers-card-title { font-size: 22px; font-weight: 300; letter-spacing: -0.3px; margin-bottom: 8px; }
+        .offers-card-title strong { font-weight: 600; }
+        .offers-card-sub { font-size: 13px; color: var(--text-secondary); font-weight: 300; }
+        .offers-card-arrow { margin-top: 20px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--accent); font-weight: 500; }
+        .offers-card-arrow svg { width: 16px; height: 16px; stroke: var(--accent); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
-        .offers-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(139, 26, 26, 0.4);
-        }
+        .footer { padding: 40px 20px 50px; text-align: center; border-top: 1px solid var(--border); max-width: 460px; margin: 0 auto; }
+        .footer-logo { font-size: 20px; font-weight: 700; letter-spacing: 2px; color: var(--silver); margin-bottom: 4px; }
+        .footer-sub { font-size: 10px; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 24px; }
+        .footer-contacts { display: flex; flex-direction: column; gap: 10px; max-width: 280px; margin: 0 auto; }
+        .footer-contact { color: var(--text-secondary); text-decoration: none; font-size: 13px; transition: color 0.2s ease; }
+        .footer-contact:hover { color: var(--text-primary); }
+        .footer-copy { margin-top: 32px; font-size: 11px; color: var(--text-muted); }
 
-        .offers-card:active {
-            transform: scale(0.98);
-        }
-
-        .offers-card-label {
-            font-size: 11px;
-            letter-spacing: 2px;
-            color: var(--accent);
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .offers-card-title {
-            font-size: 22px;
-            font-weight: 300;
-            letter-spacing: -0.3px;
-            margin-bottom: 8px;
-            line-height: 1.2;
-        }
-
-        .offers-card-title strong {
-            font-weight: 600;
-        }
-
-        .offers-card-sub {
-            font-size: 13px;
-            color: var(--text-secondary);
-            font-weight: 300;
-        }
-
-        .offers-card-arrow {
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: var(--accent);
-            font-weight: 500;
-        }
-
-        .offers-card-arrow svg {
-            width: 16px;
-            height: 16px;
-            stroke: var(--accent);
-            stroke-width: 2;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        /* ============ FOOTER ============ */
-        .footer {
-            padding: 40px 20px 50px;
-            text-align: center;
-            border-top: 1px solid var(--border);
-            max-width: 460px;
-            margin: 0 auto;
-        }
-
-        .footer-logo {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--silver);
-            margin-bottom: 4px;
-        }
-
-        .footer-sub {
-            font-size: 10px;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-        }
-
-        .footer-contacts {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 280px;
-            margin: 0 auto;
-        }
-
-        .footer-contact {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 13px;
-            transition: color 0.2s ease;
-        }
-
-        .footer-contact:hover {
-            color: var(--text-primary);
-        }
-
-        .footer-copy {
-            margin-top: 32px;
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        /* ============ RESPONSIVE ============ */
         @media (max-width: 380px) {
-            .card-name {
-                font-size: 32px;
-            }
-            .section-title {
-                font-size: 26px;
-            }
-            .digital-card {
-                border-radius: 28px;
-            }
-        }
-
-        @media (min-height: 800px) {
-            .hero {
-                min-height: 800px;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .content {
-                padding: 60px 24px 80px;
-            }
+            .card-name { font-size: 32px; }
+            .section-title { font-size: 26px; }
+            .digital-card { border-radius: 28px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Hero Section with Digital Card -->
+    <!-- 1. SPLASH SCREEN -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-glass">
+            <svg class="glass-outline" viewBox="0 0 60 80">
+                <path d="M10 10 Q30 50 50 10" />
+                <line x1="30" y1="50" x2="30" y2="70" />
+                <line x1="15" y1="70" x2="45" y2="70" />
+            </svg>
+            <div class="glass-fill"></div>
+        </div>
+        <div class="splash-text">
+            <div class="splash-logo">LUDING</div>
+            <div class="splash-sub">EST. 1993</div>
+        </div
+    </div>
+
+    <!-- 2. HERO & 3D CARD -->
     <section class="hero" id="hero">
         <div class="digital-card" id="digitalCard">
             
-            <!-- Card Header -->
-            <div class="card-header">
+            <!-- Слой 0: Фон -->
+            <div class="card-layer-bg"></div>
+            
+            <!-- Слой 1: Динамический свет/блик -->
+            <div class="card-layer-shine" id="cardShine"></div>
+            
+            <!-- Слой 2: Фото (Parallax Z=30) -->
+            <div class="card-layer-photo" style="--tz: 30px">
+                <img src="photo.jpg" alt="Алексей Ситников" class="card-photo">
+            </div>
+            
+            <!-- Слой 3: Хедер (Parallax Z=50) -->
+            <div class="card-header" style="--tz: 50px">
                 <div class="card-logo">LUDING</div>
                 <div class="card-logo-sub">EST. 1993</div>
             </div>
 
-            <!-- Contact Button on Card -->
-            <button class="card-contact-btn" onclick="saveContact(event)">
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                    <line x1="19" y1="8" x2="19" y2="14"/>
-                    <line x1="22" y1="11" x2="16" y2="11"/>
-                </svg>
-                <span>Контакт</span>
-            </button>
-
-            <!-- Photo -->
-            <div class="card-photo-container">
-                <img src="photo.jpg" alt="Алексей Ситников" class="card-photo">
-            </div>
-
-            <!-- Card Content -->
-            <div class="card-content">
-                <h1 class="card-name">
-                    Алексей<br>
-                    <strong>Ситников</strong>
-                </h1>
+            <!-- Слой 3: Контент (Parallax Z=50) -->
+            <div class="card-layer-content" style="--tz: 50px">
+                <h1 class="card-name">Алексей<br><strong>Ситников</strong></h1>
                 <p class="card-position">Менеджер по работе<br>с частными и корпоративными клиентами</p>
                 <div class="card-brand">LUDING</div>
                 <div class="card-divider"></div>
-                <div class="card-footer-text">Корпоративные поставки • Подарочные решения • Персональный подбор</div>
+                <div class="card-footer-text">Персональный менеджер корпоративных клиентов</div>
+            </div>
+
+            <!-- Слой 4: Кнопка (Parallax Z=70) -->
+            <div class="card-layer-btn" style="--tz: 70px">
+                <button class="card-contact-btn" onclick="saveContact(event)">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                        <line x1="19" y1="8" x2="19" y2="14"/>
+                        <line x1="22" y1="11" x2="16" y2="11"/>
+                    </svg>
+                    <span>Контакт</span>
+                </button>
             </div>
         </div>
 
-        <!-- Scroll Indicator -->
         <div class="scroll-indicator">
             <div class="scroll-text">ПРОКРУТИТЕ</div>
             <div class="scroll-line"></div>
         </div>
     </section>
 
-    <!-- Compact Header (appears on scroll) -->
+    <!-- COMPACT HEADER -->
     <div class="compact-header" id="compactHeader">
         <div class="compact-header-content">
             <div class="compact-logo">LUDING</div>
@@ -886,122 +602,70 @@
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- CONTENT -->
     <div class="content">
-        
-        <!-- Quick Actions -->
         <section class="section" data-animate>
             <div class="section-label">Связаться</div>
             <h2 class="section-title">Быстрые <strong>действия</strong></h2>
-            
             <div class="quick-actions">
                 <a href="tel:+79670281571" class="btn-primary">
                     <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
                     Позвонить
                 </a>
-
                 <div class="actions-grid">
                     <a href="https://t.me/+79670281571" target="_blank" class="btn-glass">
-                        <div class="btn-glass-icon">
-                            <svg viewBox="0 0 24 24"><path d="M21.5 4.5L2.5 11.5L9.5 13.5L12.5 20.5L21.5 4.5Z"/></svg>
-                        </div>
-                        <div class="btn-glass-text">Telegram</div>
+                        <div class="btn-glass-icon"><svg viewBox="0 0 24 24"><path d="M21.5 4.5L2.5 11.5L9.5 13.5L12.5 20.5L21.5 4.5Z"/></svg></div>
+                        <div>Telegram</div>
                     </a>
-
                     <a href="https://max.ru/u/f9LHodD0cOLvSFb5ck4JSoEU8jPP38BwELZ8ic1o1_NfMi9J5LAuk90woYw" target="_blank" class="btn-glass">
-                        <div class="btn-glass-icon">
-                            <img src="max-logo.png" alt="MAX">
-                        </div>
-                        <div class="btn-glass-text">MAX</div>
+                        <div class="btn-glass-icon"><img src="max-logo.png" alt="MAX"></div>
+                        <div>MAX</div>
                     </a>
-
                     <a href="mailto:Aleksei.sitnikov@luding.ru" class="btn-glass">
-                        <div class="btn-glass-icon">
-                            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7L12 13L21 7"/></svg>
-                        </div>
-                        <div class="btn-glass-text">Email</div>
+                        <div class="btn-glass-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7L12 13L21 7"/></svg></div>
+                        <div>Email</div>
                     </a>
-
                     <a href="https://luding.ru" target="_blank" class="btn-glass">
-                        <div class="btn-glass-icon">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.5 16 8.5 16 12C16 15.5 14.5 18.5 12 21C9.5 18.5 8 15.5 8 12C8 8.5 9.5 5.5 12 3Z"/></svg>
-                        </div>
-                        <div class="btn-glass-text">Сайт LUDING</div>
+                        <div class="btn-glass-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.5 16 8.5 16 12C16 15.5 14.5 18.5 12 21C9.5 18.5 8 15.5 8 12C8 8.5 9.5 5.5 12 3Z"/></svg></div>
+                        <div>Сайт LUDING</div>
                     </a>
                 </div>
             </div>
         </section>
 
-        <!-- Expertise -->
         <section class="section" data-animate>
             <div class="section-label">Обо мне</div>
             <h2 class="section-title">Эксперт в мире <strong>напитков</strong></h2>
-            <p class="section-text">
-                Более 8 лет опыта в винной индустрии. Помогаю подобрать напитки для корпоративных мероприятий, деловых встреч, подарков партнерам и важных событий.
-            </p>
+            <p class="section-text">Более 8 лет опыта в винной индустрии. Помогаю подобрать напитки для корпоративных мероприятий, деловых встреч, подарков партнерам и важных событий.</p>
         </section>
 
-        <!-- Features -->
         <section class="section" data-animate>
             <div class="section-label">Преимущества</div>
             <h2 class="section-title">Почему выбирают <strong>LUDING</strong></h2>
-            
             <div class="features-grid">
                 <div class="feature-card" data-feature>
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M8 2h8l-1 9c-.5 2-2 3.5-3 4v4h3v2H9v-2h3v-4c-1-.5-2.5-2-3-4L8 2z"/>
-                            <path d="M6 2h12"/>
-                        </svg>
-                    </div>
+                    <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M8 2h8l-1 9c-.5 2-2 3.5-3 4v4h3v2H9v-2h3v-4c-1-.5-2.5-2-3-4L8 2z"/><path d="M6 2h12"/></svg></div>
                     <div class="feature-title">Широкий ассортимент</div>
                     <div class="feature-desc">Более 5000 позиций напитков</div>
                 </div>
-
                 <div class="feature-card" data-feature>
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24">
-                            <rect x="3" y="8" width="18" height="13" rx="1"/>
-                            <path d="M12 8v13"/>
-                            <path d="M3 12h18"/>
-                            <path d="M12 8c-2-2-4-3-4-5s2-2 3-1c.5.5 1 1.5 1 2 0-.5.5-1.5 1-2 1-1 3-1 3 1s-2 3-4 5z"/>
-                        </svg>
-                    </div>
+                    <div class="feature-icon"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M12 8v13"/><path d="M3 12h18"/><path d="M12 8c-2-2-4-3-4-5s2-2 3-1c.5.5 1 1.5 1 2 0-.5.5-1.5 1-2 1-1 3-1 3 1s-2 3-4 5z"/></svg></div>
                     <div class="feature-title">Подарочные решения</div>
                     <div class="feature-desc">Подбор наборов для клиентов и партнеров</div>
                 </div>
-
                 <div class="feature-card" data-feature>
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M3 21V7l9-4 9 4v14"/>
-                            <path d="M9 21v-6h6v6"/>
-                            <path d="M9 9h.01"/>
-                            <path d="M15 9h.01"/>
-                            <path d="M9 13h.01"/>
-                            <path d="M15 13h.01"/>
-                        </svg>
-                    </div>
+                    <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M3 21V7l9-4 9 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 9h.01"/><path d="M15 9h.01"/><path d="M9 13h.01"/><path d="M15 13h.01"/></svg></div>
                     <div class="feature-title">Корпоративные проекты</div>
                     <div class="feature-desc">Комплектация мероприятий любого масштаба</div>
                 </div>
-
                 <div class="feature-card" data-feature>
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24">
-                            <rect x="1" y="7" width="15" height="10" rx="1"/>
-                            <path d="M16 11h4l3 3v3h-7"/>
-                            <circle cx="5.5" cy="18.5" r="2.5"/>
-                            <circle cx="18.5" cy="18.5" r="2.5"/>
-                        </svg>
-                    </div>
+                    <div class="feature-icon"><svg viewBox="0 0 24 24"><rect x="1" y="7" width="15" height="10" rx="1"/><path d="M16 11h4l3 3v3h-7"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
                     <div class="feature-title">Оперативная отгрузка</div>
-                    <div class="feature-desc">Быстрое оформление и отгрузка</div>
+                    <div class="feature-desc">Быстрое оформление и доставка</div>
                 </div>
             </div>
         </section>
 
-        <!-- Offers -->
         <section class="section" data-animate>
             <a href="offers.html" class="offers-card">
                 <div class="offers-card-label">Акции</div>
@@ -1013,135 +677,201 @@
                 </div>
             </a>
         </section>
-
     </div>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-logo">LUDING</div>
         <div class="footer-sub">EST. 1993</div>
-        
         <div class="footer-contacts">
             <a href="tel:+79670281571" class="footer-contact">+7 967 028-15-71</a>
             <a href="mailto:Aleksei.sitnikov@luding.ru" class="footer-contact">Aleksei.sitnikov@luding.ru</a>
             <a href="https://t.me/+79670281571" target="_blank" class="footer-contact">Telegram</a>
             <a href="https://max.ru/u/f9LHodD0cOLvSFb5ck4JSoEU8jPP38BwELZ8ic1o1_NfMi9J5LAuk90woYw" target="_blank" class="footer-contact">MAX</a>
         </div>
-        
         <div class="footer-copy">© 2026 LUDING. Все права защищены.</div>
     </footer>
 
     <script>
-        // ============================================
-        // 3D НАКЛОН КАРТЫ (Исправленный и оптимизированный)
-        // ============================================
+        // ==========================================
+        // 3D ДВИЖОК: Parallax, Гироскоп, Мышь, Свет
+        // ==========================================
         const card = document.getElementById('digitalCard');
         const hero = document.getElementById('hero');
+        const shine = document.getElementById('cardShine');
         
-        let currentRotateX = 0;
-        let currentRotateY = 0;
-        let targetRotateX = 0;
-        let targetRotateY = 0;
-        let isHovering = false;
+        let currentX = 0, currentY = 0;
+        let targetX = 0, targetY = 0;
+        let isInteracting = false;
         let animationId = null;
 
-        const MAX_TILT = 8; // Оптимальный угол для премиального эффекта (было 12, 8 выглядит дороже)
-
+        // Функция линейной интерполяции для плавности ("тяжелая" карта)
         function lerp(start, end, factor) {
             return start + (end - start) * factor;
         }
 
-        function updateTilt() {
-            // Если не наводим, плавно возвращаем в 0
-            if (!isHovering) {
-                targetRotateX = 0;
-                targetRotateY = 0;
+        function update3D() {
+            // Плавное приближение (0.06 = медленно и дорого, как металлическая карта)
+            currentX = lerp(currentX, targetX, 0.06);
+            currentY = lerp(currentY, targetY, 0.06);
+
+            // Если взаимодействие закончилось, возвращаем в 0
+            if (!isInteracting) {
+                targetX = 0;
+                targetY = 0;
             }
 
-            // Плавная интерполяция (0.08 дает мягкое, "вязкое" движение)
-            currentRotateX = lerp(currentRotateX, targetRotateX, 0.08);
-            currentRotateY = lerp(currentRotateY, targetRotateY, 0.08);
+            // Применяем вращение к самой карте
+            // Инвертируем Y для естественного наклона
+            card.style.transform = `perspective(1200px) rotateX(${-currentY}deg) rotateY(${currentX}deg)`;
 
-            // Применяем трансформацию
-            card.style.transform = `perspective(1200px) rotateX(${currentRotateX}deg) rotateY(${currentRotateY}deg) scale(1)`;
+            // Динамический свет: перемещаем градиент в противоположную сторону от наклона
+            // (имитация источника света в левом верхнем углу)
+            const lightX = 30 + (currentX * 2); 
+            const lightY = 30 - (currentY * 2);
+            shine.style.setProperty('--light-x', `${lightX}%`);
+            shine.style.setProperty('--light-y', `${lightY}%`);
+            
+            // Показываем блик только при движении
+            if (Math.abs(currentX) > 0.1 || Math.abs(currentY) > 0.1) {
+                shine.style.opacity = '1';
+            } else {
+                shine.style.opacity = '0';
+            }
 
-            // Продолжаем анимацию, если есть движение или если не вернулись в 0
-            if (isHovering || Math.abs(currentRotateX) > 0.01 || Math.abs(currentRotateY) > 0.01) {
-                animationId = requestAnimationFrame(updateTilt);
+            // Параллакс слоев: обновляем их transform для усиления эффекта глубины
+            // (CSS translateZ уже делает основную работу, но мы добавляем микро-сдвиг)
+            const layers = document.querySelectorAll('[style*="--tz"]');
+            layers.forEach(layer => {
+                const tz = layer.style.getPropertyValue('--tz').replace('px', '');
+                const factor = tz / 70; // Нормализация от 0 до 1
+                const moveX = currentX * factor * 1.5;
+                const moveY = -currentY * factor * 1.5;
+                layer.style.transform = `translateZ(${tz}px) translateX(${moveX}px) translateY(${moveY}px)`;
+            });
+
+            // Продолжаем цикл, если есть движение или мы не вернулись в ноль
+            if (isInteracting || Math.abs(currentX) > 0.05 || Math.abs(currentY) > 0.05) {
+                animationId = requestAnimationFrame(update3D);
             } else {
                 animationId = null;
+                // Сброс в идеальный ноль
+                card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg)`;
+                shine.style.opacity = '0';
             }
         }
 
-        function handleMove(clientX, clientY) {
-            // ИСПРАВЛЕНО: Отключаем наклон, если пользователь уже начал прокрутку (чтобы не конфликтовало)
-            if (window.scrollY > 50) return;
-
+        // --- Обработка Мыши (ПК) ---
+        hero.addEventListener('mousemove', (e) => {
+            if (window.scrollY > 50) return; // Отключаем при прокрутке
             const rect = hero.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
+            const x = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+            const y = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
             
-            // Нормализуем координаты от -1 до 1
-            const x = (clientX - centerX) / (rect.width / 2);
-            const y = (clientY - centerY) / (rect.height / 2);
+            // Максимум 5 градусов
+            targetX = x * 5;
+            targetY = y * 5;
             
-            targetRotateY = x * MAX_TILT;
-            targetRotateX = -y * MAX_TILT; // Инверсия для естественного эффекта
-
-            if (!isHovering) {
-                isHovering = true;
-                if (!animationId) {
-                    animationId = requestAnimationFrame(updateTilt);
-                }
+            if (!isInteracting) {
+                isInteracting = true;
+                if (!animationId) animationId = requestAnimationFrame(update3D);
             }
-        }
-
-        // Мышь (ПК)
-        hero.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
-        hero.addEventListener('mouseleave', () => {
-            isHovering = false;
         });
 
-        // Тач (Смартфон)
+        hero.addEventListener('mouseleave', () => {
+            isInteracting = false;
+            if (!animationId) animationId = requestAnimationFrame(update3D);
+        });
+
+        // --- Обработка Тача / Гироскопа (Мобильные) ---
+        // Используем положение пальца относительно центра экрана для имитации наклона телефона
+        // Это надежнее, чем запрос разрешения на гироскоп в iOS, и дает тот же эффект
         hero.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 1) {
-                handleMove(e.touches[0].clientX, e.touches[0].clientY);
+            if (window.scrollY > 50 || e.touches.length !== 1) return;
+            const touch = e.touches[0];
+            const rect = hero.getBoundingClientRect();
+            const x = (touch.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+            const y = (touch.clientY - rect.top - rect.height / 2) / (rect.height / 2);
+            
+            targetX = x * 5;
+            targetY = y * 5;
+            
+            if (!isInteracting) {
+                isInteracting = true;
+                if (!animationId) animationId = requestAnimationFrame(update3D);
             }
         }, { passive: true });
-        
+
         hero.addEventListener('touchend', () => {
-            isHovering = false;
+            isInteracting = false;
+            if (!animationId) animationId = requestAnimationFrame(update3D);
         });
 
-        // ============================================
-        // СОХРАНЕНИЕ КОНТАКТА
-        // ============================================
-        function saveContact(event) {
-            if (event) {
-                event.stopPropagation();
-            }
-            
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
+        // --- Эффект нажатия (2%) и Вспышка света (Requirement 10) ---
+        card.addEventListener('mousedown', () => card.classList.add('pressed'));
+        card.addEventListener('mouseup', () => card.classList.remove('pressed'));
+        card.addEventListener('touchstart', () => {
+            card.classList.add('pressed');
+            // Запуск вспышки света при касании
+            shine.classList.remove('touch-flash');
+            void shine.offsetWidth; // Триггер перерисовки для перезапуска анимации
+            shine.classList.add('touch-flash');
+        }, { passive: true });
+        card.addEventListener('touchend', () => card.classList.remove('pressed'));
+
+
+        // ==========================================
+        // ПРОКРУТКА: Эффект "уезжания назад"
+        // ==========================================
+        const compactHeader = document.getElementById('compactHeader');
+        let isCompact = false;
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const heroHeight = hero.offsetHeight;
+            const threshold = heroHeight * 0.6;
+
+            // Компактный хедер
+            if (scrollY > threshold && !isCompact) {
+                isCompact = true;
+                compactHeader.classList.add('visible');
+            } else if (scrollY <= threshold && isCompact) {
+                isCompact = false;
+                compactHeader.classList.remove('visible');
             }
 
+            // Рецессия карты (уезжает назад)
+            if (scrollY < heroHeight) {
+                const progress = Math.min(scrollY / threshold, 1);
+                const scale = 1 - (progress * 0.15);
+                const translateY = scrollY * 0.4; // Уезжает вверх
+                const opacity = 1 - (progress * 0.6);
+                
+                // Если скроллим, принудительно отменяем 3D наклон
+                card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale(${scale}) translateY(${translateY}px)`;
+                card.style.opacity = opacity;
+                isInteracting = false; // Отключаем интерактивность при скролле
+            }
+        }, { passive: true });
+
+
+        // ==========================================
+        // СОХРАНЕНИЕ КОНТАКТА
+        // ==========================================
+        function saveContact(event) {
+            if (event) event.stopPropagation();
+            if (navigator.vibrate) navigator.vibrate(10);
+
             const vCardData = [
-                'BEGIN:VCARD',
-                'VERSION:3.0',
-                'FN:Алексей Ситников',
-                'N:Ситников;Алексей;;;',
-                'ORG:LUDING',
-                'TITLE:Менеджер по работе с частными и корпоративными клиентами',
-                'TEL;TYPE=CELL:+79670281571',
-                'EMAIL:Aleksei.sitnikov@luding.ru',
-                'URL:https://luding.ru',
-                'NOTE:LUDING - поставки премиальных напитков',
+                'BEGIN:VCARD', 'VERSION:3.0',
+                'FN:Алексей Ситников', 'N:Ситников;Алексей;;;',
+                'ORG:LUDING', 'TITLE:Менеджер по работе с частными и корпоративными клиентами',
+                'TEL;TYPE=CELL:+79670281571', 'EMAIL:Aleksei.sitnikov@luding.ru',
+                'URL:https://luding.ru', 'NOTE:LUDING - поставки премиальных напитков',
                 'END:VCARD'
             ].join('\r\n');
 
             const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
             const url = URL.createObjectURL(blob);
-            
             const link = document.createElement('a');
             link.href = url;
             link.download = 'Алексей_Ситников.vcf';
@@ -1153,92 +883,30 @@
             
             document.body.appendChild(link);
             link.click();
-            
             setTimeout(() => {
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
             }, 1000);
         }
 
-        // ============================================
-        // ПРОКРУТКА: трансформация карты в шапку
-        // ============================================
-        const compactHeader = document.getElementById('compactHeader');
-        let isCompact = false;
-
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            const heroHeight = hero.offsetHeight;
-            const threshold = heroHeight * 0.6;
-
-            if (scrollY > threshold && !isCompact) {
-                isCompact = true;
-                compactHeader.classList.add('visible');
-            } else if (scrollY <= threshold && isCompact) {
-                isCompact = false;
-                compactHeader.classList.remove('visible');
-            }
-
-            // ИСПРАВЛЕНО: Если прокрутили больше 50px, принудительно отключаем 3D и применяем скролл-эффект
-            if (scrollY > 50) {
-                isHovering = false; 
-                const progress = Math.min(scrollY / threshold, 1);
-                const scale = 1 - (progress * 0.15);
-                const translateY = scrollY * 0.3;
-                const opacity = 1 - (progress * 0.3);
-                
-                card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale(${scale}) translateY(${translateY}px)`;
-                card.style.opacity = opacity;
-            }
-        }, { passive: true });
-
-        // ============================================
+        // ==========================================
         // АНИМАЦИИ ПОЯВЛЕНИЯ СЕКЦИЙ
-        // ============================================
-        const sectionObserver = new IntersectionObserver((entries) => {
+        // ==========================================
+        const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    sectionObserver.unobserve(entry.target);
+                    if (entry.target.classList.contains('features-grid') || entry.target.classList.contains('section')) {
+                        // Для карточек внутри grid добавляем задержку
+                        const cards = entry.target.querySelectorAll('.feature-card');
+                        cards.forEach((c, i) => setTimeout(() => c.classList.add('visible'), i * 120));
+                    }
+                    observer.unobserve(entry.target);
                 }
             });
-        }, {
-            threshold: 0.15,
-            rootMargin: '0px 0px -50px 0px'
-        });
+        }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
 
-        document.querySelectorAll('[data-animate]').forEach(el => {
-            sectionObserver.observe(el);
-        });
-
-        // Карточки преимуществ с задержкой
-        const featureObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const cards = entry.target.querySelectorAll('[data-feature]');
-                    cards.forEach((card, index) => {
-                        setTimeout(() => {
-                            card.classList.add('visible');
-                        }, index * 150);
-                    });
-                    featureObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.2 });
-
-        document.querySelectorAll('.features-grid').forEach(grid => {
-            featureObserver.observe(grid);
-        });
-
-        // Тактильная обратная связь для кнопок
-        document.querySelectorAll('.btn-glass, .btn-primary, .offers-card').forEach(btn => {
-            btn.addEventListener('touchstart', function() {
-                this.style.transform = 'scale(0.97)';
-            }, { passive: true });
-            btn.addEventListener('touchend', function() {
-                this.style.transform = '';
-            }, { passive: true });
-        });
+        document.querySelectorAll('.section, .features-grid').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
