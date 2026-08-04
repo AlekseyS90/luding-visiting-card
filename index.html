@@ -137,69 +137,73 @@
         @keyframes textAppear { to { opacity: 1; } }
         @keyframes splashFadeOut { to { opacity: 0; visibility: hidden; } }
 
-        /* HERO & 3D CARD */
+        /* HERO & FLIP CARD */
         .hero {
             position: relative;
             width: 100%;
-            height: 100vh;
-            min-height: 720px;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            perspective: 1200px;
-            overflow: hidden;
+            padding: 40px 20px 60px; /* Отступ сверху чтобы карточка не уходила за край */
+            perspective: 1500px;
+            overflow: visible;
         }
 
-        .digital-card {
+        .card-wrapper {
             position: relative;
             width: 90%;
             max-width: 400px;
-            height: 70vh;
-            max-height: 640px;
-            min-height: 560px;
-            border-radius: 32px;
+            height: 65vh;
+            max-height: 620px;
+            min-height: 540px;
             transform-style: preserve-3d;
-            will-change: transform;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             opacity: 0;
             transform: translateY(40px) scale(0.95);
             animation: cardEntrance 1s cubic-bezier(0.2, 0.8, 0.2, 1) 1.5s forwards;
         }
 
+        .card-wrapper.flipped {
+            transform: rotateY(180deg);
+        }
+
         @keyframes cardEntrance {
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .digital-card.pressed {
-            transition: transform 0.1s ease !important;
-            transform: scale(0.98) !important;
-        }
-
-        .card-layer-bg {
+        /* Общие стили для обеих сторон */
+        .card-face {
             position: absolute;
             inset: 0;
-            background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 50%, #151515 100%);
             border-radius: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
-            transform: translateZ(0px);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
             overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
         }
 
-        .card-layer-shine {
+        /* ЛИЦЕВАЯ СТОРОНА */
+        .card-front {
+            background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 50%, #151515 100%);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transform: rotateY(0deg);
+        }
+
+        .card-front .card-layer-shine {
             position: absolute;
             inset: 0;
             border-radius: 32px;
             background: radial-gradient(circle at var(--light-x, 30%) var(--light-y, 30%), rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.03) 40%, transparent 70%);
-            transform: translateZ(10px);
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
             mix-blend-mode: overlay;
+            z-index: 5;
         }
 
-        .card-layer-shine.touch-flash {
+        .card-front .card-layer-shine.touch-flash {
             animation: touchFlash 0.4s ease-out forwards;
         }
 
@@ -209,15 +213,15 @@
             100% { opacity: 0; }
         }
 
-        .card-layer-photo {
+        .card-front .card-layer-photo {
             position: absolute;
             inset: 0;
-            transform: translateZ(30px);
             opacity: 0;
             animation: layerFadeIn 0.8s ease 1.8s forwards;
+            z-index: 1;
         }
 
-        .card-photo {
+        .card-front .card-photo {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -226,40 +230,40 @@
             -webkit-mask-image: linear-gradient(to bottom, black 40%, rgba(0,0,0,0.8) 70%, transparent 100%);
         }
 
-        .card-header {
+        .card-front .card-header {
             position: absolute;
             top: 28px;
             left: 28px;
-            transform: translateZ(50px);
+            z-index: 3;
             opacity: 0;
             animation: layerFadeIn 0.6s ease 1.9s forwards;
         }
 
-        .card-logo {
+        .card-front .card-logo {
             font-size: 22px;
             font-weight: 700;
             letter-spacing: 2px;
             color: var(--silver);
         }
 
-        .card-logo-sub {
+        .card-front .card-logo-sub {
             font-size: 9px;
             letter-spacing: 2px;
             color: var(--text-muted);
             margin-top: 4px;
         }
 
-        .card-layer-content {
+        .card-front .card-layer-content {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             padding: 0 32px 36px;
-            transform: translateZ(50px);
+            z-index: 3;
             text-shadow: 0 4px 20px rgba(0,0,0,0.8);
         }
 
-        .card-name {
+        .card-front .card-name {
             font-size: 38px;
             font-weight: 300;
             letter-spacing: -0.5px;
@@ -269,9 +273,9 @@
             animation: layerSlideUp 0.7s ease 2.0s forwards;
         }
 
-        .card-name strong { font-weight: 600; display: block; }
+        .card-front .card-name strong { font-weight: 600; display: block; }
 
-        .card-position {
+        .card-front .card-position {
             font-size: 14px;
             color: var(--text-primary);
             font-weight: 400;
@@ -281,7 +285,7 @@
             animation: layerSlideUp 0.7s ease 2.1s forwards;
         }
 
-        .card-brand {
+        .card-front .card-brand {
             font-size: 13px;
             letter-spacing: 3px;
             color: var(--accent);
@@ -291,7 +295,7 @@
             animation: layerSlideUp 0.7s ease 2.2s forwards;
         }
 
-        .card-divider {
+        .card-front .card-divider {
             width: 32px;
             height: 1px;
             background: var(--accent);
@@ -300,7 +304,7 @@
             animation: layerFadeIn 0.5s ease 2.3s forwards;
         }
 
-        .card-footer-text {
+        .card-front .card-footer-text {
             font-size: 11px;
             color: var(--text-muted);
             letter-spacing: 0.5px;
@@ -308,11 +312,11 @@
             animation: layerSlideUp 0.6s ease 2.4s forwards;
         }
 
-        .card-layer-btn {
+        .card-front .card-layer-btn {
             position: absolute;
             top: 24px;
             right: 24px;
-            transform: translateZ(70px);
+            z-index: 4;
             opacity: 0;
             animation: layerSlideUp 0.6s ease 2.5s forwards;
         }
@@ -346,13 +350,205 @@
             stroke-linecap: round; stroke-linejoin: round;
         }
 
-        @keyframes layerFadeIn { to { opacity: 1; } }
-        @keyframes layerSlideUp {
-            from { opacity: 0; transform: translateZ(50px) translateY(15px); }
-            to { opacity: 1; transform: translateZ(50px) translateY(0); }
+        /* Индикатор "нажмите чтобы перевернуть" */
+        .flip-hint {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            opacity: 0;
+            animation: layerFadeIn 0.6s ease 2.8s forwards;
+            pointer-events: none;
         }
 
-        /* Scroll indicator — только стрелочка, без текста */
+        .flip-hint svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--text-muted);
+            stroke-width: 1.5;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            animation: flipHintPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes flipHintPulse {
+            0%, 100% { transform: rotateY(0deg); }
+            50% { transform: rotateY(180deg); }
+        }
+
+        @keyframes layerFadeIn { to { opacity: 1; } }
+        @keyframes layerSlideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ОБРАТНАЯ СТОРОНА */
+        .card-back {
+            background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 50%, #151515 100%);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            padding: 32px 24px;
+        }
+
+        .card-back-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .card-back-logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--silver);
+            margin-bottom: 4px;
+        }
+
+        .card-back-sub {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+        }
+
+        .card-back-title {
+            font-size: 13px;
+            letter-spacing: 2px;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .back-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(4px);
+        }
+
+        .back-btn:active {
+            transform: scale(0.97);
+        }
+
+        .back-btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .back-btn-primary:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(139, 26, 26, 0.4);
+        }
+
+        .back-btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+
+        .back-btn-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-primary);
+            stroke-width: 1.5;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .back-btn-icon img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .back-btn-primary .back-btn-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .back-btn-primary .back-btn-icon svg {
+            stroke: white;
+            fill: white;
+        }
+
+        .back-btn-text {
+            flex: 1;
+        }
+
+        .back-btn-arrow {
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        .card-back-flip-hint {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .card-back-flip-hint svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--text-muted);
+            stroke-width: 1.5;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            animation: flipHintPulse 2s ease-in-out infinite;
+        }
+
+        /* Scroll indicator */
         .scroll-indicator {
             position: absolute;
             bottom: 24px;
@@ -428,34 +624,7 @@
         .section-title strong { font-weight: 600; }
         .section-text { font-size: 15px; color: var(--text-secondary); line-height: 1.7; font-weight: 300; }
 
-        .quick-actions { display: flex; flex-direction: column; gap: 12px; }
-        
-        .btn-primary {
-            display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 20px;
-            background: var(--accent); color: white; border: none; border-radius: 18px; font-size: 16px; font-weight: 600;
-            text-decoration: none; cursor: pointer; font-family: inherit;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform;
-        }
-        .btn-primary:active { transform: scale(0.98) !important; }
-        .btn-primary svg { width: 20px; height: 20px; fill: white; }
-
-        .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        
-        .btn-glass {
-            display: flex; align-items: center; gap: 12px; padding: 18px 16px;
-            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid var(--border);
-            border-radius: 18px; color: var(--text-primary); text-decoration: none; font-size: 14px; font-weight: 500;
-            cursor: pointer; font-family: inherit;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform;
-        }
-        .btn-glass:active { transform: scale(0.97) !important; }
-        .btn-glass-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.06); }
-        .btn-glass-icon svg { width: 20px; height: 20px; stroke: var(--text-primary); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        .btn-glass-icon img { width: 22px; height: 22px; object-fit: contain; }
-
-        /* GLASS FEATURE CARDS (объёмные, со стеклом, с 3D при нажатии) */
+        /* GLASS FEATURE CARDS */
         .features-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -473,11 +642,9 @@
             padding: 24px 20px;
             opacity: 0;
             transform: translateY(20px);
-            transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: opacity 0.6s ease, border-color 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
             overflow: hidden;
-            transform-style: preserve-3d;
-            will-change: transform;
             box-shadow: 
                 0 8px 32px rgba(0, 0, 0, 0.3),
                 inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -495,7 +662,6 @@
                 inset 0 1px 0 rgba(255, 255, 255, 0.12);
         }
         
-        /* Блик на стеклянной карточке */
         .feature-card::before {
             content: '';
             position: absolute;
@@ -519,7 +685,6 @@
             left: 100%;
         }
         
-        /* При нажатии — плавный 3D-наклон */
         .feature-card.pressing {
             transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease;
             transform: scale(0.96);
@@ -535,7 +700,6 @@
             display: flex; 
             align-items: center; 
             justify-content: center;
-            transform: translateZ(20px);
         }
         .feature-icon svg { 
             width: 28px; 
@@ -550,13 +714,11 @@
             font-size: 14px; 
             font-weight: 600; 
             margin-bottom: 6px; 
-            transform: translateZ(15px);
         }
         .feature-desc { 
             font-size: 12px; 
             color: var(--text-muted); 
             line-height: 1.5; 
-            transform: translateZ(10px);
         }
 
         .offers-card {
@@ -568,9 +730,8 @@
             color: inherit; 
             display: block;
             transition: transform 0.3s ease;
-            will-change: transform;
         }
-        .offers-card:active { transform: scale(0.98) !important; }
+        .offers-card:active { transform: scale(0.98); }
         .offers-card-label { font-size: 11px; letter-spacing: 2px; color: var(--accent); font-weight: 600; text-transform: uppercase; margin-bottom: 12px; }
         .offers-card-title { font-size: 22px; font-weight: 300; letter-spacing: -0.3px; margin-bottom: 8px; }
         .offers-card-title strong { font-weight: 600; }
@@ -635,9 +796,9 @@
         @keyframes toastOut { to { opacity: 0; transform: translateY(-10px) scale(0.95); } }
 
         @media (max-width: 380px) {
-            .card-name { font-size: 32px; }
+            .card-front .card-name { font-size: 32px; }
             .section-title { font-size: 26px; }
-            .digital-card { border-radius: 28px; }
+            .card-wrapper, .card-face { border-radius: 28px; }
         }
     </style>
 </head>
@@ -662,43 +823,106 @@
     <!-- TOAST -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- HERO -->
+    <!-- HERO WITH FLIP CARD -->
     <section class="hero" id="hero">
-        <div class="digital-card" id="digitalCard">
-            <div class="card-layer-bg"></div>
-            <div class="card-layer-shine" id="cardShine"></div>
+        <div class="card-wrapper" id="cardWrapper">
             
-            <div class="card-layer-photo">
-                <img src="photo.jpg" alt="Алексей Ситников" class="card-photo">
-            </div>
-            
-            <div class="card-header">
-                <div class="card-logo">LUDING</div>
-                <div class="card-logo-sub">EST. 1993</div>
+            <!-- ЛИЦЕВАЯ СТОРОНА -->
+            <div class="card-face card-front" id="cardFront">
+                <div class="card-layer-shine" id="cardShine"></div>
+                
+                <div class="card-layer-photo">
+                    <img src="photo.jpg" alt="Алексей Ситников" class="card-photo">
+                </div>
+                
+                <div class="card-header">
+                    <div class="card-logo">LUDING</div>
+                    <div class="card-logo-sub">EST. 1993</div>
+                </div>
+
+                <div class="card-layer-content">
+                    <h1 class="card-name">Алексей<br><strong>Ситников</strong></h1>
+                    <p class="card-position">Менеджер по работе<br>с частными и корпоративными клиентами</p>
+                    <div class="card-brand">LUDING</div>
+                    <div class="card-divider"></div>
+                    <div class="card-footer-text">Корпоративные поставки • Подарочные решения • Персональный подбор</div>
+                </div>
+
+                <div class="card-layer-btn">
+                    <button class="card-contact-btn" onclick="saveContact(event)">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                            <line x1="19" y1="8" x2="19" y2="14"/>
+                            <line x1="22" y1="11" x2="16" y2="11"/>
+                        </svg>
+                        <span>Контакт</span>
+                    </button>
+                </div>
+
+                <div class="flip-hint">
+                    <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.36 2.64L21 3v6h-6l2.64-2.64A7 7 0 0 0 12 5a7 7 0 0 0-7 7 7 7 0 0 0 7 7 7 7 0 0 0 6.36-4H21a9 9 0 0 1-9 9 9 9 0 0 1-9-9z"/></svg>
+                    <span>Нажмите чтобы перевернуть</span>
+                </div>
             </div>
 
-            <div class="card-layer-content">
-                <h1 class="card-name">Алексей<br><strong>Ситников</strong></h1>
-                <p class="card-position">Менеджер по работе<br>с частными и корпоративными клиентами</p>
-                <div class="card-brand">LUDING</div>
-                <div class="card-divider"></div>
-                <div class="card-footer-text">Корпоративные поставки • Подарочные решения • Персональный подбор</div>
-            </div>
+            <!-- ОБРАТНАЯ СТОРОНА -->
+            <div class="card-face card-back">
+                <div class="card-back-header">
+                    <div class="card-back-logo">LUDING</div>
+                    <div class="card-back-sub">EST. 1993</div>
+                </div>
 
-            <div class="card-layer-btn">
-                <button class="card-contact-btn" onclick="saveContact(event)">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                        <line x1="19" y1="8" x2="19" y2="14"/>
-                        <line x1="22" y1="11" x2="16" y2="11"/>
-                    </svg>
-                    <span>Контакт</span>
-                </button>
+                <div class="card-back-title">Связаться со мной</div>
+
+                <div class="back-buttons">
+                    <a href="tel:+79670281571" class="back-btn back-btn-primary" onclick="event.stopPropagation()">
+                        <div class="back-btn-icon">
+                            <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                        </div>
+                        <div class="back-btn-text">Позвонить</div>
+                    </a>
+
+                    <a href="https://t.me/+79670281571" target="_blank" class="back-btn" onclick="event.stopPropagation()">
+                        <div class="back-btn-icon">
+                            <svg viewBox="0 0 24 24"><path d="M21.5 4.5L2.5 11.5L9.5 13.5L12.5 20.5L21.5 4.5Z"/></svg>
+                        </div>
+                        <div class="back-btn-text">Telegram</div>
+                        <div class="back-btn-arrow">›</div>
+                    </a>
+
+                    <a href="https://max.ru/u/f9LHodD0cOLvSFb5ck4JSoEU8jPP38BwELZ8ic1o1_NfMi9J5LAuk90woYw" target="_blank" class="back-btn" onclick="event.stopPropagation()">
+                        <div class="back-btn-icon">
+                            <img src="max-logo.png" alt="MAX">
+                        </div>
+                        <div class="back-btn-text">MAX</div>
+                        <div class="back-btn-arrow">›</div>
+                    </a>
+
+                    <a href="mailto:Aleksei.sitnikov@luding.ru" class="back-btn" onclick="event.stopPropagation()">
+                        <div class="back-btn-icon">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7L12 13L21 7"/></svg>
+                        </div>
+                        <div class="back-btn-text">Email</div>
+                        <div class="back-btn-arrow">›</div>
+                    </a>
+
+                    <a href="https://luding.ru" target="_blank" class="back-btn" onclick="event.stopPropagation()">
+                        <div class="back-btn-icon">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.5 16 8.5 16 12C16 15.5 14.5 18.5 12 21C9.5 18.5 8 15.5 8 12C8 8.5 9.5 5.5 12 3Z"/></svg>
+                        </div>
+                        <div class="back-btn-text">Сайт LUDING</div>
+                        <div class="back-btn-arrow">›</div>
+                    </a>
+                </div>
+
+                <div class="card-back-flip-hint">
+                    <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.36 2.64L21 3v6h-6l2.64-2.64A7 7 0 0 0 12 5a7 7 0 0 0-7 7 7 7 0 0 0 7 7 7 7 0 0 0 6.36-4H21a9 9 0 0 1-9 9 9 9 0 0 1-9-9z"/></svg>
+                    <span>Нажмите чтобы перевернуть</span>
+                </div>
             </div>
         </div>
 
-        <!-- Только стрелочка, без текста -->
         <div class="scroll-indicator">
             <div class="scroll-line"></div>
         </div>
@@ -724,37 +948,8 @@
         </div>
     </div>
 
-    <!-- CONTENT -->
+    <!-- CONTENT (без блока "Быстрые действия") -->
     <div class="content">
-        <section class="section" data-animate>
-            <div class="section-label">Связаться</div>
-            <h2 class="section-title">Быстрые <strong>действия</strong></h2>
-            <div class="quick-actions">
-                <a href="tel:+79670281571" class="btn-primary magnetic" data-magnetic>
-                    <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                    Позвонить
-                </a>
-                <div class="actions-grid">
-                    <a href="https://t.me/+79670281571" target="_blank" class="btn-glass magnetic" data-magnetic>
-                        <div class="btn-glass-icon"><svg viewBox="0 0 24 24"><path d="M21.5 4.5L2.5 11.5L9.5 13.5L12.5 20.5L21.5 4.5Z"/></svg></div>
-                        <div>Telegram</div>
-                    </a>
-                    <a href="https://max.ru/u/f9LHodD0cOLvSFb5ck4JSoEU8jPP38BwELZ8ic1o1_NfMi9J5LAuk90woYw" target="_blank" class="btn-glass magnetic" data-magnetic>
-                        <div class="btn-glass-icon"><img src="max-logo.png" alt="MAX"></div>
-                        <div>MAX</div>
-                    </a>
-                    <a href="mailto:Aleksei.sitnikov@luding.ru" class="btn-glass magnetic" data-magnetic>
-                        <div class="btn-glass-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7L12 13L21 7"/></svg></div>
-                        <div>Email</div>
-                    </a>
-                    <a href="https://luding.ru" target="_blank" class="btn-glass magnetic" data-magnetic>
-                        <div class="btn-glass-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.5 16 8.5 16 12C16 15.5 14.5 18.5 12 21C9.5 18.5 8 15.5 8 12C8 8.5 9.5 5.5 12 3Z"/></svg></div>
-                        <div>Сайт LUDING</div>
-                    </a>
-                </div>
-            </div>
-        </section>
-
         <section class="section" data-animate>
             <div class="section-label">Обо мне</div>
             <h2 class="section-title">Эксперт в мире <strong>напитков</strong></h2>
@@ -789,7 +984,7 @@
         </section>
 
         <section class="section" data-animate>
-            <a href="offers.html" class="offers-card magnetic" data-magnetic>
+            <a href="offers.html" class="offers-card">
                 <div class="offers-card-label">Акции</div>
                 <div class="offers-card-title">Персональные <strong>предложения</strong></div>
                 <div class="offers-card-sub">Подборки · Акции · Предложения месяца</div>
@@ -835,84 +1030,66 @@
             }, duration);
         }
 
-        // MAGNETIC BUTTONS (только ПК)
-        function setupMagneticButtons() {
-            if (!window.matchMedia('(pointer: fine)').matches) return;
+        // FLIP CARD LOGIC
+        function setupFlipCard() {
+            const wrapper = document.getElementById('cardWrapper');
+            const front = document.getElementById('cardFront');
+            if (!wrapper || !front) return;
 
-            const magnets = document.querySelectorAll('[data-magnetic]');
-            const MAGNETIC_STRENGTH = 0.3;
-            const MAX_OFFSET = 15;
+            let isFlipped = false;
+            let pressStartTime = 0;
+            const LONG_PRESS_THRESHOLD = 200; // Если нажатие короче 200мс — это клик (flip)
 
-            magnets.forEach(btn => {
-                btn.addEventListener('mousemove', (e) => {
-                    const rect = btn.getBoundingClientRect();
-                    const centerX = rect.left + rect.width / 2;
-                    const centerY = rect.top + rect.height / 2;
-                    
-                    const deltaX = e.clientX - centerX;
-                    const deltaY = e.clientY - centerY;
-                    
-                    const offsetX = Math.max(-MAX_OFFSET, Math.min(MAX_OFFSET, deltaX * MAGNETIC_STRENGTH));
-                    const offsetY = Math.max(-MAX_OFFSET, Math.min(MAX_OFFSET, deltaY * MAGNETIC_STRENGTH));
-                    
-                    btn.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-                });
+            const handlePressStart = () => {
+                pressStartTime = Date.now();
+            };
 
-                btn.addEventListener('mouseleave', () => {
-                    btn.style.transform = 'translate(0, 0)';
-                });
-            });
-        }
-
-        // 3D EFFECT ДЛЯ GLASS КАРТОЧЕК (при нажатии наклоняются к точке касания)
-        function setupFeatureCards3D() {
-            const cards = document.querySelectorAll('.feature-card');
-            
-            cards.forEach(card => {
-                const handlePress = (clientX, clientY) => {
-                    const rect = card.getBoundingClientRect();
-                    const centerX = rect.left + rect.width / 2;
-                    const centerY = rect.top + rect.height / 2;
-                    
-                    const deltaX = clientX - centerX;
-                    const deltaY = clientY - centerY;
-                    
-                    // Максимальный наклон 8 градусов
-                    const rotateY = (deltaX / (rect.width / 2)) * 8;
-                    const rotateX = -(deltaY / (rect.height / 2)) * 8;
-                    
-                    card.classList.add('pressing');
-                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(0.96)`;
-                };
-                
-                const handleRelease = () => {
-                    card.classList.remove('pressing');
-                    card.style.transform = '';
-                };
-                
-                // Мышь
-                card.addEventListener('mousedown', (e) => handlePress(e.clientX, e.clientY));
-                card.addEventListener('mouseup', handleRelease);
-                card.addEventListener('mouseleave', handleRelease);
-                
-                // Тач
-                card.addEventListener('touchstart', (e) => {
-                    if (e.touches.length === 1) {
-                        handlePress(e.touches[0].clientX, e.touches[0].clientY);
+            const handlePressEnd = (e) => {
+                const pressDuration = Date.now() - pressStartTime;
+                // Если это был короткий клик (не долгое нажатие) и не движение — переворачиваем
+                if (pressDuration < LONG_PRESS_THRESHOLD) {
+                    // Проверяем, что клик был по карточке, а не по кнопке внутри
+                    if (e.target.closest('.card-contact-btn') || e.target.closest('.back-btn')) {
+                        return; // Клик по кнопке — не переворачиваем
                     }
-                }, { passive: true });
-                card.addEventListener('touchend', handleRelease);
-            });
+                    isFlipped = !isFlipped;
+                    if (isFlipped) {
+                        wrapper.classList.add('flipped');
+                    } else {
+                        wrapper.classList.remove('flipped');
+                    }
+                    if (navigator.vibrate) navigator.vibrate(15);
+                }
+            };
+
+            // Мышь
+            front.addEventListener('mousedown', handlePressStart);
+            front.addEventListener('mouseup', handlePressEnd);
+            front.addEventListener('mouseleave', () => { pressStartTime = 0; });
+
+            // Тач
+            front.addEventListener('touchstart', handlePressStart, { passive: true });
+            front.addEventListener('touchend', handlePressEnd);
+
+            // Обратная сторона — тоже кликабельна для возврата
+            const back = wrapper.querySelector('.card-back');
+            if (back) {
+                back.addEventListener('mousedown', handlePressStart);
+                back.addEventListener('mouseup', handlePressEnd);
+                back.addEventListener('touchstart', handlePressStart, { passive: true });
+                back.addEventListener('touchend', handlePressEnd);
+            }
         }
 
-        // 3D КАРТА
+        // 3D НАКЛОН ЛИЦЕВОЙ СТОРОНЫ (работает только когда не перевёрнута)
         function setup3DCard() {
-            const card = document.getElementById('digitalCard');
-            const hero = document.getElementById('hero');
+            const wrapper = document.getElementById('cardWrapper');
+            const front = document.getElementById('cardFront');
             const shine = document.getElementById('cardShine');
             const compactHeader = document.getElementById('compactHeader');
+            const hero = document.getElementById('hero');
             
-            if (!card || !hero) return;
+            if (!wrapper || !front) return;
 
             let currentX = 0, currentY = 0;
             let targetX = 0, targetY = 0;
@@ -924,6 +1101,12 @@
             }
 
             function update3D() {
+                // Если карточка перевёрнута — не применяем 3D к лицевой стороне
+                if (wrapper.classList.contains('flipped')) {
+                    animationId = null;
+                    return;
+                }
+
                 currentX = lerp(currentX, targetX, 0.06);
                 currentY = lerp(currentY, targetY, 0.06);
 
@@ -932,7 +1115,13 @@
                     targetY = 0;
                 }
 
-                card.style.transform = `perspective(1200px) rotateX(${-currentY}deg) rotateY(${currentX}deg)`;
+                // Применяем к wrapper, но только rotate (без flip, который управляется классом)
+                const baseTransform = wrapper.classList.contains('flipped') 
+                    ? 'rotateY(180deg)' 
+                    : '';
+                
+                // 3D наклон применяем через отдельный внутренний элемент
+                front.style.transform = `perspective(1200px) rotateX(${-currentY}deg) rotateY(${currentX}deg)`;
 
                 const lightX = 30 + (currentX * 3); 
                 const lightY = 30 - (currentY * 3);
@@ -945,13 +1134,13 @@
                     animationId = requestAnimationFrame(update3D);
                 } else {
                     animationId = null;
-                    card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg)`;
+                    front.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg)';
                     shine.style.opacity = '0';
                 }
             }
 
             hero.addEventListener('mousemove', (e) => {
-                if (window.scrollY > 50) return;
+                if (window.scrollY > 50 || wrapper.classList.contains('flipped')) return;
                 const rect = hero.getBoundingClientRect();
                 targetX = ((e.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 5;
                 targetY = ((e.clientY - rect.top - rect.height / 2) / (rect.height / 2)) * 5;
@@ -968,7 +1157,7 @@
             });
 
             hero.addEventListener('touchmove', (e) => {
-                if (window.scrollY > 50 || e.touches.length !== 1) return;
+                if (window.scrollY > 50 || wrapper.classList.contains('flipped') || e.touches.length !== 1) return;
                 const touch = e.touches[0];
                 const rect = hero.getBoundingClientRect();
                 targetX = ((touch.clientX - rect.left - rect.width / 2) / (rect.width / 2)) * 5;
@@ -985,19 +1174,18 @@
                 if (!animationId) animationId = requestAnimationFrame(update3D);
             });
 
+            // Вспышка света при касании
             const handlePress = () => {
-                card.classList.add('pressed');
+                if (wrapper.classList.contains('flipped')) return;
                 shine.classList.remove('touch-flash');
                 void shine.offsetWidth; 
                 shine.classList.add('touch-flash');
             };
-            const handleRelease = () => card.classList.remove('pressed');
 
-            card.addEventListener('mousedown', handlePress);
-            card.addEventListener('mouseup', handleRelease);
-            card.addEventListener('touchstart', handlePress, { passive: true });
-            card.addEventListener('touchend', handleRelease);
+            front.addEventListener('touchstart', handlePress, { passive: true });
+            front.addEventListener('mousedown', handlePress);
 
+            // Прокрутка
             let isCompact = false;
             window.addEventListener('scroll', () => {
                 const scrollY = window.scrollY;
@@ -1012,18 +1200,24 @@
                     compactHeader.classList.remove('visible');
                 }
 
-                if (scrollY < heroHeight) {
+                if (scrollY < heroHeight && !wrapper.classList.contains('flipped')) {
                     const progress = Math.min(scrollY / threshold, 1);
                     const scale = 1 - (progress * 0.15);
                     const translateY = scrollY * 0.4;
                     const opacity = 1 - (progress * 0.6);
                     
-                    card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) scale(${scale}) translateY(${translateY}px)`;
-                    card.style.opacity = opacity;
+                    wrapper.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+                    wrapper.style.opacity = opacity;
                     isInteracting = false;
+                } else if (wrapper.classList.contains('flipped')) {
+                    // При перевёрнутой карточке — просто скрываем при прокрутке
+                    const progress = Math.min(scrollY / threshold, 1);
+                    const opacity = 1 - (progress * 0.6);
+                    wrapper.style.opacity = opacity;
                 }
             }, { passive: true });
 
+            // Анимации секций
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1038,6 +1232,44 @@
             }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
 
             document.querySelectorAll('.section, .features-grid').forEach(el => observer.observe(el));
+        }
+
+        // 3D эффект для стеклянных карточек
+        function setupFeatureCards3D() {
+            const cards = document.querySelectorAll('.feature-card');
+            
+            cards.forEach(card => {
+                const handlePress = (clientX, clientY) => {
+                    const rect = card.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    
+                    const deltaX = clientX - centerX;
+                    const deltaY = clientY - centerY;
+                    
+                    const rotateY = (deltaX / (rect.width / 2)) * 8;
+                    const rotateX = -(deltaY / (rect.height / 2)) * 8;
+                    
+                    card.classList.add('pressing');
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(0.96)`;
+                };
+                
+                const handleRelease = () => {
+                    card.classList.remove('pressing');
+                    card.style.transform = '';
+                };
+                
+                card.addEventListener('mousedown', (e) => handlePress(e.clientX, e.clientY));
+                card.addEventListener('mouseup', handleRelease);
+                card.addEventListener('mouseleave', handleRelease);
+                
+                card.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 1) {
+                        handlePress(e.touches[0].clientX, e.touches[0].clientY);
+                    }
+                }, { passive: true });
+                card.addEventListener('touchend', handleRelease);
+            });
         }
 
         // СОХРАНЕНИЕ КОНТАКТА
@@ -1102,8 +1334,8 @@
                 });
             }
 
+            setupFlipCard();
             setup3DCard();
-            setupMagneticButtons();
             setupFeatureCards3D();
         });
     </script>
