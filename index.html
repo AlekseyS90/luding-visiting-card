@@ -8,21 +8,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="LUDING">
     
-    <!-- Open Graph (превью при отправке ссылки) -->
     <meta property="og:title" content="Алексей Ситников — LUDING">
     <meta property="og:description" content="Менеджер по работе с частными и корпоративными клиентами">
     <meta property="og:type" content="profile">
     <meta property="og:locale" content="ru_RU">
     
-    <!-- Favicon (SVG inline — не требует отдельного файла) -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23080808'/%3E%3Cpath d='M30 25 L30 75 L70 75' stroke='%238b1a1a' stroke-width='10' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-    
-    <!-- iOS иконка (SVG inline, масштабируется) -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23080808'/%3E%3Cpath d='M50 45 L50 130 L130 130' stroke='%238b1a1a' stroke-width='18' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ctext x='90' y='165' font-family='Arial' font-size='14' fill='%23C8C8C8' text-anchor='middle' letter-spacing='2'%3ELUDING%3C/text%3E%3C/svg%3E">
     
     <title>Алексей Ситников — LUDING Digital Card</title>
     
-    <!-- Lenis для плавного скролла -->
     <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
     
     <style>
@@ -44,18 +39,10 @@
             --border: rgba(255, 255, 255, 0.08);
         }
 
-        html.lenis, html.lenis body {
-            height: auto;
-        }
-        .lenis.lenis-smooth {
-            scroll-behavior: auto !important;
-        }
-        .lenis.lenis-smooth [data-lenis-prevent] {
-            overscroll-behavior: contain;
-        }
-        .lenis.lenis-stopped {
-            overflow: hidden;
-        }
+        html.lenis, html.lenis body { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Inter', sans-serif;
@@ -66,9 +53,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* =========================================
-           FILM GRAIN (зернистая текстура)
-           ========================================= */
+        /* FILM GRAIN */
         body::before {
             content: '';
             position: fixed;
@@ -82,9 +67,7 @@
             mix-blend-mode: overlay;
         }
 
-        /* =========================================
-           SPLASH SCREEN
-           ========================================= */
+        /* SPLASH SCREEN */
         .splash-screen {
             position: fixed;
             inset: 0;
@@ -154,9 +137,7 @@
         @keyframes textAppear { to { opacity: 1; } }
         @keyframes splashFadeOut { to { opacity: 0; visibility: hidden; } }
 
-        /* =========================================
-           HERO & 3D CARD
-           ========================================= */
+        /* HERO & 3D CARD */
         .hero {
             position: relative;
             width: 100%;
@@ -371,6 +352,7 @@
             to { opacity: 1; transform: translateZ(50px) translateY(0); }
         }
 
+        /* Scroll indicator — только стрелочка, без текста */
         .scroll-indicator {
             position: absolute;
             bottom: 24px;
@@ -379,15 +361,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
             opacity: 0;
             animation: layerFadeIn 0.6s ease 3.0s forwards;
             z-index: 10;
         }
 
-        .scroll-text { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
         .scroll-line {
-            width: 1px; height: 24px;
+            width: 1px;
+            height: 24px;
             background: linear-gradient(to bottom, var(--text-muted), transparent);
             animation: scrollPulse 2s ease-in-out infinite;
         }
@@ -397,9 +378,7 @@
             50% { opacity: 1; transform: scaleY(1); }
         }
 
-        /* =========================================
-           COMPACT HEADER
-           ========================================= */
+        /* COMPACT HEADER */
         .compact-header {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -439,9 +418,7 @@
         }
         .compact-contact-btn svg { width: 14px; height: 14px; stroke: white; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
-        /* =========================================
-           CONTENT
-           ========================================= */
+        /* CONTENT */
         .content { max-width: 460px; margin: 0 auto; padding: 40px 20px 60px; }
 
         .section { margin-bottom: 64px; opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
@@ -478,31 +455,118 @@
         .btn-glass-icon svg { width: 20px; height: 20px; stroke: var(--text-primary); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
         .btn-glass-icon img { width: 22px; height: 22px; object-fit: contain; }
 
-        /* Копируемые элементы */
-        .copyable {
-            position: relative;
-            cursor: pointer;
-            user-select: none;
-            -webkit-user-select: none;
-            transition: opacity 0.2s ease;
+        /* GLASS FEATURE CARDS (объёмные, со стеклом, с 3D при нажатии) */
+        .features-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px;
+            perspective: 1000px;
         }
-        .copyable:active { opacity: 0.7; }
-
-        .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        
         .feature-card {
-            background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 24px 20px;
-            transition: all 0.4s ease; opacity: 0; transform: translateY(20px);
+            position: relative;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 24px 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            will-change: transform;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
-        .feature-card.visible { opacity: 1; transform: translateY(0); }
-        .feature-icon { width: 40px; height: 40px; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; }
-        .feature-icon svg { width: 28px; height: 28px; stroke: var(--text-primary); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        .feature-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
-        .feature-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        
+        .feature-card.visible { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+        
+        .feature-card:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        }
+        
+        /* Блик на стеклянной карточке */
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                105deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.04) 45%,
+                rgba(255, 255, 255, 0.08) 50%,
+                rgba(255, 255, 255, 0.04) 55%,
+                transparent 60%
+            );
+            pointer-events: none;
+            transition: left 0.6s ease;
+        }
+        
+        .feature-card:hover::before {
+            left: 100%;
+        }
+        
+        /* При нажатии — плавный 3D-наклон */
+        .feature-card.pressing {
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s ease;
+            transform: scale(0.96);
+            box-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .feature-icon { 
+            width: 40px; 
+            height: 40px; 
+            margin-bottom: 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            transform: translateZ(20px);
+        }
+        .feature-icon svg { 
+            width: 28px; 
+            height: 28px; 
+            stroke: var(--text-primary); 
+            stroke-width: 1.5; 
+            fill: none; 
+            stroke-linecap: round; 
+            stroke-linejoin: round; 
+        }
+        .feature-title { 
+            font-size: 14px; 
+            font-weight: 600; 
+            margin-bottom: 6px; 
+            transform: translateZ(15px);
+        }
+        .feature-desc { 
+            font-size: 12px; 
+            color: var(--text-muted); 
+            line-height: 1.5; 
+            transform: translateZ(10px);
+        }
 
         .offers-card {
             background: linear-gradient(135deg, rgba(139, 26, 26, 0.12) 0%, rgba(139, 26, 26, 0.04) 100%);
-            border: 1px solid rgba(139, 26, 26, 0.25); border-radius: 24px; padding: 32px 24px;
-            text-decoration: none; color: inherit; display: block;
+            border: 1px solid rgba(139, 26, 26, 0.25); 
+            border-radius: 24px; 
+            padding: 32px 24px;
+            text-decoration: none; 
+            color: inherit; 
+            display: block;
             transition: transform 0.3s ease;
             will-change: transform;
         }
@@ -522,9 +586,7 @@
         .footer-contact:hover { color: var(--text-primary); }
         .footer-copy { margin-top: 32px; font-size: 11px; color: var(--text-muted); }
 
-        /* =========================================
-           TOAST УВЕДОМЛЕНИЯ
-           ========================================= */
+        /* TOAST */
         .toast-container {
             position: fixed;
             bottom: 30px;
@@ -557,59 +619,21 @@
             pointer-events: auto;
         }
 
-        .toast.hiding {
-            animation: toastOut 0.3s ease forwards;
-        }
+        .toast.hiding { animation: toastOut 0.3s ease forwards; }
 
         .toast-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            width: 32px; height: 32px; border-radius: 50%;
             background: rgba(139, 26, 26, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
+        .toast-icon svg { width: 18px; height: 18px; stroke: var(--accent); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .toast-content { flex: 1; min-width: 0; }
+        .toast-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+        .toast-subtitle { font-size: 12px; color: var(--text-muted); }
 
-        .toast-icon svg {
-            width: 18px;
-            height: 18px;
-            stroke: var(--accent);
-            stroke-width: 2.5;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
+        @keyframes toastIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes toastOut { to { opacity: 0; transform: translateY(-10px) scale(0.95); } }
 
-        .toast-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .toast-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 2px;
-        }
-
-        .toast-subtitle {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        @keyframes toastIn {
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        @keyframes toastOut {
-            to { opacity: 0; transform: translateY(-10px) scale(0.95); }
-        }
-
-        /* =========================================
-           RESPONSIVE
-           ========================================= */
         @media (max-width: 380px) {
             .card-name { font-size: 32px; }
             .section-title { font-size: 26px; }
@@ -635,10 +659,10 @@
         </div>
     </div>
 
-    <!-- TOAST КОНТЕЙНЕР -->
+    <!-- TOAST -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- HERO & 3D CARD -->
+    <!-- HERO -->
     <section class="hero" id="hero">
         <div class="digital-card" id="digitalCard">
             <div class="card-layer-bg"></div>
@@ -658,7 +682,7 @@
                 <p class="card-position">Менеджер по работе<br>с частными и корпоративными клиентами</p>
                 <div class="card-brand">LUDING</div>
                 <div class="card-divider"></div>
-                <div class="card-footer-text">Персональный менеджер корпоративных клиентов</div>
+                <div class="card-footer-text">Корпоративные поставки • Подарочные решения • Персональный подбор</div>
             </div>
 
             <div class="card-layer-btn">
@@ -674,8 +698,8 @@
             </div>
         </div>
 
+        <!-- Только стрелочка, без текста -->
         <div class="scroll-indicator">
-            <div class="scroll-text">ПРОКРУТИТЕ</div>
             <div class="scroll-line"></div>
         </div>
     </section>
@@ -727,20 +751,6 @@
                         <div class="btn-glass-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12H21"/><path d="M12 3C14.5 5.5 16 8.5 16 12C16 15.5 14.5 18.5 12 21C9.5 18.5 8 15.5 8 12C8 8.5 9.5 5.5 12 3Z"/></svg></div>
                         <div>Сайт LUDING</div>
                     </a>
-                </div>
-            </div>
-            
-            <!-- Копируемые контакты -->
-            <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 12px;">
-                <div class="copyable" data-copy="+79670281571" data-copy-label="Телефон скопирован">
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase;">Телефон</div>
-                    <div style="font-size: 18px; font-weight: 500; letter-spacing: 0.5px;">+7 967 028-15-71</div>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Долгое нажатие — скопировать</div>
-                </div>
-                <div class="copyable" data-copy="Aleksei.sitnikov@luding.ru" data-copy-label="Email скопирован">
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase;">Email</div>
-                    <div style="font-size: 16px; font-weight: 500; word-break: break-all;">Aleksei.sitnikov@luding.ru</div>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Долгое нажатие — скопировать</div>
                 </div>
             </div>
         </section>
@@ -804,9 +814,7 @@
     </footer>
 
     <script>
-        // ==========================================
-        // TOAST УВЕДОМЛЕНИЯ
-        // ==========================================
+        // TOAST
         function showToast(title, subtitle, duration = 2500) {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -821,93 +829,19 @@
                 </div>
             `;
             container.appendChild(toast);
-            
             setTimeout(() => {
                 toast.classList.add('hiding');
                 setTimeout(() => toast.remove(), 300);
             }, duration);
         }
 
-        // ==========================================
-        // КОПИРОВАНИЕ В БУФЕР (долгое нажатие)
-        // ==========================================
-        function setupCopyable() {
-            const copyables = document.querySelectorAll('.copyable');
-            let pressTimer = null;
-            const LONG_PRESS_DURATION = 600;
-
-            copyables.forEach(el => {
-                const startPress = (e) => {
-                    e.preventDefault();
-                    pressTimer = setTimeout(() => {
-                        const text = el.dataset.copy;
-                        const label = el.dataset.copyLabel || 'Скопировано';
-                        
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                            navigator.clipboard.writeText(text).then(() => {
-                                if (navigator.vibrate) navigator.vibrate(15);
-                                showToast(label, text);
-                            }).catch(() => {
-                                fallbackCopy(text, label);
-                            });
-                        } else {
-                            fallbackCopy(text, label);
-                        }
-                        pressTimer = null;
-                    }, LONG_PRESS_DURATION);
-                };
-
-                const cancelPress = () => {
-                    if (pressTimer) {
-                        clearTimeout(pressTimer);
-                        pressTimer = null;
-                    }
-                };
-
-                el.addEventListener('touchstart', startPress, { passive: false });
-                el.addEventListener('touchend', cancelPress);
-                el.addEventListener('touchmove', cancelPress);
-                el.addEventListener('mousedown', startPress);
-                el.addEventListener('mouseup', cancelPress);
-                el.addEventListener('mouseleave', cancelPress);
-                el.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    const text = el.dataset.copy;
-                    const label = el.dataset.copyLabel || 'Скопировано';
-                    navigator.clipboard.writeText(text).then(() => {
-                        showToast(label, text);
-                    }).catch(() => fallbackCopy(text, label));
-                });
-            });
-        }
-
-        function fallbackCopy(text, label) {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-                if (navigator.vibrate) navigator.vibrate(15);
-                showToast(label, text);
-            } catch (err) {
-                showToast('Не удалось скопировать', 'Скопируйте вручную');
-            }
-            document.body.removeChild(textarea);
-        }
-
-        // ==========================================
-        // MAGNETIC BUTTONS (только на ПК)
-        // ==========================================
+        // MAGNETIC BUTTONS (только ПК)
         function setupMagneticButtons() {
-            // Проверка: есть ли точный указатель (мышь), а не тач
             if (!window.matchMedia('(pointer: fine)').matches) return;
 
             const magnets = document.querySelectorAll('[data-magnetic]');
-            const MAGNETIC_STRENGTH = 0.3; // 30% от расстояния до курсора
-            const MAX_OFFSET = 15; // максимум пикселей смещения
+            const MAGNETIC_STRENGTH = 0.3;
+            const MAX_OFFSET = 15;
 
             magnets.forEach(btn => {
                 btn.addEventListener('mousemove', (e) => {
@@ -930,9 +864,48 @@
             });
         }
 
-        // ==========================================
+        // 3D EFFECT ДЛЯ GLASS КАРТОЧЕК (при нажатии наклоняются к точке касания)
+        function setupFeatureCards3D() {
+            const cards = document.querySelectorAll('.feature-card');
+            
+            cards.forEach(card => {
+                const handlePress = (clientX, clientY) => {
+                    const rect = card.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    
+                    const deltaX = clientX - centerX;
+                    const deltaY = clientY - centerY;
+                    
+                    // Максимальный наклон 8 градусов
+                    const rotateY = (deltaX / (rect.width / 2)) * 8;
+                    const rotateX = -(deltaY / (rect.height / 2)) * 8;
+                    
+                    card.classList.add('pressing');
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(0.96)`;
+                };
+                
+                const handleRelease = () => {
+                    card.classList.remove('pressing');
+                    card.style.transform = '';
+                };
+                
+                // Мышь
+                card.addEventListener('mousedown', (e) => handlePress(e.clientX, e.clientY));
+                card.addEventListener('mouseup', handleRelease);
+                card.addEventListener('mouseleave', handleRelease);
+                
+                // Тач
+                card.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 1) {
+                        handlePress(e.touches[0].clientX, e.touches[0].clientY);
+                    }
+                }, { passive: true });
+                card.addEventListener('touchend', handleRelease);
+            });
+        }
+
         // 3D КАРТА
-        // ==========================================
         function setup3DCard() {
             const card = document.getElementById('digitalCard');
             const hero = document.getElementById('hero');
@@ -1051,7 +1024,6 @@
                 }
             }, { passive: true });
 
-            // Анимации секций
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1068,9 +1040,7 @@
             document.querySelectorAll('.section, .features-grid').forEach(el => observer.observe(el));
         }
 
-        // ==========================================
         // СОХРАНЕНИЕ КОНТАКТА
-        // ==========================================
         function saveContact(event) {
             if (event) event.stopPropagation();
             if (navigator.vibrate) navigator.vibrate(10);
@@ -1102,23 +1072,19 @@
                 URL.revokeObjectURL(url);
             }, 1000);
 
-            // Toast уведомление
             setTimeout(() => {
                 showToast('Контакт сохранён', 'Алексей Ситников — LUDING');
             }, 300);
         }
 
-        // ==========================================
-        // ИНИЦИАЛИЗАЦИЯ ПОСЛЕ ЗАГРУЗКИ
-        // ==========================================
+        // ИНИЦИАЛИЗАЦИЯ
         document.addEventListener('DOMContentLoaded', () => {
-            // Lenis плавный скролл
             if (typeof Lenis !== 'undefined') {
                 const lenis = new Lenis({
                     duration: 1.2,
                     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                     smooth: true,
-                    smoothTouch: false, // На мобильных оставляем нативный скролл для производительности
+                    smoothTouch: false,
                 });
 
                 function raf(time) {
@@ -1127,7 +1093,6 @@
                 }
                 requestAnimationFrame(raf);
 
-                // Интеграция Lenis с якорями
                 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                     anchor.addEventListener('click', function (e) {
                         e.preventDefault();
@@ -1137,10 +1102,9 @@
                 });
             }
 
-            // Запуск всех модулей
             setup3DCard();
             setupMagneticButtons();
-            setupCopyable();
+            setupFeatureCards3D();
         });
     </script>
 </body>
