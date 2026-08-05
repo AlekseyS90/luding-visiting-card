@@ -150,7 +150,7 @@
             overflow: visible;
         }
 
-        /* FLIP CARD — ИСПРАВЛЕННАЯ ВЕРСИЯ */
+        /* FLIP CARD */
         .card-wrapper {
             position: relative;
             width: 90%;
@@ -169,7 +169,6 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* Внутренний контейнер для flip */
         .card-inner {
             position: relative;
             width: 100%;
@@ -184,7 +183,16 @@
             transform: rotateY(180deg);
         }
 
-        /* Общие стили для сторон */
+        /* Анимация нажатия */
+        .card-wrapper.pressing .card-inner {
+            transform: scale(0.97);
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-wrapper.flipped.pressing .card-inner {
+            transform: rotateY(180deg) scale(0.97);
+        }
+
         .card-face {
             position: absolute;
             inset: 0;
@@ -271,7 +279,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 0 32px 36px;
+            padding: 0 32px 50px;
             z-index: 3;
             text-shadow: 0 4px 20px rgba(0,0,0,0.8);
         }
@@ -410,13 +418,13 @@
             -webkit-transform: rotateY(180deg);
             display: flex;
             flex-direction: column;
-            padding: 32px 24px;
+            padding: 28px 20px;
             z-index: 1;
         }
 
         .card-back-header {
             text-align: center;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
         }
 
         .card-back-logo {
@@ -440,33 +448,35 @@
             font-weight: 600;
             text-transform: uppercase;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .back-buttons {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             flex: 1;
+            overflow-y: auto;
         }
 
         .back-btn {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 18px 20px;
+            gap: 12px;
+            padding: 14px 16px;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px;
+            border-radius: 16px;
             color: var(--text-primary);
             text-decoration: none;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
             transition: all 0.3s ease;
             cursor: pointer;
             font-family: inherit;
+            flex-shrink: 0;
         }
 
         .back-btn:hover {
@@ -484,7 +494,7 @@
             border-color: var(--accent);
             justify-content: center;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .back-btn-primary:hover {
@@ -495,9 +505,9 @@
         }
 
         .back-btn-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -506,8 +516,8 @@
         }
 
         .back-btn-icon svg {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             stroke: var(--text-primary);
             stroke-width: 1.5;
             fill: none;
@@ -516,8 +526,8 @@
         }
 
         .back-btn-icon img {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             object-fit: contain;
         }
 
@@ -541,7 +551,7 @@
 
         .card-back-flip-hint {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 16px;
             font-size: 11px;
             color: var(--text-muted);
             letter-spacing: 0.5px;
@@ -1046,7 +1056,7 @@
             }, duration);
         }
 
-        // FLIP CARD LOGIC
+        // FLIP CARD LOGIC С СВАЙПОМ
         function setupFlipCard() {
             const wrapper = document.getElementById('cardWrapper');
             const inner = document.getElementById('cardInner');
@@ -1056,8 +1066,8 @@
             let pressStartTime = 0;
             let pressStartX = 0;
             let pressStartY = 0;
-            const LONG_PRESS_THRESHOLD = 250;
-            const MOVE_THRESHOLD = 10;
+            const SWIPE_THRESHOLD = 50;
+            const CLICK_THRESHOLD = 200;
 
             const handlePressStart = (e) => {
                 pressStartTime = Date.now();
@@ -1068,12 +1078,17 @@
                     pressStartX = e.clientX;
                     pressStartY = e.clientY;
                 }
+                
+                // Анимация нажатия
+                wrapper.classList.add('pressing');
             };
 
             const handlePressEnd = (e) => {
+                // Убираем анимацию нажатия
+                setTimeout(() => wrapper.classList.remove('pressing'), 150);
+                
                 const pressDuration = Date.now() - pressStartTime;
                 
-                // Проверяем, было ли движение
                 let endX = pressStartX;
                 let endY = pressStartY;
                 if (e.changedTouches && e.changedTouches[0]) {
@@ -1084,16 +1099,21 @@
                     endY = e.clientY;
                 }
                 
-                const distance = Math.sqrt(Math.pow(endX - pressStartX, 2) + Math.pow(endY - pressStartY, 2));
+                const deltaX = endX - pressStartX;
+                const deltaY = endY - pressStartY;
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
                 
-                // Короткий клик без значительного движения
-                if (pressDuration < LONG_PRESS_THRESHOLD && distance < MOVE_THRESHOLD) {
-                    // Проверяем, что клик не по кнопке
-                    const target = e.target;
-                    if (target.closest('.card-contact-btn') || target.closest('.back-btn')) {
-                        return;
-                    }
-                    
+                // Проверяем, что клик не по кнопке
+                const target = e.target;
+                if (target.closest('.card-contact-btn') || target.closest('.back-btn')) {
+                    return;
+                }
+                
+                // Свайп или клик
+                const isSwipe = distance > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY);
+                const isClick = pressDuration < CLICK_THRESHOLD && distance < SWIPE_THRESHOLD;
+                
+                if (isSwipe || isClick) {
                     isFlipped = !isFlipped;
                     if (isFlipped) {
                         wrapper.classList.add('flipped');
@@ -1109,6 +1129,7 @@
             if (front) {
                 front.addEventListener('mousedown', handlePressStart);
                 front.addEventListener('mouseup', handlePressEnd);
+                front.addEventListener('mouseleave', () => wrapper.classList.remove('pressing'));
                 front.addEventListener('touchstart', handlePressStart, { passive: true });
                 front.addEventListener('touchend', handlePressEnd);
             }
@@ -1118,6 +1139,7 @@
             if (back) {
                 back.addEventListener('mousedown', handlePressStart);
                 back.addEventListener('mouseup', handlePressEnd);
+                back.addEventListener('mouseleave', () => wrapper.classList.remove('pressing'));
                 back.addEventListener('touchstart', handlePressStart, { passive: true });
                 back.addEventListener('touchend', handlePressEnd);
             }
