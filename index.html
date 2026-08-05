@@ -158,7 +158,7 @@
             height: 65vh;
             max-height: 620px;
             min-height: 540px;
-            perspective: 1500px;
+            perspective: 2000px;
             cursor: pointer;
             opacity: 0;
             transform: translateY(40px) scale(0.95);
@@ -175,7 +175,7 @@
             height: 100%;
             transform-style: preserve-3d;
             -webkit-transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1.000);
             border-radius: 32px;
         }
 
@@ -183,14 +183,15 @@
             transform: rotateY(180deg);
         }
 
-        /* Анимация нажатия */
+        /* Анимация нажатия с lift-эффектом */
         .card-wrapper.pressing .card-inner {
-            transform: scale(0.97);
-            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(0.96) translateY(4px);
         }
 
         .card-wrapper.flipped.pressing .card-inner {
-            transform: rotateY(180deg) scale(0.97);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotateY(180deg) scale(0.96) translateY(4px);
         }
 
         .card-face {
@@ -200,13 +201,14 @@
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
             overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.04);
         }
 
         /* ЛИЦЕВАЯ СТОРОНА */
         .card-front {
             background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 50%, #151515 100%);
-            border: 1px solid rgba(255, 255, 255, 0.04);
             transform: rotateY(0deg);
             -webkit-transform: rotateY(0deg);
             z-index: 2;
@@ -383,6 +385,7 @@
             font-size: 11px;
             color: var(--text-muted);
             letter-spacing: 0.5px;
+            white-space: nowrap;
             opacity: 0;
             animation: layerFadeIn 0.6s ease 2.8s forwards;
             pointer-events: none;
@@ -413,18 +416,17 @@
         /* ОБРАТНАЯ СТОРОНА */
         .card-back {
             background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 50%, #151515 100%);
-            border: 1px solid rgba(255, 255, 255, 0.04);
             transform: rotateY(180deg);
             -webkit-transform: rotateY(180deg);
             display: flex;
             flex-direction: column;
-            padding: 28px 20px;
+            padding: 24px 16px;
             z-index: 1;
         }
 
         .card-back-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .card-back-logo {
@@ -442,19 +444,19 @@
         }
 
         .card-back-title {
-            font-size: 13px;
+            font-size: 12px;
             letter-spacing: 2px;
             color: var(--accent);
             font-weight: 600;
             text-transform: uppercase;
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .back-buttons {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             flex: 1;
             overflow-y: auto;
         }
@@ -463,12 +465,12 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 14px 16px;
+            padding: 12px 14px;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
+            border-radius: 14px;
             color: var(--text-primary);
             text-decoration: none;
             font-size: 14px;
@@ -477,6 +479,8 @@
             cursor: pointer;
             font-family: inherit;
             flex-shrink: 0;
+            width: 100%;
+            max-width: 100%;
         }
 
         .back-btn:hover {
@@ -505,8 +509,8 @@
         }
 
         .back-btn-icon {
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -516,8 +520,8 @@
         }
 
         .back-btn-icon svg {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             stroke: var(--text-primary);
             stroke-width: 1.5;
             fill: none;
@@ -526,8 +530,8 @@
         }
 
         .back-btn-icon img {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             object-fit: contain;
         }
 
@@ -542,16 +546,21 @@
 
         .back-btn-text {
             flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .back-btn-arrow {
             color: var(--text-muted);
             font-size: 18px;
+            flex-shrink: 0;
         }
 
         .card-back-flip-hint {
             text-align: center;
-            margin-top: 16px;
+            margin-top: 14px;
             font-size: 11px;
             color: var(--text-muted);
             letter-spacing: 0.5px;
@@ -559,6 +568,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
+            white-space: nowrap;
         }
 
         .card-back-flip-hint svg {
@@ -1056,7 +1066,7 @@
             }, duration);
         }
 
-        // FLIP CARD LOGIC С СВАЙПОМ
+        // FLIP CARD LOGIC
         function setupFlipCard() {
             const wrapper = document.getElementById('cardWrapper');
             const inner = document.getElementById('cardInner');
@@ -1067,7 +1077,7 @@
             let pressStartX = 0;
             let pressStartY = 0;
             const SWIPE_THRESHOLD = 50;
-            const CLICK_THRESHOLD = 200;
+            const CLICK_THRESHOLD = 300;
 
             const handlePressStart = (e) => {
                 pressStartTime = Date.now();
@@ -1079,13 +1089,11 @@
                     pressStartY = e.clientY;
                 }
                 
-                // Анимация нажатия
                 wrapper.classList.add('pressing');
             };
 
             const handlePressEnd = (e) => {
-                // Убираем анимацию нажатия
-                setTimeout(() => wrapper.classList.remove('pressing'), 150);
+                setTimeout(() => wrapper.classList.remove('pressing'), 200);
                 
                 const pressDuration = Date.now() - pressStartTime;
                 
@@ -1103,13 +1111,11 @@
                 const deltaY = endY - pressStartY;
                 const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
                 
-                // Проверяем, что клик не по кнопке
                 const target = e.target;
                 if (target.closest('.card-contact-btn') || target.closest('.back-btn')) {
                     return;
                 }
                 
-                // Свайп или клик
                 const isSwipe = distance > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY);
                 const isClick = pressDuration < CLICK_THRESHOLD && distance < SWIPE_THRESHOLD;
                 
@@ -1124,7 +1130,6 @@
                 }
             };
 
-            // Лицевая сторона
             const front = document.getElementById('cardFront');
             if (front) {
                 front.addEventListener('mousedown', handlePressStart);
@@ -1134,7 +1139,6 @@
                 front.addEventListener('touchend', handlePressEnd);
             }
 
-            // Обратная сторона
             const back = wrapper.querySelector('.card-back');
             if (back) {
                 back.addEventListener('mousedown', handlePressStart);
@@ -1145,7 +1149,7 @@
             }
         }
 
-        // 3D НАКЛОН ЛИЦЕВОЙ СТОРОНЫ
+        // 3D НАКЛОН
         function setup3DCard() {
             const wrapper = document.getElementById('cardWrapper');
             const front = document.getElementById('cardFront');
