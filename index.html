@@ -29,7 +29,7 @@
             user-select: none;
         }
 
-        /* ===== SPLASH SCREEN — ВОЛНЫ ПОДНИМАЮТСЯ ===== */
+        /* ===== SPLASH SCREEN ===== */
         .splash {
             position: fixed; inset: 0;
             background: #000;
@@ -37,7 +37,6 @@
             overflow: hidden;
         }
         
-        /* Белый логотип LUDING по центру */
         .splash-logo {
             position: absolute;
             top: 50%;
@@ -66,7 +65,6 @@
             opacity: 0;
         }
         
-        /* Контейнер волн на splash — поднимается снизу */
         .splash-waves-container {
             position: absolute;
             bottom: 0;
@@ -121,7 +119,7 @@
             box-sizing: border-box; display: block; pointer-events: none;
         }
 
-        /* ===== CARD С ФОТО — ПРИПОДНЯТА ВВЕРХ ===== */
+        /* ===== CARD — ФОТО НА ВСЮ КАРТОЧКУ ===== */
         .card-container {
             position: absolute; 
             top: 38%; 
@@ -133,27 +131,35 @@
         }
         .card {
             position: relative;
-            background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
-            backdrop-filter: blur(40px) saturate(1.2); -webkit-backdrop-filter: blur(40px) saturate(1.2);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 30px;
-            padding: 0;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 1px 0 rgba(255,255,255,0.1) inset;
-            transform-style: preserve-3d;
+            background: #000;
+            border-radius: 30px;
             overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
         }
         
+        /* Фото на всю карточку */
         .card-photo {
             position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 55%;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             object-position: center 20%;
-            opacity: 0;
-            transform: translateY(-20px);
-            filter: blur(10px);
             z-index: 1;
-            mask-image: linear-gradient(to bottom, black 0%, black 60%, rgba(0,0,0,0.8) 75%, rgba(0,0,0,0.3) 85%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 60%, rgba(0,0,0,0.8) 75%, rgba(0,0,0,0.3) 85%, transparent 100%);
+        }
+        
+        /* Градиентный overlay для читаемости текста */
+        .card-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom,
+                rgba(0,0,0,0.1) 0%,
+                rgba(0,0,0,0.2) 40%,
+                rgba(0,0,0,0.7) 70%,
+                rgba(8,8,8,0.95) 100%);
+            z-index: 2;
         }
         
         .card-shine {
@@ -161,15 +167,19 @@
             background: radial-gradient(circle 150px at var(--lx, 50%) var(--ly, 50%), 
                 rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 30%, transparent 70%);
             pointer-events: none; opacity: 0;
-            z-index: 5;
+            z-index: 4;
             transition: opacity 0.3s ease;
         }
         
         .card-content {
             position: relative;
-            z-index: 2;
-            margin-top: 50%;
+            z-index: 3;
             padding: 24px 28px 28px;
+            margin-top: auto;
+            min-height: 45%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
         }
         
         .card-name { font-size: 32px; font-weight: 300; letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 10px; opacity: 0; transform: translateY(20px); filter: blur(10px); }
@@ -200,7 +210,7 @@
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(100px);
             background: rgba(20,20,20,0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 14px; padding: 14px 20px; display: flex; align-items: center; gap: 12px;
-            font-size: 14px; color: var(--text); z-index: 1000; opacity: 0;
+            font-size: 14px; color: var(--text); z-index: 10000; opacity: 0;
         }
         .toast.show { animation: toastIn 0.4s forwards, toastOut 0.4s 2s forwards; }
         @keyframes toastIn { to { opacity: 1; transform: translateX(-50%) translateY(0); } }
@@ -208,7 +218,7 @@
         .toast-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--wine-bright); display: flex; align-items: center; justify-content: center; }
         .toast-icon svg { width: 16px; height: 16px; stroke: white; stroke-width: 2.5; fill: none; }
 
-        /* ===== CORK — ПОД КАРТОЧКОЙ ===== */
+        /* ===== CORK ===== */
         .cork-container { 
             position: fixed; 
             bottom: 24px; 
@@ -239,7 +249,7 @@
         .cork-hint { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--text-sec); white-space: nowrap; }
         .cork:active .cork-body { transform: scale(0.92); }
 
-        .contact-bubbles { position: absolute; inset: 0; pointer-events: none; }
+        .contact-bubbles { position: absolute; inset: 0; pointer-events: none; z-index: 200; }
         .bubble {
             position: absolute; width: 52px; height: 52px; border-radius: 50%;
             background: linear-gradient(135deg, #5a1020 0%, #3a0a12 100%);
@@ -250,6 +260,7 @@
             opacity: 0; transform: scale(0);
             box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 0 15px rgba(115, 0, 26, 0.3), inset 0 2px 4px rgba(255,255,255,0.1);
             left: 6px; top: 6px;
+            z-index: 200;
         }
         .bubble:hover { background: linear-gradient(135deg, #73001A 0%, #4a0e1a 100%); box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(153, 26, 49, 0.5); }
         .bubble:active { transform: scale(0.9) !important; }
@@ -273,12 +284,11 @@
 </head>
 <body>
 
-    <!-- SPLASH — ВОЛНЫ ПОДНИМАЮТСЯ -->
+    <!-- SPLASH -->
     <div class="splash" id="splash">
         <div class="splash-logo" id="splashLogo">LUDING</div>
         <div class="splash-sub" id="splashSub">EST. 1993</div>
         
-        <!-- Волны на splash (те же что на втором экране) -->
         <div class="splash-waves-container" id="splashWavesContainer">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 1600 900" preserveAspectRatio="none">
                 <defs>
@@ -353,13 +363,14 @@
         <div class="card-container" id="cardContainer">
             <div class="card" id="card">
                 <img src="photo.jpg" alt="Алексей Ситников" class="card-photo" id="cardPhoto">
+                <div class="card-overlay"></div>
                 <div class="card-shine" id="cardShine"></div>
                 <div class="card-content">
                     <h1 class="card-name" id="cardName">Алексей<br><strong>Ситников</strong></h1>
                     <p class="card-position" id="cardPos">Менеджер по работе<br>с частными и корпоративными клиентами</p>
                     <div class="card-divider" id="cardDiv"></div>
                     <div class="card-tags" id="cardTags">Корпоративные поставки • Подарочные решения • Мероприятия</div>
-                    <button class="metal-btn" id="metalBtn" onclick="saveContact()">
+                    <button class="metal-btn" id="metalBtn" onclick="saveContact(event)">
                         <span class="metal-btn-text">
                             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
                             СОХРАНИТЬ КОНТАКТ
@@ -379,23 +390,23 @@
                 </div>
             </div>
             <div class="contact-bubbles" id="bubbles">
-                <a href="tel:+79670281571" class="bubble" id="b1">
+                <a href="tel:+79670281571" class="bubble" id="b1" onclick="event.stopPropagation()">
                     <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                     <span class="bubble-label">Позвонить</span>
                 </a>
-                <a href="https://t.me/+79670281571" target="_blank" class="bubble" id="b2">
+                <a href="https://t.me/+79670281571" target="_blank" class="bubble" id="b2" onclick="event.stopPropagation()">
                     <svg viewBox="0 0 24 24"><path d="M21.5 4.5L2.5 11.5L9.5 13.5L12.5 20.5L21.5 4.5Z"/></svg>
                     <span class="bubble-label">Telegram</span>
                 </a>
-                <a href="https://max.ru/u/f9LHodD0cOLvSFb5ck4JSoEU8jPP38BwELZ8ic1o1_NfMi9J5LAuk90woYw" target="_blank" class="bubble" id="b3">
+                <a href="https://max.ru/u/f9LHodD0cOLvSFb5ck4JSoEU8jPP38BwELZ8ic1o1_NfMi9J5LAuk90woYw" target="_blank" class="bubble" id="b3" onclick="event.stopPropagation()">
                     <img src="max-logo.png" alt="MAX">
                     <span class="bubble-label">MAX</span>
                 </a>
-                <a href="mailto:Aleksei.sitnikov@luding.ru" class="bubble" id="b4">
+                <a href="mailto:Aleksei.sitnikov@luding.ru" class="bubble" id="b4" onclick="event.stopPropagation()">
                     <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7L12 13L21 7"/></svg>
                     <span class="bubble-label">Почта</span>
                 </a>
-                <a href="https://luding.ru" target="_blank" class="bubble" id="b5">
+                <a href="https://luding.ru" target="_blank" class="bubble" id="b5" onclick="event.stopPropagation()">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                     <span class="bubble-label">Сайт</span>
                 </a>
@@ -472,10 +483,13 @@
         document.addEventListener('click', enableAudio, { once: true });
         document.addEventListener('touchstart', enableAudio, { once: true });
 
-        // ===== WINE WAVES GYROSCOPE =====
+        // ===== WINE WAVES GYROSCOPE — УЛУЧШЕННАЯ РЕАКЦИЯ =====
         let gyroX = 0;
         let targetWaveOffset = 0;
         let currentWaveOffset = 0;
+        let lastGyroTime = Date.now();
+        let isGyroActive = false;
+        
         const wave1 = document.getElementById('wave1Anim');
         const wave2 = document.getElementById('wave2Anim');
         const wave3 = document.getElementById('wave3Anim');
@@ -494,11 +508,21 @@
         function handleOrientation(e) {
             if (e.gamma !== null) {
                 gyroX = e.gamma;
-                targetWaveOffset = (gyroX / 45) * 400;
+                // Увеличенная амплитуда для эффекта "вино в бокале"
+                targetWaveOffset = (gyroX / 30) * 500;
+                lastGyroTime = Date.now();
+                isGyroActive = true;
             }
         }
 
         function updateWaves() {
+            // Плавное успокоение когда нет движения
+            const timeSinceLastGyro = Date.now() - lastGyroTime;
+            if (timeSinceLastGyro > 500) {
+                isGyroActive = false;
+                targetWaveOffset *= 0.95; // Плавное затухание
+            }
+            
             currentWaveOffset += (targetWaveOffset - currentWaveOffset) * 0.08;
             
             // Волны на splash
@@ -533,7 +557,7 @@
         }
         updateWaves();
 
-        // ===== SPLASH АНИМАЦИЯ — ВОЛНЫ ПОДНИМАЮТСЯ =====
+        // ===== SPLASH АНИМАЦИЯ =====
         function runNewSplash() {
             const wavesContainer = document.getElementById('splashWavesContainer');
             
@@ -550,23 +574,9 @@
                 }
             });
 
-            // 1. Появление белого логотипа
-            tl.to('#splashLogo', {
-                opacity: 1,
-                duration: 0.8,
-                ease: 'power2.out'
-            });
-
-            // 2. Появление EST. 1993
-            tl.to('#splashSub', {
-                opacity: 1,
-                duration: 0.5
-            }, '-=0.3');
-
-            // 3. Пауза
+            tl.to('#splashLogo', { opacity: 1, duration: 0.8, ease: 'power2.out' });
+            tl.to('#splashSub', { opacity: 1, duration: 0.5 }, '-=0.3');
             tl.to({}, { duration: 0.5 });
-
-            // 4. Волны плавно поднимаются снизу вверх (как заполнение бокала)
             tl.to(wavesContainer, {
                 translateY: '0%',
                 duration: 3,
@@ -576,8 +586,6 @@
                     playWinePour();
                 }
             });
-
-            // 5. Пауза — волны колышутся
             tl.to({}, { duration: 0.8 });
         }
 
@@ -587,10 +595,8 @@
             
             const cardTl = gsap.timeline({ delay: 0.2 });
             
-            cardTl.to('#cardPhoto', {
-                opacity: 1, y: 0, filter: 'blur(0px)',
-                duration: 1, ease: 'power3.out'
-            });
+            cardTl.to('#cardPhoto', { opacity: 1, duration: 1, ease: 'power3.out' });
+            cardTl.to('.card-overlay', { opacity: 1, duration: 1, ease: 'power3.out' }, '-=0.8');
             
             cardTl
                 .to('#cardName', { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.8, ease: 'power3.out' }, '-=0.5')
@@ -602,7 +608,7 @@
             startIdleAnimations();
         }
 
-        // ===== ПЛАВНОЕ ДВИЖЕНИЕ КАРТОЧКИ + БЛИК =====
+        // ===== 3D НАКЛОН КАРТОЧКИ + БЛИК =====
         let targetMouseX = window.innerWidth/2, targetMouseY = window.innerHeight/2;
         let currentMouseX = targetMouseX, currentMouseY = targetMouseY;
         let tiltX = 0, tiltY = 0;
@@ -613,7 +619,9 @@
         const cardShine = document.getElementById('cardShine');
 
         let touchX = 50, touchY = 50;
+        let isTouching = false;
 
+        // Mouse events для наклона
         document.addEventListener('mousemove', (e) => {
             targetMouseX = e.clientX;
             targetMouseY = e.clientY;
@@ -622,7 +630,9 @@
             touchY = ((e.clientY - rect.top) / rect.height) * 100;
         });
 
+        // Touch events для наклона карточки
         card.addEventListener('touchstart', (e) => {
+            isTouching = true;
             const touch = e.touches[0];
             const rect = cardContainer.getBoundingClientRect();
             touchX = ((touch.clientX - rect.left) / rect.width) * 100;
@@ -635,15 +645,24 @@
             const rect = cardContainer.getBoundingClientRect();
             touchX = ((touch.clientX - rect.left) / rect.width) * 100;
             touchY = ((touch.clientY - rect.top) / rect.height) * 100;
+            
+            // Наклон карточки при движении пальца
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            tiltX = ((touch.clientY - centerY) / (rect.height / 2)) * -8;
+            tiltY = ((touch.clientX - centerX) / (rect.width / 2)) * 8;
         }, { passive: true });
 
         card.addEventListener('touchend', () => {
+            isTouching = false;
+            tiltX = 0;
+            tiltY = 0;
             setTimeout(() => { cardShine.style.opacity = '0'; }, 500);
         }, { passive: true });
 
         if(window.DeviceOrientationEvent){
             window.addEventListener('deviceorientation',(e)=>{
-                if(e.gamma!==null){
+                if(e.gamma!==null && !isTouching){
                     targetMouseX = window.innerWidth/2 + (e.gamma/45)*(window.innerWidth/2);
                     targetMouseY = window.innerHeight/2 + ((e.beta-45)/45)*(window.innerHeight/2);
                 }
@@ -662,17 +681,21 @@
             lightCursor.style.left=currentMouseX+'px';
             lightCursor.style.top=currentMouseY+'px';
             
-            const cx=window.innerWidth/2, cy=window.innerHeight/2;
-            tiltX=((currentMouseY-cy)/cy)*-3;
-            tiltY=((currentMouseX-cx)/cx)*3;
+            // Наклон от мыши (если не тач)
+            if (!isTouching) {
+                const cx=window.innerWidth/2, cy=window.innerHeight/2;
+                tiltX=((currentMouseY-cy)/cy)*-5;
+                tiltY=((currentMouseX-cx)/cx)*5;
+            }
             
-            currentTiltX += (tiltX - currentTiltX) * 0.04;
-            currentTiltY += (tiltY - currentTiltY) * 0.04;
+            currentTiltX += (tiltX - currentTiltX) * 0.08;
+            currentTiltY += (tiltY - currentTiltY) * 0.08;
             
+            // Применяем 3D наклон к карточке
             card.style.transform=`rotateX(${currentTiltX}deg) rotateY(${currentTiltY}deg)`;
             
-            const shadowX=currentTiltY*-2, shadowY=currentTiltX*-2;
-            card.style.boxShadow=`${shadowX}px ${shadowY+30}px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.05) inset,0 1px 0 rgba(255,255,255,0.1) inset`;
+            const shadowX=currentTiltY*-3, shadowY=currentTiltX*-3;
+            card.style.boxShadow=`${shadowX}px ${shadowY+30}px 80px rgba(0,0,0,0.6)`;
             
             cardShine.style.setProperty('--lx', touchX + '%');
             cardShine.style.setProperty('--ly', touchY + '%');
@@ -693,7 +716,8 @@
             { x: 100, y: -110 }
         ];
 
-        cork.addEventListener('click',()=>{
+        cork.addEventListener('click',(e)=>{
+            e.stopPropagation();
             enableAudio();
             playCorkPop();
             if(!corkOpen){
@@ -717,7 +741,8 @@
         });
 
         // ===== SAVE CONTACT =====
-        function saveContact(){
+        function saveContact(e){
+            if(e) e.stopPropagation();
             enableAudio();
             playClink();
             gsap.to('#metalBtn',{scale:0.95,duration:0.1,yoyo:true,repeat:1});
@@ -741,7 +766,7 @@
         // ===== ЗАПУСК =====
         runNewSplash();
 
-        // ===== EASTER EGG: ВСТРЯХИВАНИЕ =====
+        // ===== EASTER EGG =====
         let lastShake = 0;
         if(window.DeviceMotionEvent){
             window.addEventListener('devicemotion',(e)=>{
@@ -750,8 +775,8 @@
                 const force=Math.abs(acc.x)+Math.abs(acc.y)+Math.abs(acc.z);
                 if(force>25 && Date.now()-lastShake>3000){
                     lastShake=Date.now();
-                    targetWaveOffset += (Math.random() - 0.5) * 200;
-                    setTimeout(() => { targetWaveOffset = 0; }, 500);
+                    targetWaveOffset += (Math.random() - 0.5) * 300;
+                    setTimeout(() => { targetWaveOffset = 0; }, 1000);
                 }
             });
         }
