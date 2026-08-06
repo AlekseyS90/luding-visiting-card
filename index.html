@@ -69,7 +69,7 @@
             mix-blend-mode: overlay;
         }
 
-        /* ===== НОВЫЙ SPLASH ===== */
+        /* ===== SPLASH ===== */
         .splash {
             position: fixed; inset: 0;
             background: #000;
@@ -128,7 +128,7 @@
             display: block;
         }
 
-        /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+        /* ===== MAIN ===== */
         #main {
             display: none;
         }
@@ -203,7 +203,7 @@
                 0 0 0 1px rgba(255, 255, 255, 0.04);
         }
 
-        /* ЛИЦЕВАЯ СТОРОНА */
+        /* FRONT */
         .card-front {
             background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 50%, #151515 100%);
             transform: rotateY(0deg);
@@ -410,7 +410,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ОБРАТНАЯ СТОРОНА */
+        /* BACK */
         .card-back {
             background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 50%, #151515 100%);
             transform: rotateY(180deg);
@@ -655,7 +655,7 @@
         .section-title strong { font-weight: 600; }
         .section-text { font-size: 15px; color: var(--text-secondary); line-height: 1.7; font-weight: 300; }
 
-        /* GLASS FEATURE CARDS — теперь внутри водные кнопки */
+        /* FEATURE CARDS – теперь внутри водные кнопки */
         .features-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -664,16 +664,17 @@
         }
         
         .feature-card {
-            position: relative;
+            position: relative; /* важно для корректного позиционирования водной кнопки */
             background: transparent;
             border-radius: 24px;
             padding: 0;
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.6s ease, transform 0.6s ease;
-            overflow: hidden;
+            overflow: visible;
             box-shadow: none;
             cursor: default;
+            min-height: 120px; /* чтобы водная кнопка имела высоту */
         }
         
         .feature-card.visible { 
@@ -685,6 +686,8 @@
         .feature-card .water-btn-wrapper {
             width: 100% !important;
             display: block !important;
+            height: 100% !important;
+            min-height: 120px;
         }
 
         .offers-card {
@@ -770,7 +773,7 @@
 </head>
 <body>
 
-    <!-- ===== НОВЫЙ SPLASH ===== -->
+    <!-- ===== SPLASH ===== -->
     <div class="splash" id="splash">
         <div class="splash-logo" id="splashLogo">LUDING</div>
         <div class="splash-sub" id="splashSub">EST. 1993</div>
@@ -807,17 +810,17 @@
         </div>
     </div>
 
-    <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
+    <!-- ===== MAIN ===== -->
     <div id="main">
         <!-- TOAST -->
         <div class="toast-container" id="toastContainer"></div>
 
-        <!-- HERO WITH FLIP CARD -->
+        <!-- HERO -->
         <section class="hero" id="hero">
             <div class="card-wrapper" id="cardWrapper">
                 <div class="card-inner" id="cardInner">
                     
-                    <!-- ЛИЦЕВАЯ СТОРОНА -->
+                    <!-- FRONT -->
                     <div class="card-face card-front" id="cardFront">
                         <div class="card-layer-shine" id="cardShine"></div>
                         
@@ -856,7 +859,7 @@
                         </div>
                     </div>
 
-                    <!-- ОБРАТНАЯ СТОРОНА -->
+                    <!-- BACK -->
                     <div class="card-face card-back">
                         <div class="card-back-header">
                             <div class="card-back-logo">LUDING</div>
@@ -951,7 +954,7 @@
                 <div class="section-label">Преимущества</div>
                 <h2 class="section-title">Почему выбирают <strong>LUDING</strong></h2>
                 <div class="features-grid" id="featuresGrid">
-                    <!-- Карточки будут заполнены через JS водными кнопками -->
+                    <!-- 4 карточки будут заполнены через JS -->
                     <div class="feature-card" data-feature></div>
                     <div class="feature-card" data-feature></div>
                     <div class="feature-card" data-feature></div>
@@ -1039,7 +1042,7 @@
             }, 300);
         }
 
-        // ===== ВОДНАЯ КНОПКА (адаптированная из Originkit) =====
+        // ===== ВОДНАЯ КНОПКА (адаптирована из Originkit) =====
         (function() {
             // ---- Константы ----
             const COLUMNS = 64;
@@ -1218,7 +1221,6 @@
                 textSpan.style.fontWeight = '600';
                 textSpan.style.letterSpacing = '-0.01em';
                 textSpan.style.padding = '4px 0';
-                // Устанавливаем содержимое: если передан htmlLabel, используем его, иначе label как текст
                 if (htmlLabel) {
                     textSpan.innerHTML = htmlLabel;
                 } else {
@@ -1226,10 +1228,9 @@
                 }
                 wrapper.appendChild(textSpan);
 
-                // Добавляем wrapper в контейнер
                 container.appendChild(wrapper);
 
-                // ---- Логика воды (адаптирована из React-компонента) ----
+                // ---- Логика воды ----
                 const rootEl = wrapper;
                 const canvasEl = canvas;
                 const ctx = canvas.getContext('2d');
@@ -1470,7 +1471,6 @@
 
                     ctx.restore();
 
-                    // Рамка (border)
                     if (border && borderOptions.stroke > 0) {
                         const half = borderOptions.stroke / 2;
                         roundRectPath(ctx, half, half, W - borderOptions.stroke, H - borderOptions.stroke, rounded - half);
@@ -1509,7 +1509,7 @@
                     raf = requestAnimationFrame(loop);
                 }
 
-                // ---- Обработчики событий ----
+                // ---- Обработчики ----
                 const wake = () => {
                     asleep = false;
                     quiet = 0;
@@ -1633,7 +1633,6 @@
                 const deltaY = endY - pressStartY;
                 const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
                 const target = e.target;
-                // Игнорируем клики по водным кнопкам и кнопкам на обратной стороне
                 if (target.closest('.water-btn-wrapper') || target.closest('.back-btn')) return;
                 const isSwipe = distance > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY);
                 const isClick = pressDuration < CLICK_THRESHOLD && distance < SWIPE_THRESHOLD;
@@ -1796,9 +1795,7 @@
 
             cards.forEach((card, index) => {
                 const data = featuresData[index] || { title: 'Преимущество', desc: '' };
-                // Очищаем карточку
                 card.innerHTML = '';
-                // Создаём водную кнопку
                 const htmlLabel = `
                     <div style="font-weight:700;font-size:15px;margin-bottom:4px;">${data.title}</div>
                     <div style="font-weight:400;font-size:12px;opacity:0.85;line-height:1.4;">${data.desc}</div>
@@ -1806,7 +1803,7 @@
                 window.createWaterButton(card, {
                     htmlLabel: htmlLabel,
                     waterColor: '#8b1a1a',
-                    waterAmount: 50 + Math.random() * 30, // разные уровни
+                    waterAmount: 50 + Math.random() * 30,
                     textColor: '#ffffff',
                     paddingX: 16,
                     paddingY: 20,
@@ -1835,12 +1832,11 @@
                         minHeight: '120px'
                     }
                 });
-                // Добавляем класс visible для анимации появления (будет добавлено позже)
                 card.classList.add('visible');
             });
         }
 
-        // ===== НОВЫЙ SPLASH (из второго кода) =====
+        // ===== SPLASH =====
         let audioEnabled = false;
         let ctx = null;
 
@@ -1912,6 +1908,10 @@
             // Создаём водные кнопки для карточек преимуществ
             createFeatureWineButtons();
 
+            // Принудительно показываем секцию с преимуществами (чтобы карточки были видны)
+            const featureSection = document.querySelector('.section .features-grid')?.closest('.section');
+            if (featureSection) featureSection.classList.add('visible');
+
             // Активируем анимацию карточки
             const cardWrapper = document.getElementById('cardWrapper');
             if (cardWrapper) {
@@ -1920,11 +1920,10 @@
                 }, 200);
             }
 
-            // Инициализация flip и 3D (без 3D для карточек преимуществ, так как водные кнопки сами обрабатывают наведение)
             setupFlipCard();
             setup3DCard();
 
-            // Intersection Observer для секций (кроме features-grid, т.к. карточки уже отображаются)
+            // Intersection Observer для остальных секций (кроме той, которую уже показали)
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1934,9 +1933,8 @@
                 });
             }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
 
-            document.querySelectorAll('.section:not(.features-grid)').forEach(el => observer.observe(el));
+            document.querySelectorAll('.section:not(.visible)').forEach(el => observer.observe(el));
 
-            // Lenis
             if (typeof Lenis !== 'undefined') {
                 const lenis = new Lenis({
                     duration: 1.2,
