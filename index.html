@@ -655,7 +655,7 @@
         .section-title strong { font-weight: 600; }
         .section-text { font-size: 15px; color: var(--text-secondary); line-height: 1.7; font-weight: 300; }
 
-        /* FEATURE CARDS – теперь внутри водные кнопки */
+        /* FEATURE CARDS — теперь с водным слоем */
         .features-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -664,30 +664,94 @@
         }
         
         .feature-card {
-            position: relative; /* важно для корректного позиционирования водной кнопки */
-            background: transparent;
+            position: relative;
             border-radius: 24px;
-            padding: 0;
+            overflow: hidden;
+            background: transparent;
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.6s ease, transform 0.6s ease;
-            overflow: visible;
-            box-shadow: none;
             cursor: default;
-            min-height: 120px; /* чтобы водная кнопка имела высоту */
+            min-height: 120px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
         
         .feature-card.visible { 
             opacity: 1; 
             transform: translateY(0); 
         }
-        
-        /* Водная кнопка занимает всю карточку */
-        .feature-card .water-btn-wrapper {
-            width: 100% !important;
-            display: block !important;
-            height: 100% !important;
+
+        /* Стеклянный фон */
+        .feature-glass-bg {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: hsl(0 0% 100% / 0.08);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Canvas для воды */
+        .feature-water-canvas {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            z-index: 1;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Содержимое поверх */
+        .feature-content {
+            position: relative;
+            z-index: 2;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            height: 100%;
             min-height: 120px;
+            color: var(--text-primary);
+            text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .feature-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--text-primary);
+            stroke-width: 1.5;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        .feature-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .feature-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            opacity: 0.85;
         }
 
         .offers-card {
@@ -954,11 +1018,7 @@
                 <div class="section-label">Преимущества</div>
                 <h2 class="section-title">Почему выбирают <strong>LUDING</strong></h2>
                 <div class="features-grid" id="featuresGrid">
-                    <!-- 4 карточки будут заполнены через JS -->
-                    <div class="feature-card" data-feature></div>
-                    <div class="feature-card" data-feature></div>
-                    <div class="feature-card" data-feature></div>
-                    <div class="feature-card" data-feature></div>
+                    <!-- 4 карточки будут созданы через JS -->
                 </div>
             </section>
 
@@ -1042,37 +1102,37 @@
             }, 300);
         }
 
-        // ===== ВОДНАЯ КНОПКА (адаптирована из Originkit) =====
+        // ===== ВОДНАЯ СИМУЛЯЦИЯ ДЛЯ КАРТОЧЕК =====
         (function() {
-            // ---- Константы ----
-            const COLUMNS = 64;
-            const SUBSTEPS = 6;
-            const GRAVITY = 6000;
-            const VISCOSITY = 2.6;
-            const CURSOR_REACH = 46;
-            const SWEEP_FORCE = 3;
-            const DIP_FORCE = 1.5;
-            const CLICK_FORCE = 260;
-            const MAX_KICK = 8;
-            const MAX_FILL = 0.9;
-            const STILL = 0.05;
-            const SLEEP_FRAMES = 20;
-            const MAX_DROPS = 96;
-            const DROP_GRAVITY = 1400;
-            const DROP_DRAG = 0.6;
-            const DROP_VOLUME = 0.18;
-            const DROP_RADIUS = 1.25;
-            const SPRAY_THRESHOLD = 1.6;
-            const SPRAY_RATE = 0.5;
-            const SPRAY_PER_FRAME = 4;
-            const SPRAY_LIFT = 150;
-            const BREAK_SPEED = 210;
-            const MIN_SPRAY_DEPTH = 2;
-            const RIPPLE = 1;
-            const MAX_PIXEL_SCALE = 8;
-            const MAX_PIXELS = 2000000;
+            // Параметры симуляции (оптимизированы для стабильности)
+            const COLUMNS = 48;
+            const SUBSTEPS = 8;
+            const GRAVITY = 5000;
+            const VISCOSITY = 3.2;
+            const CURSOR_REACH = 40;
+            const SWEEP_FORCE = 2.5;
+            const DIP_FORCE = 1.2;
+            const CLICK_FORCE = 180; // уменьшено, чтобы не выплескивать
+            const MAX_KICK = 6;
+            const MAX_FILL = 0.85;
+            const STILL = 0.04;
+            const SLEEP_FRAMES = 15;
+            const MAX_DROPS = 64;
+            const DROP_GRAVITY = 1200;
+            const DROP_DRAG = 0.5;
+            const DROP_VOLUME = 0.12;
+            const DROP_RADIUS = 1.0;
+            const SPRAY_THRESHOLD = 1.8;
+            const SPRAY_RATE = 0.4;
+            const SPRAY_PER_FRAME = 3;
+            const SPRAY_LIFT = 120;
+            const BREAK_SPEED = 180;
+            const MIN_SPRAY_DEPTH = 1.5;
+            const RIPPLE = 0.8;
+            const MAX_PIXEL_SCALE = 6;
+            const MAX_PIXELS = 1500000;
 
-            // ---- Вспомогательные функции ----
+            // Вспомогательные функции
             function parseColor(color) {
                 const value = (color || '').trim();
                 const hex = value.replace('#', '');
@@ -1116,131 +1176,38 @@
                 return Math.max(-MAX_KICK, Math.min(MAX_KICK, value));
             }
 
-            // ---- Основная функция создания водной кнопки ----
-            window.createWaterButton = function(container, options) {
+            // Основная функция инициализации водного слоя для карточки
+            window.initWaterFeature = function(container, options) {
                 const {
-                    label = '',
-                    htmlLabel = null,
                     waterColor = '#8b1a1a',
-                    waterAmount = 65,
-                    textColor = '#ffffff',
-                    paddingX = 16,
-                    paddingY = 14,
+                    waterAmount = 60,
                     rounded = 24,
-                    glass = { tint: 'rgba(0,0,0,0.3)', blur: 30, frost: 15 },
                     border = true,
-                    borderOptions = { color: 'rgba(255,255,255,0.25)', stroke: 1 },
-                    shadow = true,
-                    shadowOptions = { color: '#000000', intensity: 20 },
-                    press = true,
-                    onClick = null,
-                    style = {}
+                    borderOptions = { color: 'rgba(255,255,255,0.15)', stroke: 1 },
+                    glass = { tint: 'rgba(0,0,0,0.2)', blur: 30, frost: 12 }
                 } = options || {};
 
+                // Находим canvas внутри container
+                const canvas = container.querySelector('.feature-water-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+
                 const [cr, cg, cb, ca] = parseColor(waterColor);
-                const surfaceTone = `rgba(${shift(cr, 0.45)}, ${shift(cg, 0.45)}, ${shift(cb, 0.45)}, ${ca})`;
+                const surfaceTone = `rgba(${shift(cr, 0.35)}, ${shift(cg, 0.35)}, ${shift(cb, 0.35)}, ${ca})`;
                 const bodyTone = `rgba(${cr}, ${cg}, ${cb}, ${ca})`;
-                const depthTone = `rgba(${shift(cr, -0.35)}, ${shift(cg, -0.35)}, ${shift(cb, -0.35)}, ${ca})`;
-                const glintTone = `rgba(${shift(cr, 0.75)}, ${shift(cg, 0.75)}, ${shift(cb, 0.75)}, ${Math.min(1, ca + 0.25)})`;
+                const depthTone = `rgba(${shift(cr, -0.3)}, ${shift(cg, -0.3)}, ${shift(cb, -0.3)}, ${ca})`;
+                const glintTone = `rgba(${shift(cr, 0.6)}, ${shift(cg, 0.6)}, ${shift(cb, 0.6)}, ${Math.min(1, ca + 0.2)})`;
 
                 const [rr, rg, rb, ra] = parseColor(borderOptions.color);
                 const borderTone = `rgba(${rr}, ${rg}, ${rb}, ${ra})`;
-                const borderBase = `rgba(${rr}, ${rg}, ${rb}, ${ra * 0.35})`;
+                const borderBase = `rgba(${rr}, ${rg}, ${rb}, ${ra * 0.3})`;
                 const borderFade = `rgba(${rr}, ${rg}, ${rb}, 0)`;
-
-                // Создаём обёртку
-                const wrapper = document.createElement('div');
-                wrapper.className = 'water-btn-wrapper';
-                wrapper.style.display = 'inline-block';
-                wrapper.style.position = 'relative';
-                wrapper.style.borderRadius = rounded + 'px';
-                wrapper.style.overflow = 'hidden';
-                wrapper.style.cursor = 'pointer';
-                wrapper.style.isolation = 'isolate';
-                // Применяем тень
-                if (shadow) {
-                    const intensity = Math.min(100, Math.max(0, shadowOptions.intensity || 0)) / 100;
-                    const [sr, sg, sb, sa] = parseColor(shadowOptions.color || '#000000');
-                    const shadowStr = `
-                        0 0 0.75px rgba(${sr},${sg},${sb},${0.2 * intensity * sa}),
-                        0.7px 0.8px 1.2px -0.4px rgba(${sr},${sg},${sb},${0.1 * intensity * sa}),
-                        1.3px 1.5px 2.2px -0.8px rgba(${sr},${sg},${sb},${0.1 * intensity * sa}),
-                        2.3px 2.6px 3.9px -1.2px rgba(${sr},${sg},${sb},${0.1 * intensity * sa}),
-                        3.9px 4.4px 6.6px -1.7px rgba(${sr},${sg},${sb},${0.1 * intensity * sa}),
-                        6.5px 7.2px 10.9px -2.1px rgba(${sr},${sg},${sb},${0.1 * intensity * sa}),
-                        8px 9px 14px -2.5px rgba(${sr},${sg},${sb},${0.2 * intensity * sa})
-                    `.replace(/\s+/g, ' ').trim();
-                    wrapper.style.boxShadow = shadowStr;
-                }
-                // Применяем пользовательские стили
-                Object.assign(wrapper.style, style);
-
-                // Стеклянный фон (frost + blur)
-                const glassDiv = document.createElement('div');
-                glassDiv.style.position = 'absolute';
-                glassDiv.style.inset = '0';
-                glassDiv.style.borderRadius = 'inherit';
-                glassDiv.style.overflow = 'hidden';
-                glassDiv.style.background = `hsl(0 0% 100% / ${(glass.frost || 15) / 100})`;
-                glassDiv.style.backdropFilter = `blur(${glass.blur || 30}px)`;
-                glassDiv.style.WebkitBackdropFilter = `blur(${glass.blur || 30}px)`;
-                glassDiv.style.pointerEvents = 'none';
-                wrapper.appendChild(glassDiv);
-
-                // Тонировка
-                const tintDiv = document.createElement('div');
-                tintDiv.style.position = 'absolute';
-                tintDiv.style.inset = '0';
-                tintDiv.style.borderRadius = 'inherit';
-                tintDiv.style.backgroundColor = glass.tint || 'rgba(0,0,0,0.3)';
-                tintDiv.style.pointerEvents = 'none';
-                wrapper.appendChild(tintDiv);
-
-                // Canvas для воды
-                const canvas = document.createElement('canvas');
-                canvas.style.display = 'block';
-                canvas.style.width = '100%';
-                canvas.style.height = '100%';
-                canvas.style.position = 'absolute';
-                canvas.style.inset = '0';
-                canvas.style.pointerEvents = 'none';
-                wrapper.appendChild(canvas);
-
-                // Текст (поверх canvas)
-                const textSpan = document.createElement('span');
-                textSpan.style.position = 'relative';
-                textSpan.style.zIndex = '3';
-                textSpan.style.color = textColor;
-                textSpan.style.textAlign = 'center';
-                textSpan.style.whiteSpace = 'pre-wrap';
-                textSpan.style.userSelect = 'none';
-                textSpan.style.lineHeight = '1.3';
-                textSpan.style.display = 'block';
-                textSpan.style.fontFamily = 'Inter, system-ui, sans-serif';
-                textSpan.style.fontSize = '14px';
-                textSpan.style.fontWeight = '600';
-                textSpan.style.letterSpacing = '-0.01em';
-                textSpan.style.padding = '4px 0';
-                if (htmlLabel) {
-                    textSpan.innerHTML = htmlLabel;
-                } else {
-                    textSpan.textContent = label;
-                }
-                wrapper.appendChild(textSpan);
-
-                container.appendChild(wrapper);
-
-                // ---- Логика воды ----
-                const rootEl = wrapper;
-                const canvasEl = canvas;
-                const ctx = canvas.getContext('2d');
 
                 let alive = true;
                 let raf = 0;
                 let last = 0;
                 let pixScale = 1;
-                let W = 0;
-                let H = 0;
+                let W = 0, H = 0;
 
                 const h = new Float32Array(COLUMNS);
                 const u = new Float32Array(COLUMNS + 1);
@@ -1260,13 +1227,13 @@
                 let quiet = 0;
                 const pointer = { x: -9999, y: -9999, vx: 0, vy: 0 };
 
-                const amount = Math.min(MAX_FILL, Math.max(0, waterAmount / 100));
+                const amount = Math.min(MAX_FILL, Math.max(0.2, waterAmount / 100));
                 const ripple = RIPPLE;
 
                 const colX = (i) => (i + 0.5) * colW;
 
                 function pixelScale() {
-                    const rect = rootEl.getBoundingClientRect();
+                    const rect = container.getBoundingClientRect();
                     const zoom = rect.width > 1 && W > 1 ? rect.width / W : 1;
                     let s = Math.min(MAX_PIXEL_SCALE, (window.devicePixelRatio || 1) * zoom);
                     const area = Math.max(1, W * H);
@@ -1276,14 +1243,14 @@
 
                 function raster() {
                     pixScale = pixelScale();
-                    canvasEl.width = Math.round(W * pixScale);
-                    canvasEl.height = Math.round(H * pixScale);
+                    canvas.width = Math.round(W * pixScale);
+                    canvas.height = Math.round(H * pixScale);
                     ctx.setTransform(pixScale, 0, 0, pixScale, 0, 0);
                 }
 
                 function build() {
-                    W = Math.max(2, rootEl.clientWidth);
-                    H = Math.max(2, rootEl.clientHeight);
+                    W = Math.max(2, container.clientWidth);
+                    H = Math.max(2, container.clientHeight);
                     raster();
                     colW = W / COLUMNS;
                     rest = H * amount;
@@ -1357,12 +1324,12 @@
                         if (speed > SPRAY_THRESHOLD) {
                             const want = Math.min(SPRAY_PER_FRAME, Math.round((speed - SPRAY_THRESHOLD) * SPRAY_RATE * ripple));
                             for (let k = 0; k < want; k++) {
-                                const x = pointer.x + (Math.random() - 0.5) * CURSOR_REACH * 0.7;
+                                const x = pointer.x + (Math.random() - 0.5) * CURSOR_REACH * 0.6;
                                 const i = Math.max(0, Math.min(COLUMNS - 1, Math.floor(x / colW)));
-                                if (pointer.y < H - h[i] - CURSOR_REACH * 0.5) continue;
+                                if (pointer.y < H - h[i] - CURSOR_REACH * 0.4) continue;
                                 tear(i,
-                                    kx * 60 * 0.45 + (Math.random() - 0.5) * 70,
-                                    -(SPRAY_LIFT * (0.6 + Math.random() * 0.9)) + ky * 60 * 0.25
+                                    kx * 60 * 0.4 + (Math.random() - 0.5) * 60,
+                                    -(SPRAY_LIFT * (0.5 + Math.random() * 0.8)) + ky * 60 * 0.2
                                 );
                             }
                         }
@@ -1370,10 +1337,10 @@
                     for (let i = 1; i < COLUMNS - 1; i++) {
                         const flow = Math.abs(u[i]);
                         if (flow < BREAK_SPEED) continue;
-                        if (Math.random() > (flow - BREAK_SPEED) * 0.004 * ripple * dt * 60) continue;
+                        if (Math.random() > (flow - BREAK_SPEED) * 0.003 * ripple * dt * 60) continue;
                         tear(i,
-                            u[i] * 0.5 + (Math.random() - 0.5) * 40,
-                            -(SPRAY_LIFT * 0.5 * (0.5 + Math.random()))
+                            u[i] * 0.4 + (Math.random() - 0.5) * 30,
+                            -(SPRAY_LIFT * 0.4 * (0.5 + Math.random()))
                         );
                     }
                 }
@@ -1386,12 +1353,12 @@
                         dropVX[d] -= dropVX[d] * Math.min(1, DROP_DRAG * dt);
                         dropX[d] += dropVX[d] * dt;
                         dropY[d] += dropVY[d] * dt;
-                        if (dropX[d] < 0) { dropX[d] = 0; dropVX[d] = -dropVX[d] * 0.35; }
-                        else if (dropX[d] > W) { dropX[d] = W; dropVX[d] = -dropVX[d] * 0.35; }
+                        if (dropX[d] < 0) { dropX[d] = 0; dropVX[d] = -dropVX[d] * 0.3; }
+                        else if (dropX[d] > W) { dropX[d] = W; dropVX[d] = -dropVX[d] * 0.3; }
                         const i = Math.max(0, Math.min(COLUMNS - 1, Math.floor(dropX[d] / colW)));
                         if (dropVY[d] > 0 && dropY[d] >= H - h[i]) {
                             h[i] += DROP_VOLUME / colW;
-                            if (i > 0 && i < COLUMNS) u[i] += dropVX[d] * 0.25;
+                            if (i > 0 && i < COLUMNS) u[i] += dropVX[d] * 0.2;
                             dropLive[d] = 0;
                             flying--;
                         }
@@ -1450,13 +1417,16 @@
                     ctx.fillStyle = grad;
                     ctx.fill();
 
+                    // Убираем яркую линию блика, оставляем только тонкий полупрозрачный контур
                     ctx.beginPath();
                     ctx.moveTo(0, surfaceAt(0));
                     for (let i = 0; i < COLUMNS; i++) ctx.lineTo(colX(i), surfaceAt(i));
                     ctx.lineTo(W, surfaceAt(COLUMNS - 1));
                     ctx.strokeStyle = glintTone;
-                    ctx.lineWidth = 1.5;
+                    ctx.lineWidth = 0.8;
+                    ctx.globalAlpha = 0.4;
                     ctx.stroke();
+                    ctx.globalAlpha = 1;
 
                     if (flying > 0) {
                         ctx.beginPath();
@@ -1477,7 +1447,6 @@
                         ctx.lineWidth = borderOptions.stroke;
                         ctx.strokeStyle = borderBase;
                         ctx.stroke();
-
                         const rim = ctx.createLinearGradient(W, H, 0, 0);
                         rim.addColorStop(0, borderTone);
                         rim.addColorStop(0.3, borderFade);
@@ -1509,20 +1478,30 @@
                     raf = requestAnimationFrame(loop);
                 }
 
-                // ---- Обработчики ----
                 const wake = () => {
                     asleep = false;
                     quiet = 0;
                 };
+
+                // Обработчики событий на контейнере
                 const toLocal = (e) => {
-                    const rect = rootEl.getBoundingClientRect();
+                    const rect = container.getBoundingClientRect();
                     const sx = rect.width > 0 ? W / rect.width : 1;
                     const sy = rect.height > 0 ? H / rect.height : 1;
+                    let clientX, clientY;
+                    if (e.touches) {
+                        clientX = e.touches[0].clientX;
+                        clientY = e.touches[0].clientY;
+                    } else {
+                        clientX = e.clientX;
+                        clientY = e.clientY;
+                    }
                     return {
-                        x: (e.clientX - rect.left) * sx,
-                        y: (e.clientY - rect.top) * sy
+                        x: (clientX - rect.left) * sx,
+                        y: (clientY - rect.top) * sy
                     };
                 };
+
                 const onEnter = (e) => {
                     hovering = true;
                     const p = toLocal(e);
@@ -1554,20 +1533,21 @@
                     pointer.y = p.y;
                     splash(p.x);
                     wake();
-                    if (onClick) onClick(e);
                 };
 
-                wrapper.addEventListener('mouseenter', onEnter);
-                wrapper.addEventListener('mousemove', onMove);
-                wrapper.addEventListener('mouseleave', onLeave);
-                wrapper.addEventListener('pointerdown', onDown);
+                container.addEventListener('mouseenter', onEnter);
+                container.addEventListener('mousemove', onMove);
+                container.addEventListener('mouseleave', onLeave);
+                container.addEventListener('pointerdown', onDown);
 
+                // ResizeObserver для изменения размеров
                 const observer = new ResizeObserver(() => {
                     build();
                     draw();
                 });
-                observer.observe(rootEl);
+                observer.observe(container);
 
+                // Интервал для проверки пиксельной масштабации
                 const probe = setInterval(() => {
                     if (!alive) return;
                     if (Math.abs(pixelScale() - pixScale) < 0.02) return;
@@ -1583,15 +1563,84 @@
                     alive = false;
                     cancelAnimationFrame(raf);
                     clearInterval(probe);
-                    wrapper.removeEventListener('mouseenter', onEnter);
-                    wrapper.removeEventListener('mousemove', onMove);
-                    wrapper.removeEventListener('mouseleave', onLeave);
-                    wrapper.removeEventListener('pointerdown', onDown);
+                    container.removeEventListener('mouseenter', onEnter);
+                    container.removeEventListener('mousemove', onMove);
+                    container.removeEventListener('mouseleave', onLeave);
+                    container.removeEventListener('pointerdown', onDown);
                     observer.disconnect();
-                    if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
                 };
             };
         })();
+
+        // ===== СОЗДАНИЕ КАРТОЧЕК ПРЕИМУЩЕСТВ =====
+        function createFeatureCards() {
+            const grid = document.getElementById('featuresGrid');
+            if (!grid) return;
+
+            const featuresData = [
+                {
+                    icon: '<svg viewBox="0 0 24 24"><path d="M8 2h8l-1 9c-.5 2-2 3.5-3 4v4h3v2H9v-2h3v-4c-1-.5-2.5-2-3-4L8 2z"/><path d="M6 2h12"/></svg>',
+                    title: 'Широкий ассортимент',
+                    desc: 'Более 5000 позиций напитков'
+                },
+                {
+                    icon: '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M12 8v13"/><path d="M3 12h18"/><path d="M12 8c-2-2-4-3-4-5s2-2 3-1c.5.5 1 1.5 1 2 0-.5.5-1.5 1-2 1-1 3-1 3 1s-2 3-4 5z"/></svg>',
+                    title: 'Подарочные решения',
+                    desc: 'Подбор наборов для клиентов и партнеров'
+                },
+                {
+                    icon: '<svg viewBox="0 0 24 24"><path d="M3 21V7l9-4 9 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 9h.01"/><path d="M15 9h.01"/><path d="M9 13h.01"/><path d="M15 13h.01"/></svg>',
+                    title: 'Корпоративные проекты',
+                    desc: 'Комплектация мероприятий любого масштаба'
+                },
+                {
+                    icon: '<svg viewBox="0 0 24 24"><rect x="1" y="7" width="15" height="10" rx="1"/><path d="M16 11h4l3 3v3h-7"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+                    title: 'Оперативная отгрузка',
+                    desc: 'Быстрое оформление и доставка'
+                }
+            ];
+
+            featuresData.forEach((data, index) => {
+                const card = document.createElement('div');
+                card.className = 'feature-card';
+                // Добавляем класс visible с задержкой
+                setTimeout(() => card.classList.add('visible'), 200 + index * 120);
+
+                // Стеклянный фон
+                const glassBg = document.createElement('div');
+                glassBg.className = 'feature-glass-bg';
+                card.appendChild(glassBg);
+
+                // Canvas для воды
+                const canvas = document.createElement('canvas');
+                canvas.className = 'feature-water-canvas';
+                card.appendChild(canvas);
+
+                // Содержимое
+                const content = document.createElement('div');
+                content.className = 'feature-content';
+                content.innerHTML = `
+                    <div class="feature-icon">${data.icon}</div>
+                    <div class="feature-title">${data.title}</div>
+                    <div class="feature-desc">${data.desc}</div>
+                `;
+                card.appendChild(content);
+
+                grid.appendChild(card);
+
+                // Инициализация водной симуляции
+                setTimeout(() => {
+                    window.initWaterFeature(card, {
+                        waterColor: '#8b1a1a',
+                        waterAmount: 55 + Math.random() * 25,
+                        rounded: 24,
+                        border: true,
+                        borderOptions: { color: 'rgba(255,255,255,0.15)', stroke: 1 },
+                        glass: { tint: 'rgba(0,0,0,0.2)', blur: 30, frost: 12 }
+                    });
+                }, 50);
+            });
+        }
 
         // ===== FLIP CARD LOGIC =====
         function setupFlipCard() {
@@ -1633,7 +1682,7 @@
                 const deltaY = endY - pressStartY;
                 const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
                 const target = e.target;
-                if (target.closest('.water-btn-wrapper') || target.closest('.back-btn')) return;
+                if (target.closest('.card-contact-btn') || target.closest('.back-btn')) return;
                 const isSwipe = distance > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY);
                 const isClick = pressDuration < CLICK_THRESHOLD && distance < SWIPE_THRESHOLD;
                 if (isSwipe || isClick) {
@@ -1771,71 +1820,6 @@
             }, { passive: true });
         }
 
-        // ===== СОЗДАНИЕ ВОДНЫХ КНОПОК ДЛЯ КАРТОЧЕК ПРЕИМУЩЕСТВ =====
-        function createFeatureWineButtons() {
-            const cards = document.querySelectorAll('.feature-card');
-            const featuresData = [
-                {
-                    title: 'Широкий ассортимент',
-                    desc: 'Более 5000 позиций напитков'
-                },
-                {
-                    title: 'Подарочные решения',
-                    desc: 'Подбор наборов для клиентов и партнеров'
-                },
-                {
-                    title: 'Корпоративные проекты',
-                    desc: 'Комплектация мероприятий любого масштаба'
-                },
-                {
-                    title: 'Оперативная отгрузка',
-                    desc: 'Быстрое оформление и доставка'
-                }
-            ];
-
-            cards.forEach((card, index) => {
-                const data = featuresData[index] || { title: 'Преимущество', desc: '' };
-                card.innerHTML = '';
-                const htmlLabel = `
-                    <div style="font-weight:700;font-size:15px;margin-bottom:4px;">${data.title}</div>
-                    <div style="font-weight:400;font-size:12px;opacity:0.85;line-height:1.4;">${data.desc}</div>
-                `;
-                window.createWaterButton(card, {
-                    htmlLabel: htmlLabel,
-                    waterColor: '#8b1a1a',
-                    waterAmount: 50 + Math.random() * 30,
-                    textColor: '#ffffff',
-                    paddingX: 16,
-                    paddingY: 20,
-                    rounded: 24,
-                    glass: {
-                        tint: 'rgba(0,0,0,0.25)',
-                        blur: 30,
-                        frost: 12
-                    },
-                    border: true,
-                    borderOptions: {
-                        color: 'rgba(255,255,255,0.2)',
-                        stroke: 1
-                    },
-                    shadow: true,
-                    shadowOptions: {
-                        color: '#000000',
-                        intensity: 25
-                    },
-                    press: true,
-                    style: {
-                        width: '100%',
-                        display: 'block',
-                        boxSizing: 'border-box',
-                        height: '100%',
-                        minHeight: '120px'
-                    }
-                });
-                card.classList.add('visible');
-            });
-        }
-
         // ===== SPLASH =====
         let audioEnabled = false;
         let ctx = null;
@@ -1905,14 +1889,10 @@
             main.style.display = 'block';
             gsap.fromTo(main, { opacity: 0 }, { opacity: 1, duration: 0.8 });
 
-            // Создаём водные кнопки для карточек преимуществ
-            createFeatureWineButtons();
+            // Создаём карточки преимуществ с водным слоем
+            createFeatureCards();
 
-            // Принудительно показываем секцию с преимуществами (чтобы карточки были видны)
-            const featureSection = document.querySelector('.section .features-grid')?.closest('.section');
-            if (featureSection) featureSection.classList.add('visible');
-
-            // Активируем анимацию карточки
+            // Активируем анимацию flip-карты
             const cardWrapper = document.getElementById('cardWrapper');
             if (cardWrapper) {
                 setTimeout(() => {
@@ -1923,7 +1903,7 @@
             setupFlipCard();
             setup3DCard();
 
-            // Intersection Observer для остальных секций (кроме той, которую уже показали)
+            // Intersection Observer для остальных секций
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1933,7 +1913,7 @@
                 });
             }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
 
-            document.querySelectorAll('.section:not(.visible)').forEach(el => observer.observe(el));
+            document.querySelectorAll('.section:not(.section .features-grid)').forEach(el => observer.observe(el));
 
             if (typeof Lenis !== 'undefined') {
                 const lenis = new Lenis({
