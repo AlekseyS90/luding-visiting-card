@@ -131,6 +131,7 @@
         /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
         #main {
             display: none;
+            /* будет показан после splash */
         }
 
         /* HERO */
@@ -157,6 +158,7 @@
             cursor: pointer;
             opacity: 0;
             transform: translateY(40px) scale(0.95);
+            /* анимация будет запущена добавлением класса .visible */
         }
 
         .card-wrapper.visible {
@@ -341,38 +343,33 @@
             animation: layerSlideUp 0.6s ease 1.0s forwards;
         }
 
-        /* Водная кнопка будет вставлена сюда */
-        .card-layer-btn .water-btn-wrapper {
-            display: inline-block;
-        }
-        .card-layer-btn .water-btn-wrapper .water-btn {
-            border-radius: 21px;
-            overflow: hidden;
-            /* Размеры задаются через padding в JS */
-            font-family: inherit;
-            cursor: pointer;
-            background: transparent;
-            border: none;
-            color: white;
-            outline: none;
-        }
-        .card-layer-btn .water-btn-wrapper .water-btn span {
+        .card-contact-btn {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-weight: 600;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 21px;
+            color: white;
             font-size: 13px;
-            letter-spacing: 0.3px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, border-color 0.3s ease;
+            font-family: inherit;
         }
-        .card-layer-btn .water-btn-wrapper .water-btn svg {
-            width: 16px;
-            height: 16px;
-            stroke: white;
-            stroke-width: 1.8;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            flex-shrink: 0;
+
+        .card-contact-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: var(--accent);
+        }
+
+        .card-contact-btn svg {
+            width: 16px; height: 16px;
+            stroke: white; stroke-width: 1.8; fill: none;
+            stroke-linecap: round; stroke-linejoin: round;
         }
 
         .flip-hint {
@@ -908,9 +905,16 @@
                             <div class="card-footer-text">Корпоративные поставки • Подарочные решения • Персональный подбор</div>
                         </div>
 
-                        <!-- Контейнер для водной кнопки -->
-                        <div class="card-layer-btn" id="waterBtnContainer">
-                            <!-- Сюда будет вставлена водная кнопка -->
+                        <div class="card-layer-btn">
+                            <button class="card-contact-btn" onclick="saveContact(event)">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                    <line x1="19" y1="8" x2="19" y2="14"/>
+                                    <line x1="22" y1="11" x2="16" y2="11"/>
+                                </svg>
+                                <span>Контакт</span>
+                            </button>
                         </div>
 
                         <div class="flip-hint">
@@ -1085,602 +1089,6 @@
             }, duration);
         }
 
-        // ===== СОХРАНЕНИЕ КОНТАКТА =====
-        function saveContact(event) {
-            if (event) event.stopPropagation();
-            if (navigator.vibrate) navigator.vibrate(10);
-            const vCardData = [
-                'BEGIN:VCARD', 'VERSION:3.0',
-                'FN:Алексей Ситников', 'N:Ситников;Алексей;;;',
-                'ORG:LUDING', 'TITLE:Менеджер по работе с частными и корпоративными клиентами',
-                'TEL;TYPE=CELL:+79670281571', 'EMAIL:Aleksei.sitnikov@luding.ru',
-                'URL:https://luding.ru', 'NOTE:LUDING - поставки премиальных напитков',
-                'END:VCARD'
-            ].join('\r\n');
-            const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'Алексей_Ситников.vcf';
-            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-            }
-            document.body.appendChild(link);
-            link.click();
-            setTimeout(() => {
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 1000);
-            setTimeout(() => {
-                showToast('Контакт сохранён', 'Алексей Ситников — LUDING');
-            }, 300);
-        }
-
-        // ===== ВОДНАЯ КНОПКА (адаптированный код из Originkit) =====
-        (function() {
-            // ---- Константы ----
-            const COLUMNS = 64;
-            const SUBSTEPS = 6;
-            const GRAVITY = 6000;
-            const VISCOSITY = 2.6;
-            const CURSOR_REACH = 46;
-            const SWEEP_FORCE = 3;
-            const DIP_FORCE = 1.5;
-            const CLICK_FORCE = 260;
-            const MAX_KICK = 8;
-            const MAX_FILL = 0.9;
-            const STILL = 0.05;
-            const SLEEP_FRAMES = 20;
-            const MAX_DROPS = 96;
-            const DROP_GRAVITY = 1400;
-            const DROP_DRAG = 0.6;
-            const DROP_VOLUME = 0.18;
-            const DROP_RADIUS = 1.25;
-            const SPRAY_THRESHOLD = 1.6;
-            const SPRAY_RATE = 0.5;
-            const SPRAY_PER_FRAME = 4;
-            const SPRAY_LIFT = 150;
-            const BREAK_SPEED = 210;
-            const MIN_SPRAY_DEPTH = 2;
-            const RIPPLE = 1;
-            const MAX_PIXEL_SCALE = 8;
-            const MAX_PIXELS = 2000000;
-
-            // ---- Вспомогательные функции ----
-            function parseColor(color) {
-                const value = (color || '').trim();
-                const hex = value.replace('#', '');
-                if (/^[0-9a-f]{6}$/i.test(hex)) {
-                    return [
-                        parseInt(hex.slice(0, 2), 16),
-                        parseInt(hex.slice(2, 4), 16),
-                        parseInt(hex.slice(4, 6), 16),
-                        1
-                    ];
-                }
-                const match = value.match(/rgba?\(([^)]+)\)/i);
-                if (match) {
-                    const parts = match[1].split(',').map(p => parseFloat(p));
-                    return [
-                        parts[0] || 0,
-                        parts[1] || 0,
-                        parts[2] || 0,
-                        parts[3] === undefined ? 1 : parts[3]
-                    ];
-                }
-                return [62, 155, 214, 1];
-            }
-
-            function shift(channel, f) {
-                return Math.round(Math.max(0, Math.min(255, channel + (f > 0 ? (255 - channel) * f : channel * f))));
-            }
-
-            function roundRectPath(ctx, x, y, w, h, radius) {
-                const r = Math.max(0, Math.min(radius, Math.min(w, h) / 2));
-                ctx.beginPath();
-                ctx.moveTo(x + r, y);
-                ctx.arcTo(x + w, y, x + w, y + h, r);
-                ctx.arcTo(x + w, y + h, x, y + h, r);
-                ctx.arcTo(x, y + h, x, y, r);
-                ctx.arcTo(x, y, x + w, y, r);
-                ctx.closePath();
-            }
-
-            function clampKick(value) {
-                return Math.max(-MAX_KICK, Math.min(MAX_KICK, value));
-            }
-
-            // ---- Основная функция создания водной кнопки ----
-            window.createWaterButton = function(container, options) {
-                const {
-                    label = 'Контакт',
-                    waterColor = '#8b1a1a',
-                    waterAmount = 65,
-                    textColor = '#ffffff',
-                    paddingX = 20,
-                    paddingY = 10,
-                    rounded = 21,
-                    glass = { tint: 'rgba(0,0,0,0.3)', blur: 30, frost: 15 },
-                    border = true,
-                    borderOptions = { color: 'rgba(255,255,255,0.3)', stroke: 1 },
-                    shadow = true,
-                    shadowOptions = { color: '#000000', intensity: 20 },
-                    press = true,
-                    onClick = null,
-                    style = {}
-                } = options || {};
-
-                const [cr, cg, cb, ca] = parseColor(waterColor);
-                const surfaceTone = `rgba(${shift(cr, 0.45)}, ${shift(cg, 0.45)}, ${shift(cb, 0.45)}, ${ca})`;
-                const bodyTone = `rgba(${cr}, ${cg}, ${cb}, ${ca})`;
-                const depthTone = `rgba(${shift(cr, -0.35)}, ${shift(cg, -0.35)}, ${shift(cb, -0.35)}, ${ca})`;
-                const glintTone = `rgba(${shift(cr, 0.75)}, ${shift(cg, 0.75)}, ${shift(cb, 0.75)}, ${Math.min(1, ca + 0.25)})`;
-
-                const [rr, rg, rb, ra] = parseColor(borderOptions.color);
-                const borderTone = `rgba(${rr}, ${rg}, ${rb}, ${ra})`;
-                const borderBase = `rgba(${rr}, ${rg}, ${rb}, ${ra * 0.35})`;
-                const borderFade = `rgba(${rr}, ${rg}, ${rb}, 0)`;
-
-                // Создаём обёртку
-                const wrapper = document.createElement('div');
-                wrapper.className = 'water-btn-wrapper';
-                wrapper.style.display = 'inline-block';
-                wrapper.style.position = 'relative';
-                wrapper.style.borderRadius = rounded + 'px';
-                wrapper.style.overflow = 'hidden';
-                wrapper.style.cursor = 'pointer';
-                wrapper.style.isolation = 'isolate';
-                // Применяем тень
-                if (shadow) {
-                    const intensity = Math.min(100, Math.max(0, shadowOptions.intensity || 0)) / 100;
-                    const [sr, sg, sb, sa] = parseColor(shadowOptions.color || '#000000');
-                    const shadowStr = `
-                        0 0 0.75px rgba(${sr},${sg},${sb},${0.2 * intensity * sa}),
-                        0.7px 0.8px 1.2px -0.4px rgba(${sr},${sg},${sb},${0.1 * intensity * sa}),
-                        1.3px 1.5px 2.2px -0.8px rgba(${sr},${sg},${sb},${0.1 * intensity * sa}),
-                        2.3px 2.6px 3.9px -1.2px rgba(${sr},${sg},${sb},${0.1 * intensity * sa}),
-                        3.9px 4.4px 6.6px -1.7px rgba(${sr},${sg},${sb},${0.1 * intensity * sa}),
-                        6.5px 7.2px 10.9px -2.1px rgba(${sr},${sg},${sb},${0.1 * intensity * sa}),
-                        8px 9px 14px -2.5px rgba(${sr},${sg},${sb},${0.2 * intensity * sa})
-                    `.replace(/\s+/g, ' ').trim();
-                    wrapper.style.boxShadow = shadowStr;
-                }
-                // Применяем пользовательские стили
-                Object.assign(wrapper.style, style);
-
-                // Стеклянный фон (frost + blur)
-                const glassDiv = document.createElement('div');
-                glassDiv.style.position = 'absolute';
-                glassDiv.style.inset = '0';
-                glassDiv.style.borderRadius = 'inherit';
-                glassDiv.style.overflow = 'hidden';
-                glassDiv.style.background = `hsl(0 0% 100% / ${(glass.frost || 15) / 100})`;
-                glassDiv.style.backdropFilter = `blur(${glass.blur || 30}px)`;
-                glassDiv.style.WebkitBackdropFilter = `blur(${glass.blur || 30}px)`;
-                glassDiv.style.pointerEvents = 'none';
-                wrapper.appendChild(glassDiv);
-
-                // Тонировка
-                const tintDiv = document.createElement('div');
-                tintDiv.style.position = 'absolute';
-                tintDiv.style.inset = '0';
-                tintDiv.style.borderRadius = 'inherit';
-                tintDiv.style.backgroundColor = glass.tint || 'rgba(0,0,0,0.3)';
-                tintDiv.style.pointerEvents = 'none';
-                wrapper.appendChild(tintDiv);
-
-                // Canvas для воды
-                const canvas = document.createElement('canvas');
-                canvas.style.display = 'block';
-                canvas.style.width = '100%';
-                canvas.style.height = '100%';
-                canvas.style.position = 'absolute';
-                canvas.style.inset = '0';
-                canvas.style.pointerEvents = 'none';
-                wrapper.appendChild(canvas);
-
-                // Текст (поверх canvas)
-                const textSpan = document.createElement('span');
-                textSpan.style.position = 'relative';
-                textSpan.style.zIndex = '3';
-                textSpan.style.color = textColor;
-                textSpan.style.textAlign = 'center';
-                textSpan.style.whiteSpace = 'pre';
-                textSpan.style.userSelect = 'none';
-                textSpan.style.lineHeight = '1';
-                textSpan.style.display = 'block';
-                textSpan.style.fontFamily = 'Inter, system-ui, sans-serif';
-                textSpan.style.fontSize = '13px';
-                textSpan.style.fontWeight = '600';
-                textSpan.style.letterSpacing = '-0.01em';
-                // Добавляем иконку и текст
-                textSpan.innerHTML = `
-                    <span style="display:flex;align-items:center;gap:8px;justify-content:center;">
-                        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:${textColor};stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                            <line x1="19" y1="8" x2="19" y2="14"/>
-                            <line x1="22" y1="11" x2="16" y2="11"/>
-                        </svg>
-                        ${label}
-                    </span>
-                `;
-                wrapper.appendChild(textSpan);
-
-                // Добавляем wrapper в контейнер
-                container.appendChild(wrapper);
-
-                // ---- Логика воды (адаптирована из React-компонента) ----
-                const rootEl = wrapper;
-                const canvasEl = canvas;
-                const ctx = canvas.getContext('2d');
-
-                let alive = true;
-                let raf = 0;
-                let last = 0;
-                let pixScale = 1;
-                let W = 0;
-                let H = 0;
-
-                const h = new Float32Array(COLUMNS);
-                const u = new Float32Array(COLUMNS + 1);
-                const flux = new Float32Array(COLUMNS + 1);
-                let rest = 0;
-                let colW = 1;
-
-                const dropX = new Float32Array(MAX_DROPS);
-                const dropY = new Float32Array(MAX_DROPS);
-                const dropVX = new Float32Array(MAX_DROPS);
-                const dropVY = new Float32Array(MAX_DROPS);
-                const dropLive = new Uint8Array(MAX_DROPS);
-                let flying = 0;
-
-                let hovering = false;
-                let asleep = false;
-                let quiet = 0;
-                const pointer = { x: -9999, y: -9999, vx: 0, vy: 0 };
-
-                const amount = Math.min(MAX_FILL, Math.max(0, waterAmount / 100));
-                const ripple = RIPPLE;
-
-                const colX = (i) => (i + 0.5) * colW;
-
-                function pixelScale() {
-                    const rect = rootEl.getBoundingClientRect();
-                    const zoom = rect.width > 1 && W > 1 ? rect.width / W : 1;
-                    let s = Math.min(MAX_PIXEL_SCALE, (window.devicePixelRatio || 1) * zoom);
-                    const area = Math.max(1, W * H);
-                    if (area * s * s > MAX_PIXELS) s = Math.sqrt(MAX_PIXELS / area);
-                    return Math.max(1, s);
-                }
-
-                function raster() {
-                    pixScale = pixelScale();
-                    canvasEl.width = Math.round(W * pixScale);
-                    canvasEl.height = Math.round(H * pixScale);
-                    ctx.setTransform(pixScale, 0, 0, pixScale, 0, 0);
-                }
-
-                function build() {
-                    W = Math.max(2, rootEl.clientWidth);
-                    H = Math.max(2, rootEl.clientHeight);
-                    raster();
-                    colW = W / COLUMNS;
-                    rest = H * amount;
-                    h.fill(rest);
-                    u.fill(0);
-                    dropLive.fill(0);
-                    flying = 0;
-                    asleep = true;
-                    quiet = 0;
-                }
-
-                function freeze() {
-                    h.fill(rest);
-                    u.fill(0);
-                    dropLive.fill(0);
-                    flying = 0;
-                    asleep = true;
-                    quiet = 0;
-                }
-
-                function drive(dt) {
-                    const reach = CURSOR_REACH;
-                    const kx = clampKick(pointer.vx) * 60;
-                    const ky = clampKick(pointer.vy) * 60;
-                    const first = Math.max(1, Math.floor((pointer.x - reach) / colW));
-                    const last = Math.min(COLUMNS - 1, Math.ceil((pointer.x + reach) / colW));
-                    for (let i = first; i <= last; i++) {
-                        const dx = i * colW - pointer.x;
-                        const fall = 1 - Math.abs(dx) / reach;
-                        if (fall <= 0) continue;
-                        if (pointer.y < H - h[i] - reach) continue;
-                        const bite = fall * ripple * dt;
-                        u[i] += kx * SWEEP_FORCE * bite;
-                        u[i] += Math.sign(dx) * ky * DIP_FORCE * bite;
-                    }
-                }
-
-                function splash(px) {
-                    const reach = CURSOR_REACH;
-                    const first = Math.max(1, Math.floor((px - reach) / colW));
-                    const last = Math.min(COLUMNS - 1, Math.ceil((px + reach) / colW));
-                    for (let i = first; i <= last; i++) {
-                        const dx = i * colW - px;
-                        const fall = 1 - Math.abs(dx) / reach;
-                        if (fall <= 0) continue;
-                        u[i] += Math.sign(dx || 1) * CLICK_FORCE * fall * ripple;
-                    }
-                }
-
-                function tear(i, vx, vy) {
-                    if (h[i] <= MIN_SPRAY_DEPTH) return;
-                    let slot = -1;
-                    for (let d = 0; d < MAX_DROPS; d++) {
-                        if (!dropLive[d]) { slot = d; break; }
-                    }
-                    if (slot < 0) return;
-                    dropLive[slot] = 1;
-                    flying++;
-                    dropX[slot] = colX(i);
-                    dropY[slot] = H - h[i] - DROP_RADIUS;
-                    dropVX[slot] = vx;
-                    dropVY[slot] = vy;
-                    h[i] -= DROP_VOLUME / colW;
-                }
-
-                function spray(dt) {
-                    if (hovering) {
-                        const kx = clampKick(pointer.vx);
-                        const ky = clampKick(pointer.vy);
-                        const speed = Math.abs(kx) + Math.abs(ky);
-                        if (speed > SPRAY_THRESHOLD) {
-                            const want = Math.min(SPRAY_PER_FRAME, Math.round((speed - SPRAY_THRESHOLD) * SPRAY_RATE * ripple));
-                            for (let k = 0; k < want; k++) {
-                                const x = pointer.x + (Math.random() - 0.5) * CURSOR_REACH * 0.7;
-                                const i = Math.max(0, Math.min(COLUMNS - 1, Math.floor(x / colW)));
-                                if (pointer.y < H - h[i] - CURSOR_REACH * 0.5) continue;
-                                tear(i,
-                                    kx * 60 * 0.45 + (Math.random() - 0.5) * 70,
-                                    -(SPRAY_LIFT * (0.6 + Math.random() * 0.9)) + ky * 60 * 0.25
-                                );
-                            }
-                        }
-                    }
-                    for (let i = 1; i < COLUMNS - 1; i++) {
-                        const flow = Math.abs(u[i]);
-                        if (flow < BREAK_SPEED) continue;
-                        if (Math.random() > (flow - BREAK_SPEED) * 0.004 * ripple * dt * 60) continue;
-                        tear(i,
-                            u[i] * 0.5 + (Math.random() - 0.5) * 40,
-                            -(SPRAY_LIFT * 0.5 * (0.5 + Math.random()))
-                        );
-                    }
-                }
-
-                function fall(dt) {
-                    if (flying === 0) return;
-                    for (let d = 0; d < MAX_DROPS; d++) {
-                        if (!dropLive[d]) continue;
-                        dropVY[d] += DROP_GRAVITY * dt;
-                        dropVX[d] -= dropVX[d] * Math.min(1, DROP_DRAG * dt);
-                        dropX[d] += dropVX[d] * dt;
-                        dropY[d] += dropVY[d] * dt;
-                        if (dropX[d] < 0) { dropX[d] = 0; dropVX[d] = -dropVX[d] * 0.35; }
-                        else if (dropX[d] > W) { dropX[d] = W; dropVX[d] = -dropVX[d] * 0.35; }
-                        const i = Math.max(0, Math.min(COLUMNS - 1, Math.floor(dropX[d] / colW)));
-                        if (dropVY[d] > 0 && dropY[d] >= H - h[i]) {
-                            h[i] += DROP_VOLUME / colW;
-                            if (i > 0 && i < COLUMNS) u[i] += dropVX[d] * 0.25;
-                            dropLive[d] = 0;
-                            flying--;
-                        }
-                    }
-                }
-
-                function step(dt) {
-                    spray(dt);
-                    fall(dt);
-                    const sub = dt / SUBSTEPS;
-                    for (let s = 0; s < SUBSTEPS; s++) {
-                        if (hovering) drive(sub);
-                        for (let i = 1; i < COLUMNS; i++) {
-                            u[i] += ((-GRAVITY * (h[i] - h[i - 1])) / colW) * sub;
-                            u[i] -= u[i] * Math.min(1, VISCOSITY * sub);
-                        }
-                        u[0] = 0;
-                        u[COLUMNS] = 0;
-                        for (let i = 1; i < COLUMNS; i++) {
-                            flux[i] = (u[i] > 0 ? h[i - 1] : h[i]) * u[i];
-                        }
-                        flux[0] = 0;
-                        flux[COLUMNS] = 0;
-                        for (let i = 0; i < COLUMNS; i++) {
-                            h[i] -= ((flux[i + 1] - flux[i]) / colW) * sub;
-                            if (h[i] < 0) h[i] = 0;
-                        }
-                    }
-                    let worst = 0;
-                    for (let i = 0; i < COLUMNS; i++) {
-                        const off = Math.abs(h[i] - rest);
-                        if (off > worst) worst = off;
-                    }
-                    return worst;
-                }
-
-                function draw() {
-                    ctx.clearRect(0, 0, W, H);
-                    ctx.save();
-                    roundRectPath(ctx, 0, 0, W, H, rounded);
-                    ctx.clip();
-
-                    const surfaceAt = (i) => H - h[i];
-                    ctx.beginPath();
-                    ctx.moveTo(0, surfaceAt(0));
-                    for (let i = 0; i < COLUMNS; i++) ctx.lineTo(colX(i), surfaceAt(i));
-                    ctx.lineTo(W, surfaceAt(COLUMNS - 1));
-                    ctx.lineTo(W, H);
-                    ctx.lineTo(0, H);
-                    ctx.closePath();
-
-                    const grad = ctx.createLinearGradient(0, H - rest, 0, H);
-                    grad.addColorStop(0, surfaceTone);
-                    grad.addColorStop(0.35, bodyTone);
-                    grad.addColorStop(1, depthTone);
-                    ctx.fillStyle = grad;
-                    ctx.fill();
-
-                    ctx.beginPath();
-                    ctx.moveTo(0, surfaceAt(0));
-                    for (let i = 0; i < COLUMNS; i++) ctx.lineTo(colX(i), surfaceAt(i));
-                    ctx.lineTo(W, surfaceAt(COLUMNS - 1));
-                    ctx.strokeStyle = glintTone;
-                    ctx.lineWidth = 1.5;
-                    ctx.stroke();
-
-                    if (flying > 0) {
-                        ctx.beginPath();
-                        for (let d = 0; d < MAX_DROPS; d++) {
-                            if (!dropLive[d]) continue;
-                            ctx.moveTo(dropX[d] + DROP_RADIUS, dropY[d]);
-                            ctx.arc(dropX[d], dropY[d], DROP_RADIUS, 0, Math.PI * 2);
-                        }
-                        ctx.fillStyle = surfaceTone;
-                        ctx.fill();
-                    }
-
-                    ctx.restore();
-
-                    // Рамка (border)
-                    if (border && borderOptions.stroke > 0) {
-                        const half = borderOptions.stroke / 2;
-                        roundRectPath(ctx, half, half, W - borderOptions.stroke, H - borderOptions.stroke, rounded - half);
-                        ctx.lineWidth = borderOptions.stroke;
-                        ctx.strokeStyle = borderBase;
-                        ctx.stroke();
-
-                        const rim = ctx.createLinearGradient(W, H, 0, 0);
-                        rim.addColorStop(0, borderTone);
-                        rim.addColorStop(0.3, borderFade);
-                        rim.addColorStop(0.7, borderFade);
-                        rim.addColorStop(1, borderTone);
-                        ctx.strokeStyle = rim;
-                        ctx.stroke();
-                    }
-                }
-
-                function loop(now) {
-                    if (!alive) return;
-                    const dt = last ? Math.min((now - last) / 1000, 1 / 30) : 1 / 60;
-                    last = now;
-
-                    pointer.vx *= 0.8;
-                    pointer.vy *= 0.8;
-
-                    if (!asleep) {
-                        const worst = step(dt);
-                        draw();
-                        if (!hovering && flying === 0 && worst < STILL) quiet++;
-                        else quiet = 0;
-                        if (quiet > SLEEP_FRAMES) {
-                            freeze();
-                            draw();
-                        }
-                    }
-                    raf = requestAnimationFrame(loop);
-                }
-
-                // ---- Обработчики событий ----
-                const wake = () => {
-                    asleep = false;
-                    quiet = 0;
-                };
-                const toLocal = (e) => {
-                    const rect = rootEl.getBoundingClientRect();
-                    const sx = rect.width > 0 ? W / rect.width : 1;
-                    const sy = rect.height > 0 ? H / rect.height : 1;
-                    return {
-                        x: (e.clientX - rect.left) * sx,
-                        y: (e.clientY - rect.top) * sy
-                    };
-                };
-                const onEnter = (e) => {
-                    hovering = true;
-                    const p = toLocal(e);
-                    pointer.x = p.x;
-                    pointer.y = p.y;
-                    pointer.vx = 0;
-                    pointer.vy = 0;
-                    wake();
-                };
-                const onMove = (e) => {
-                    const p = toLocal(e);
-                    pointer.vx = p.x - pointer.x;
-                    pointer.vy = p.y - pointer.y;
-                    pointer.x = p.x;
-                    pointer.y = p.y;
-                    wake();
-                };
-                const onLeave = () => {
-                    hovering = false;
-                    pointer.x = -9999;
-                    pointer.y = -9999;
-                    pointer.vx = 0;
-                    pointer.vy = 0;
-                    wake();
-                };
-                const onDown = (e) => {
-                    const p = toLocal(e);
-                    pointer.x = p.x;
-                    pointer.y = p.y;
-                    splash(p.x);
-                    wake();
-                    // Вызов onClick, если передан
-                    if (onClick) onClick(e);
-                };
-
-                // Добавляем обработчики на wrapper (не на canvas, чтобы клик срабатывал)
-                wrapper.addEventListener('mouseenter', onEnter);
-                wrapper.addEventListener('mousemove', onMove);
-                wrapper.addEventListener('mouseleave', onLeave);
-                wrapper.addEventListener('pointerdown', onDown);
-
-                // ResizeObserver
-                const observer = new ResizeObserver(() => {
-                    build();
-                    draw();
-                });
-                observer.observe(rootEl);
-
-                // Интервал для проверки пиксельной масштабации
-                const probe = setInterval(() => {
-                    if (!alive) return;
-                    if (Math.abs(pixelScale() - pixScale) < 0.02) return;
-                    raster();
-                    draw();
-                }, 300);
-
-                // Старт
-                build();
-                draw();
-                raf = requestAnimationFrame(loop);
-
-                // Возвращаем функцию очистки
-                return function cleanup() {
-                    alive = false;
-                    cancelAnimationFrame(raf);
-                    clearInterval(probe);
-                    wrapper.removeEventListener('mouseenter', onEnter);
-                    wrapper.removeEventListener('mousemove', onMove);
-                    wrapper.removeEventListener('mouseleave', onLeave);
-                    wrapper.removeEventListener('pointerdown', onDown);
-                    observer.disconnect();
-                    if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
-                };
-            };
-        })();
-
         // ===== FLIP CARD LOGIC =====
         function setupFlipCard() {
             const wrapper = document.getElementById('cardWrapper');
@@ -1721,8 +1129,7 @@
                 const deltaY = endY - pressStartY;
                 const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
                 const target = e.target;
-                // Игнорируем клики по водной кнопке и её дочерним элементам
-                if (target.closest('.water-btn-wrapper') || target.closest('.back-btn')) return;
+                if (target.closest('.card-contact-btn') || target.closest('.back-btn')) return;
                 const isSwipe = distance > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY);
                 const isClick = pressDuration < CLICK_THRESHOLD && distance < SWIPE_THRESHOLD;
                 if (isSwipe || isClick) {
@@ -1889,7 +1296,39 @@
             });
         }
 
-        // ===== НОВЫЙ SPLASH (из второго кода) =====
+        // ===== СОХРАНЕНИЕ КОНТАКТА =====
+        function saveContact(event) {
+            if (event) event.stopPropagation();
+            if (navigator.vibrate) navigator.vibrate(10);
+            const vCardData = [
+                'BEGIN:VCARD', 'VERSION:3.0',
+                'FN:Алексей Ситников', 'N:Ситников;Алексей;;;',
+                'ORG:LUDING', 'TITLE:Менеджер по работе с частными и корпоративными клиентами',
+                'TEL;TYPE=CELL:+79670281571', 'EMAIL:Aleksei.sitnikov@luding.ru',
+                'URL:https://luding.ru', 'NOTE:LUDING - поставки премиальных напитков',
+                'END:VCARD'
+            ].join('\r\n');
+            const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Алексей_Ситников.vcf';
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+            }
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 1000);
+            setTimeout(() => {
+                showToast('Контакт сохранён', 'Алексей Ситников — LUDING');
+            }, 300);
+        }
+
+        // ===== НОВЫЙ SPLASH (взят из второго кода) =====
         let audioEnabled = false;
         let ctx = null;
 
@@ -1956,48 +1395,10 @@
         function startMain() {
             const main = document.getElementById('main');
             main.style.display = 'block';
+            // Плавное появление
             gsap.fromTo(main, { opacity: 0 }, { opacity: 1, duration: 0.8 });
 
-            // Создаём водную кнопку и вставляем в контейнер
-            const container = document.getElementById('waterBtnContainer');
-            if (container) {
-                // Очищаем контейнер (на случай, если там что-то есть)
-                container.innerHTML = '';
-                // Создаём водную кнопку с нашими параметрами
-                const cleanup = window.createWaterButton(container, {
-                    label: 'Контакт',
-                    waterColor: '#8b1a1a', // бордовый
-                    waterAmount: 68,
-                    textColor: '#ffffff',
-                    paddingX: 16,
-                    paddingY: 10,
-                    rounded: 21,
-                    glass: {
-                        tint: 'rgba(0,0,0,0.25)',
-                        blur: 30,
-                        frost: 12
-                    },
-                    border: true,
-                    borderOptions: {
-                        color: 'rgba(255,255,255,0.25)',
-                        stroke: 1
-                    },
-                    shadow: true,
-                    shadowOptions: {
-                        color: '#000000',
-                        intensity: 25
-                    },
-                    press: true,
-                    onClick: function(e) {
-                        // Вызов saveContact с предотвращением всплытия
-                        saveContact(e);
-                    }
-                });
-                // Сохраняем cleanup на случай, если потребуется удалить
-                window._waterBtnCleanup = cleanup;
-            }
-
-            // Активируем анимацию карточки
+            // Активируем анимацию карточки (добавляем класс .visible)
             const cardWrapper = document.getElementById('cardWrapper');
             if (cardWrapper) {
                 setTimeout(() => {
@@ -2005,7 +1406,7 @@
                 }, 200);
             }
 
-            // Инициализация остальных функций
+            // Инициализируем все функциональности
             setupFlipCard();
             setup3DCard();
             setupFeatureCards3D();
@@ -2026,7 +1427,7 @@
 
             document.querySelectorAll('.section, .features-grid').forEach(el => observer.observe(el));
 
-            // Lenis
+            // Lenis (если доступен)
             if (typeof Lenis !== 'undefined') {
                 const lenis = new Lenis({
                     duration: 1.2,
@@ -2051,7 +1452,10 @@
 
         // ===== ЗАПУСК =====
         document.addEventListener('DOMContentLoaded', () => {
+            // Запускаем новый splash
             runNewSplash();
+
+            // Обработка кликов для активации аудио (для безопасного воспроизведения)
             document.addEventListener('click', enableAudio, { once: true });
             document.addEventListener('touchstart', enableAudio, { once: true });
         });
